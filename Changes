@@ -1,0 +1,63 @@
+Revision history for Perl extension Chart::Clicker.
+
+0.9.0  Pending
+    - Axis labels
+    - Get Axes working and add Axis positioning
+    - Set all values to 0 by default in Insets
+    - Rename constants CC_* and add TOP, BOTTOM, LEFT and RIGHT for Axis
+      positioning.
+    - Add Chart::Clicker::Drawing for some common constants
+    - Move HORIZONTAL and VERTICAL to C:C::Drawing as constants
+    - Eliminate extraneous drawing ops (paints) from Plot
+    - Use an Inset to keep up with 'shrinkage' of inner surface in Plot
+    - Enhance Axis with height, orientation, per, tick_values, and width and
+      prepare method that calculates required space.
+    - Remove prepare() from Renderer::Base and move most of the arguments
+      to the render() method.
+    - Rework Renderers to use the domain and range axes for the values they
+      need for rendering.
+    - 'inline' marker drawing
+    - Add divvy() to Range.
+    - Have Grid use 'main' domain and range axes for it's values.
+    - Remove reference to a C:Clicker::prepare sub in the docs
+
+0.2.4  Thu May 4 00:30:19 2006
+    - Shapes
+    - Use Shapes for Point Renderer
+
+0.2.3  Wed May 3 23:15:09 2006
+    - Bring Makefile.PL and MANIFEST up to speed
+    - Legends!
+    - Stop hard-coding output file
+    - Fix bugs in color allocation
+    - A solemn promise to tag this version so I can do svn diffs...
+
+0.2.2  No clue
+    - I forget
+
+0.2.1  Tue Apr 25 23:53:21 2006
+    - Update Bar renderer to divide available spots between all series
+    - Use ColorAllocator in renderers
+    - Add ColorAllocator
+    - Create the Drawing namespace
+
+0.2.0  Sun Apr 23 08:09:34 2006
+
+0.1.0  Thu Apr 20 01:12:09 2006
+    - Add Border and Stroke
+    - Use Class::Accessor
+    - Chart->background_color()
+    - Plot->background_color()
+    - Chart::Point
+
+0.0.4  Tue Apr 18 23:22:12 2006
+    - Add Color and use it for Markers
+
+0.0.3  Fri Apr 14 13:34:43 2006
+    - Add Grid decoration and move mass marker creation there for grid.
+
+0.0.2  Fri Apr 14 12:13:10 2006
+    - Get Markers working
+
+0.0.1  Tue Apr 11 20:30:16 2006
+	- original version
