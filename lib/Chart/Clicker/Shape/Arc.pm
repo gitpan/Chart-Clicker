@@ -8,11 +8,11 @@ use constant TO_RAD => (4 * atan2(1, 1)) / 180;
 
 =head1 NAME
 
-Chart::Clicker::Arc
+Chart::Clicker::Shape::Arc
 
 =head1 DESCRIPTION
 
-Chart::Clicker::Arc represents an arc.
+Chart::Clicker::Shape::Arc represents an arc.
 
 =head1 SYNOPSIS
 

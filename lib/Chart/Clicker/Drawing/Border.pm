@@ -9,11 +9,12 @@ use Chart::Clicker::Drawing::Stroke;
 
 =head1 NAME
 
-Chart::Clicker::Border
+Chart::Clicker::Drawing::Border
 
 =head1 DESCRIPTION
 
-Chart::Clicker::Border describes the border to be rendered around a component.
+Chart::Clicker::Drawing::Border describes the border to be rendered around a
+component.
 
 =head1 SYNOPSIS
 

@@ -15,11 +15,11 @@ use Chart::Clicker::Drawing::Stroke;
 
 =head1 NAME
 
-Chart::Clicker::Decoration::Marker
+Chart::Clicker::Decoration::Grid
 
 =head1 DESCRIPTION
 
-Used to highlight a particular value.
+Generates a collection of Markers for use as a background.
 
 =head1 SYNOPSIS
 

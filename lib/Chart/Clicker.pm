@@ -1,10 +1,10 @@
 package Chart::Clicker;
 use strict;
 
-use base 'Class::Accessor';
+use base 'Chart::Clicker::Drawing::Container';
 __PACKAGE__->mk_accessors(
     qw(
-        background_color border color_allocator height insets legend plot width
+        color_allocator legend plot
     )
 );
 
@@ -22,41 +22,50 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-use Time::HiRes qw(time);
-
 use Log::Log4perl;
 
 =head1 NAME
 
-Chart::Clicker - Graphs
+Chart::Clicker - Powerful, extensible charting.
 
 =head1 DESCRIPTION
 
-Chart::Clicker takes Elements and creates PNG chart.
+Chart::Clicker aims to be a powerful, extensible charting package that creates
+really pretty output.
+
+Clicker leverages the power of Cairo to create snazzy 2D graphics easily and
+quickly.
 
 =head1 SYNOPSIS
 
-  my $c = new Chart::Clicker({ width => 500, height => 350 });
+  use Chart::Clicker;
+  use Chart::Clicker::Drawing::Color;
 
-  my $dataset = new Chart::Clicker::Data::DataSet();
+  my $c = new Chart::Clicker({ width => 500, height => 350 });
+  $chart->background_color(
+    new Chart::Clicker::Drawing::Color({
+        red => 1, green => 1, blue => 1, alpha => 1
+    })
+ }
 
   my $series = new Chart::Clicker::Data::Series();
   $series->keys([1, 2, 3, 4, 5, 6]);
   $series->values([12, 9, 8, 3, 5, 1]);
 
+  my $dataset = new Chart::Clicker::Data::DataSet();
   $dataset->series([$series]);
 
-  $chart->datasets([$datasets]);
+  $chart->plot()->datasets([$datasets]);
 
   my $renderer = new Chart::Clicker::Renderer::Line();
   $chart->plot()->renderer($renderer);
 
   $chart->draw();
-  my $img = $chart->image();
+  $chart->write('/path/to/chart.png');
 
 =cut
 
-our $VERSION = '0.9.0';
+our $VERSION = '0.9.1';
 
 my $log = Chart::Clicker::Log->get_logger('Chart');
 
@@ -66,14 +75,10 @@ my $log = Chart::Clicker::Log->get_logger('Chart');
 
 =over 4
 
-=item Chart::Clicker->new(
+=item new
 
-)
-
-Creates a new Chart::Clicker object.  Sets the width to 500, the
-height to 300.
-
-=back
+Creates a new Chart::Clicker object. If no width and height are specified then
+defaults of 500 and 300 are chosen, respectively.
 
 =cut
 sub new {
@@ -115,44 +120,11 @@ sub new {
 
     return $self;
 }
+=back
 
 =head2 Class Methods
 
 =over 4
-
-=item $c->inside_width()
-
-Get this Chart's 'inside' width.  i.e. width - insets->left() - insets->right
-- border()->stroke()->width * 2.
-
-
-Be aware that this isn't a constant value.  As insets are changed, this value
-changes.
-
-=cut
-sub inside_width {
-    my $self = shift();
-
-    return $self->width() - $self->insets()->left() - $self->insets()->right()
-        - $self->border()->stroke()->width() * 2;
-}
-
-=item $c->inside_height()
-
-Get this Chart's 'inside' height.  i.e. height - insets->top()
-- insets->bottom() - border->stroke()->width * 2.
-
-Be aware that this isn't a constant value.  As insets are changed, this value
-changes.
-
-=cut
-sub inside_height {
-    my $self = shift();
-
-    return $self->height() - $self->insets()->bottom() - $self->insets()->top()
-        - $self->border()->stroke()->width() * 2;
-}
-
 
 =item $c->draw()
 
@@ -161,8 +133,6 @@ Draw this chart
 =cut
 sub draw {
     my $self = shift();
-
-    my $s = time();
 
     my $plot = $self->plot();
 
@@ -258,7 +228,7 @@ sub write {
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

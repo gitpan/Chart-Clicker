@@ -6,11 +6,11 @@ __PACKAGE__->mk_accessors(qw(width height));
 
 =head1 NAME
 
-Chart::Clicker::Rectangle
+Chart::Clicker::Shape::Rectangle
 
 =head1 DESCRIPTION
 
-Chart::Clicker::Rectangle represents an rectangle.
+Chart::Clicker::Shape::Rectangle represents an rectangle.
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,12 @@
 Revision history for Perl extension Chart::Clicker.
 
-0.9.0  Pending
+0.9.1  Pending
+    - Clicker is now a Container
+    - Add CC_CENTER
+    - Add Container
+    - Add Component
+
+0.9.0  Tue May 9 01:30:19 2006
     - Axis labels
     - Get Axes working and add Axis positioning
     - Set all values to 0 by default in Insets

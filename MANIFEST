@@ -8,6 +8,8 @@ t/00-log.t
 t/00-drawing-border.t
 t/00-drawing-color.t
 t/00-drawing-colorallocator.t
+t/00-drawing-component.t
+t/00-drawing-container.t
 t/00-drawing-font.t
 t/00-drawing-insets.t
 t/00-drawing-point.t
@@ -50,6 +52,8 @@ lib/Chart/Clicker/Drawing.pm
 lib/Chart/Clicker/Drawing/Border.pm
 lib/Chart/Clicker/Drawing/Color.pm
 lib/Chart/Clicker/Drawing/ColorAllocator.pm
+lib/Chart/Clicker/Drawing/Component.pm
+lib/Chart/Clicker/Drawing/Container.pm
 lib/Chart/Clicker/Drawing/Font.pm
 lib/Chart/Clicker/Drawing/Insets.pm
 lib/Chart/Clicker/Drawing/Point.pm

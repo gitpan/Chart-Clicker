@@ -7,10 +7,11 @@ WriteMakefile(
     VERSION_FROM      => 'lib/Chart/Clicker.pm', # finds $VERSION
     PREREQ_PM         =>
         {
-            Cairo       => 0.03,
-            DateTime    => 0.30
+            Cairo               => 0.03,
+            'Class::Accessor'   => 0.25,
+            'Log::Log4perl'     => 1.04,
         },
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Chart/Clicker.pm', # retrieve abstract from module
-       AUTHOR         => "Cory 'G' Watson <jheephat\@gmail.com>") : ()),
+       AUTHOR         => "Cory 'G' Watson <gphat\@cpan.org>") : ()),
 );
