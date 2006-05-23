@@ -16,13 +16,21 @@ Chart::Clicker::Shape::Arc represents an arc.
 
 =head1 SYNOPSIS
 
+ use Chart::Clicker::Shape::Arc;
+
+ my $arc = Chart::Clicker::Shape::Arc({
+    angle1 => 0,
+    angle2 => 360,
+    ragius => 5
+ });
+
 =head1 METHODS
 
 =head2 Constructor
 
 =over 4
 
-new()
+=item new
 
 Creates a new Chart::Clicker::Arc.
 
@@ -32,19 +40,21 @@ Creates a new Chart::Clicker::Arc.
 
 =over 4
 
-=item angle1()
+=item angle1
 
 Set/Get the starting angle for this arc.
 
-=item angle2()
+=item angle2
 
 Set/Get the ending angle for this arc.
 
-=item radius()
+=item radius
 
 Set/Get the radius for this arc.
 
-=item create_path($cairo, $x, $y)
+=item create_path
+
+  $arc->create_path($cairo, $x, $y);
 
 Creates a path using this arcs attributes.
 
@@ -64,7 +74,7 @@ sub create_path {
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

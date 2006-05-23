@@ -4,10 +4,6 @@ use strict;
 use base 'Class::Accessor';
 __PACKAGE__->mk_accessors(qw(lower upper));
 
-use Chart::Clicker::Log;
-
-my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Data::Range');
-
 =head1 NAME
 
 Chart::Clicker::Data::Range
@@ -18,7 +14,12 @@ Chart::Clicker::Data::Range implements a range of values.
 
 =head1 SYNOPSIS
 
-=cut
+  use Chart::Clicker::Data::Range;
+
+  my $range = new Chart::Clicker::Data::Range({
+    lower => 1,
+    upper => 10
+  });
 
 =head1 METHODS
 
@@ -26,19 +27,19 @@ Chart::Clicker::Data::Range implements a range of values.
 
 =over 4
 
-=item new({ lower => $LOWER, upper => $UPPER })
+=item new
 
 Creates a new, empty Series
 
-=item $lower = $range->lower($lower)
+=item lower
 
 Set/Get the lower bound for this Range
 
-=item $upper = $range->upper($upper)
+=item upper
 
 Set/Get the upper bound for this Range
 
-=item $span = $range->span()
+=item span
 
 Returns the span of this range, or UPPER - LOWER.
 
@@ -49,10 +50,10 @@ sub span {
     return $self->upper() - $self->lower();
 }
 
-=item $arrayref = $range->combine($lower, $upper)
+=item combine
 
 Combine this range with the specified so that this range encompasses the
-the values specified.
+values specified.
 
 =cut
 sub combine {
@@ -60,17 +61,17 @@ sub combine {
     my $range = shift();
 
     if(!defined($self->lower()) or ($range->lower() < $self->lower())) {
-        $log->debug('Adjusting Lower');
         $self->lower($range->lower());
     }
 
     if(!defined($self->upper()) or ($range->upper() > $self->upper())) {
-        $log->debug('Adjusting Upper');
         $self->upper($range->upper());
     }
 }
 
-=item divvy($N)
+=item divvy
+
+  my $values = $range->divvy(5);
 
 Returns an arrayref of $N - 1 values equally spaced in the range so that
 it may be divided into $N pieces.
@@ -94,7 +95,7 @@ sub divvy {
 
 =head1 AUTHOR
 
-Cory 'G' Watson <jheephat@gmail.com>
+Cory 'G' Watson <jheephat@cpan.org>
 
 =head1 SEE ALSO
 

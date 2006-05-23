@@ -1,16 +1,16 @@
 package Chart::Clicker::Axis;
 use strict;
 
-use base 'Class::Accessor';
+use base 'Chart::Clicker::Drawing::Component';
 __PACKAGE__->mk_accessors(
     qw(
-        color font height label orientation per position range show_ticks stroke
-        tick_length tick_stroke tick_values visible width
+        font label orientation per position range show_ticks stroke
+        tick_length tick_stroke tick_values visible
     )
 );
 
 use Chart::Clicker::Data::Range;
-use Chart::Clicker::Drawing qw(:common);
+use Chart::Clicker::Drawing qw(:positions);
 use Chart::Clicker::Drawing::Color;
 use Chart::Clicker::Drawing::Font;
 use Chart::Clicker::Drawing::Stroke;
@@ -25,6 +25,24 @@ Chart::Clicker::Axis represents the plot of the chart.
 
 =head1 SYNOPSIS
 
+  use Chart::Clicker::Axis;
+  use Chart::Clicker::Drawing qw(:positions);
+  use Chart::Clicker::Drawing::Color;
+  use Chart::Clicker::Drawing::Font;
+  use Chart::Clicker::Drawing::Stroke;
+
+  my $axis = new Chart::Clicker::Axis({
+    color => new Chart::Clicker::Drawing::Color({ name => 'black' }),
+    font  => new Chart::Clicker::Drawing::Font(),
+    orientation => $CC_VERTICAL,
+    position => $CC_LEFT,
+    show_ticks => 1,
+    stroke = new Chart::Clicker::Drawing::Stroke(),
+    tick_length => 2,
+    tick_stroke => new Chart::Clicker::Drawing::Stroke(),
+    visible => 1,
+  });
+
 =head1 METHODS
 
 =head2 Constructor
@@ -33,7 +51,8 @@ Chart::Clicker::Axis represents the plot of the chart.
 
 =item Chart::Clicker::Axis->new()
 
-Creates a new Chart::Clicker::Axis.
+Creates a new Chart::Clicker::Axis.  If no arguments are given then sane
+defaults are chosen.
 
 =back
 
@@ -83,35 +102,65 @@ sub new {
 
 =over 4
 
-=item label()
+=item color
+
+Set/Get the color of the axis.
+
+=item font
+
+Set/Get the font used for the axis' labels.
+
+=item height
+
+Set/Get the height of the axis.
+
+=item label
 
 Set/Get the label of the axis.
 
-=item length()
+=item orientation
 
-Set/Get the physical length of this axis in the chart.
+Set/Get the orientation of this axis.
 
-=item range()
+=item per
+
+Set/Get the 'per' value for the axis.  This is how many physical pixels a unit
+on the axis represents.  If the axis represents a range of 0-100 and the axis
+is 200 pixels high then the per value will be 2.
+
+=item position
+
+Set/Get the position of the axis on the chart.
+
+=item range
 
 Set/Get the Range for this axis.
 
-=item show_ticks()
+=item show_ticks
 
-Set/Get the show ticks flag
+Set/Get the show ticks flag.
 
-=item tick_length()
+=item stroke
+
+Set/Get the stroke for this axis.
+
+=item tick_length
 
 Set/Get the tick length
 
-=item tick_values()
+=item tick_stroke
+
+Set/Get the stroke for the tick markers.
+
+=item tick_values
 
 Set/Get the arrayref of values show as ticks on this Axis.
 
-=item visible()
+=item visible
 
 Set/Get this Axis' visibility
 
-=item prepare()
+=item prepare
 
 Prepare this Axis by determining the size required.  If the orientation is
 CC_HORIZONTAL this method sets the height.  Otherwise sets the width.
@@ -119,15 +168,22 @@ CC_HORIZONTAL this method sets the height.  Otherwise sets the width.
 =cut
 sub prepare {
     my $self = shift();
-    my $cairo = shift();
+    my $clicker = shift();
+    my $dimension = shift();
 
     unless($self->visible()) {
         return;
     }
 
-    $cairo->set_font_size($self->font()->size());
+    $self->tick_values($self->range()->divvy(5));
+
+    my $cairo = $clicker->context();
+
+    my $font = $self->font();
+
+    $cairo->set_font_size($font->size());
     $cairo->select_font_face(
-        $self->font()->face(), $self->font()->slant(), $self->font()->weight()
+        $font->face(), $font->slant(), $font->weight()
     );
 
     # Determine all this once... much faster.
@@ -149,56 +205,77 @@ sub prepare {
     }
 
     if($self->show_ticks()) {
-        $biggest += $self->tick_length();
+        $biggest += $self->tick_length() + 2;
     }
 
     if($self->orientation() == $CC_HORIZONTAL) {
         $self->height($biggest);
+        $self->width($dimension->width());
+        $self->per($self->width() / $self->range()->span());
     } else {
         $self->width($biggest);
+        $self->height($dimension->height());
+        $self->per($self->height() / $self->range()->span());
     }
 }
 
-sub render {
+=item draw
+
+Draw this axis.
+
+=cut
+sub draw {
     my $self = shift();
-    my $cr = shift();
-    my $x = shift();
-    my $y = shift();
+    my $clicker = shift();
 
-    $cr->set_line_width($self->stroke()->width());
-    $cr->set_line_cap($self->stroke()->line_cap());
-    $cr->set_line_join($self->stroke()->line_join());
+    my $x = 0;
+    my $y = 0;
 
-    $cr->set_font_size($self->font()->size());
+    my $orient = $self->orientation();
+    my $pos = $self->position();
+
+    if($pos == $CC_LEFT) {
+        $x += $self->width();
+    } elsif($pos == $CC_RIGHT) {
+        $x -= .5;
+    } elsif($pos == $CC_TOP) {
+        $y += $self->height() + .5;
+    }
+
+    my $surf = $self->SUPER::draw($clicker);
+    my $cr = Cairo::Context->create($surf);
+
+    my $stroke = $self->stroke();
+    $cr->set_line_width($stroke->width());
+    $cr->set_line_cap($stroke->line_cap());
+    $cr->set_line_join($stroke->line_join());
+
+    my $font = $self->font();
+    $cr->set_font_size($font->size());
     $cr->select_font_face(
-        $self->font()->face(), $self->font()->slant(), $self->font()->weight()
+        $font->face(), $font->slant(), $font->weight()
     );
 
+    my $tick_length = $self->tick_length();
+    my $per = $self->per();
+
     $cr->move_to($x, $y);
-    if($self->orientation() == $CC_HORIZONTAL) {
+    if($orient == $CC_HORIZONTAL) {
         # Draw a line for our axis
         $cr->line_to($x + $self->width(), $y);
-
-        # Draw the 0th tick mark.
-        $cr->move_to($x, $y);
-        if($self->position() == $CC_TOP) {
-            $cr->line_to($x, $y - $self->tick_length());
-        } else {
-            $cr->line_to($x, $y + $self->tick_length());
-        }
 
         # Draw a tick for each value.
         my $vi = 0;
         foreach my $val (@{ $self->tick_values() }) {
             # Grab the extent from the cache.
             my $ext = $self->{'extents_cache'}->[$vi];
-            my $ix = $x + int($val * $self->per());
+            my $ix = $x + int($val * $per);
             $cr->move_to($ix, $y);
-            if($self->position() == $CC_TOP) {
-                $cr->line_to($ix, $y - $self->tick_length());
-                $cr->rel_move_to(-($ext->{'width'} / 1.8), $ext->{'height'});
+            if($pos == $CC_TOP) {
+                $cr->line_to($ix, $y - $tick_length);
+                $cr->rel_move_to(-($ext->{'width'} / 1.8), -2);
             } else {
-                $cr->line_to($ix, $y + $self->tick_length());
+                $cr->line_to($ix, $y + $tick_length);
                 # I have NO idea why I had to use 1.8 instead of 2 here...
                 $cr->rel_move_to(-($ext->{'width'} / 1.8), $ext->{'height'});
             }
@@ -206,58 +283,45 @@ sub render {
             $vi++;
         }
 
-        # Draw the final tick mark.
-        $cr->move_to($x + $self->width(), $y);
-        if($self->position() == $CC_TOP) {
-            $cr->line_to($x + $self->width(), $y - $self->tick_length());
-        } else {
-            $cr->line_to($x + $self->width(), $y + $self->tick_length());
-        }
-
     } else {
         $cr->line_to($x, $y + $self->height());
 
-        $cr->move_to($x, $y);
-        if($self->position() == $CC_LEFT) {
-            $cr->line_to($x - $self->tick_length(), $y);
-        } else {
-            $cr->line_to($x + $self->tick_length(), $y);
-        }
         my $vi = 0;
         foreach my $val (@{ $self->tick_values() }) {
-            my $iy = $y + $self->height() - ($val * $self->per());
+            my $iy = $y + $self->height() - ($val * $per);
             my $ext = $self->{'extents_cache'}->[$vi];
             $cr->move_to($x, $iy);
             if($self->position() == $CC_LEFT) {
-                $cr->line_to($x - $self->tick_length(), $iy);
+                $cr->line_to($x - $tick_length, $iy);
                 $cr->rel_move_to(-$ext->{'width'}, $ext->{'height'} / 2);
             } else {
-                $cr->line_to($x + $self->tick_length(), $iy);
-                $cr->rel_move_to(-$ext->{'width'}, $ext->{'height'} / 2);
+                $cr->line_to($x + $tick_length, $iy);
+                $cr->rel_move_to(0, $ext->{'height'} / 2);
             }
             $cr->show_text($val);
             $vi++;
         }
-
-        $cr->move_to($x, $self->height() + $y);
-        if($self->position() == $CC_LEFT) {
-            $cr->line_to($x - $self->tick_length(), $self->height() + $y);
-        } else {
-            $cr->line_to($x + $self->tick_length(), $self->height() + $y);
-        }
     }
-
-
 
     $cr->set_source_rgba($self->color()->rgba());
     $cr->stroke();
+
+    return $surf;
 }
+
+=item visible
+
+Set/Get this axis visibility flag.
+
+=item width
+
+Set/Get this axis' width.
 
 =back
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

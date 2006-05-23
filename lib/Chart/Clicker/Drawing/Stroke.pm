@@ -1,16 +1,29 @@
 package Chart::Clicker::Drawing::Stroke;
 use strict;
 
-use base 'Class::Accessor';
+use base qw(Class::Accessor Exporter);
 __PACKAGE__->mk_accessors(qw(width line_cap line_join));
 
-our $LINE_CAP_BUTT = 'butt';
-our $LINE_CAP_ROUND = 'round';
-our $LINE_CAP_SQUARE = 'square';
+@Chart::Clicker::Drawing::Stroke::EXPORT_OK = qw(
+  $CC_LINE_CAP_BUTT $CC_LINE_CAP_ROUND $CC_LINE_CAP_SQUARE
+  $CC_LINE_JOIN_MITER $CC_LINE_JOIN_ROUND $CC_LINE_JOIN_BEVEL
+);
+%Chart::Clicker::Drawing::Stroke::EXPORT_TAGS = (
+    line_caps => [ qw(
+        $CC_LINE_CAP_BUTT $CC_LINE_CAP_ROUND $CC_LINE_CAP_SQUARE
+    ) ],
+    line_joins => [ qw(
+        $CC_LINE_JOIN_MITER $CC_LINE_JOIN_ROUND $CC_LINE_JOIN_BEVEL
+    ) ],
+);
 
-our $LINE_JOIN_MITER = 'miter';
-our $LINE_JOIN_ROUND = 'round';
-our $LINE_JOIN_BEVEL = 'bevel';
+our $CC_LINE_CAP_BUTT = 'butt';
+our $CC_LINE_CAP_ROUND = 'round';
+our $CC_LINE_CAP_SQUARE = 'square';
+
+our $CC_LINE_JOIN_MITER = 'miter';
+our $CC_LINE_JOIN_ROUND = 'round';
+our $CC_LINE_JOIN_BEVEL = 'bevel';
 
 =head1 NAME
 
@@ -24,15 +37,35 @@ see it!
 
 =head1 SYNOPSIS
 
+  use Chart::Clicker::Drawing::Stroke qw(:line_caps :line_joins);
+
+  my $stroke = new Chart::Clicker::Drawing::Stroke({
+    line_cap => $CC_LINE_CAP_ROUND,
+    line_join => $CC_LINE_JOIN_MITER,
+    width => 2
+  });
+
+=head1 EXPORTS
+
+$CC_LINE_CAP_BUTT
+$CC_LINE_CAP_ROUND
+$CC_LINE_CAP_SQUARE
+
+$CC_LINE_JOIN_MITER
+$CC_LINE_JOIN_ROUND
+$CC_LINE_JOIN_BEVEL
+
 =head1 METHODS
 
 =head2 Constructor
 
 =over 4
 
-=item Chart::Clicker::Decoration::Stroke->new({ width => $WIDTH })
+=item new
 
-Creates a new Chart::Clicker::Decoration::Stroke.
+Creates a new Chart::Clicker::Decoration::Stroke.  If no options are provided
+the width defaults to 1, the line_cap defaults to $CC_LINE_CAP_BUTT and the
+line_join defaults to $CC_LINE_JOIN_MITER.
 
 =cut
 sub new {
@@ -43,10 +76,10 @@ sub new {
         $self->width(1);
     }
     unless(defined($self->line_cap())) {
-        $self->line_cap($LINE_CAP_BUTT);
+        $self->line_cap($CC_LINE_CAP_BUTT);
     }
     unless(defined($self->line_join())) {
-        $self->line_join($LINE_JOIN_MITER);
+        $self->line_join($CC_LINE_JOIN_MITER);
     }
 
     return $self;
@@ -58,7 +91,15 @@ sub new {
 
 =over 4
 
-=item $width = $s->width($WIDTH)
+=item line_cap
+
+Set/Get the line_cap of this stroke.
+
+=item line_join
+
+Set/Get the line_join of this stroke.
+
+=item width
 
 Set/Get the width of this stroke.
 
@@ -66,7 +107,7 @@ Set/Get the width of this stroke.
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

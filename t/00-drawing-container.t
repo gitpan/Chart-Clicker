@@ -1,6 +1,7 @@
-use Test::More tests => 8;
+use Test::More tests => 10;
 
 BEGIN {
+    use_ok('Chart::Clicker::Drawing::Component');
     use_ok('Chart::Clicker::Drawing::Container');
     use_ok('Chart::Clicker::Drawing::Border');
     use_ok('Chart::Clicker::Drawing::Insets');
@@ -10,7 +11,7 @@ BEGIN {
 eval {
     my $foo = new Chart::Clicker::Drawing::Container();
 };
-ok(!defined($@) or $@ eq '', 'Failed w/no width and height');
+ok(!defined($@) || ($@ eq ''), 'Failed w/no width and height');
 
 my $c = new Chart::Clicker::Drawing::Container({
     width => 300,
@@ -29,3 +30,9 @@ isa_ok($c, 'Chart::Clicker::Drawing::Container');
 
 ok($c->inside_height() == 143, 'Inside Height');
 ok($c->inside_width() == 289, 'Inside Width');
+
+my $comp = new Chart::Clicker::Drawing::Component();
+$c->add($comp);
+
+my $comps = $c->components();
+ok(defined($comps), 'Get components');

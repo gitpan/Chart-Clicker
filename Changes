@@ -1,6 +1,11 @@
 Revision history for Perl extension Chart::Clicker.
 
-0.9.1  Pending
+0.9.3  Mon May 22 11:24:31 2006
+    - Layout based rendering.
+    - Documentation updates
+    - Labels
+
+0.9.1  Wed May 10 10:12:09 2006
     - Clicker is now a Container
     - Add CC_CENTER
     - Add Container

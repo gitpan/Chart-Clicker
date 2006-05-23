@@ -16,7 +16,19 @@ Chart::Clicker::Data::DataSet is the core class
 
 =head1 SYNOPSIS
 
-=cut
+  use Chart::Clicker::Data::DataSet;
+  use Chart::Clicker::Data::Series;
+
+  my @vals = (12, 19, 90, 4, 44, 3, 78, 87, 19, 5);
+  my @keys = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+  my $series = new Chart::Clicker::Data::Series({
+    keys    => \@keys,
+    values  => \@values
+  });
+
+  my $ds = new Chart::Clicker::Data::DataSet({
+    series => [ $series ]
+  });
 
 =head1 METHODS
 
@@ -24,7 +36,7 @@ Chart::Clicker::Data::DataSet is the core class
 
 =over 4
 
-=item new()
+=item new
 
 Creates a new, empty DataSet
 
@@ -38,11 +50,23 @@ sub new {
     return $self;
 }
 
-=item $count = $ds->count()
+=item count
 
 Get the number of series in this dataset.
 
-=item $series = $ds->series(\@series)
+=item domain
+
+Get the Range for the domain values
+
+=item max_key_count
+
+Get the number of keys in the longest series.
+
+=item range
+
+Get the Range for the... range values...
+
+=item series
 
 Set/Get the series for this DataSet
 
@@ -57,7 +81,7 @@ sub series {
     return $self->{'SERIES'};
 }
 
-=item $ds->prepare()
+=item prepare
 
 Prepare this DataSet.
 
@@ -103,23 +127,11 @@ sub prepare {
     }
 }
 
-=item $rr = $ds->range()
-
-Get the Range for the... range values...
-
-=item $dr = $ds->domain()
-
-Get the Range for the domain values
-
-=item $kc = $ds->max_key_count()
-
-Get the number of keys in the longest series.
-
 =back
 
 =head1 AUTHOR
 
-Cory 'G' Watson <jheephat@gmail.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

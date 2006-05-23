@@ -18,15 +18,23 @@ component.
 
 =head1 SYNOPSIS
 
+  use Chart::Clicker::Drawing::Border;
+
+  my $border = new Chart::Clicker::Drawing::Border({
+    color => new Chart::Clicker::Drawing::Color({ name => black }),
+    stroke => new Chart::Clicker::Drawing::Stroke()
+  });
+
 =head1 METHODS
 
 =head2 Constructor
 
 =over 4
 
-=item Chart::Clicker::Border->new({ color => $COLOR, stroke => $STROKE});
+=item new
 
-Creates a new Chart::Clicker::Border.
+Creates a new Chart::Clicker::Border.  Defaults to a color of black and
+a default stroke if none are specified.
 
 =cut
 sub new {
@@ -53,11 +61,11 @@ sub new {
 
 =over 4
 
-=item $color = $p->color($COLOR)
+=item color
 
 Set/Get the Color.
 
-=item $stroke = $p->stroke($stroke)
+=item stroke
 
 Set/Get the Stroke.
 
@@ -65,11 +73,11 @@ Set/Get the Stroke.
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 
-perl(1)
+perl(1), L<Chart::Clicker::Drawing::Stroke>
 
 =cut
 1;

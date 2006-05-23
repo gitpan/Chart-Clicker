@@ -20,7 +20,7 @@ Chart::Clicker::Shape::Rectangle represents an rectangle.
 
 =over 4
 
-new()
+=item new
 
 Creates a new Chart::Clicker::Rectangle.
 
@@ -30,15 +30,17 @@ Creates a new Chart::Clicker::Rectangle.
 
 =over 4
 
-=item width()
+=item width
 
 Set/Get the width of this rectangle.
 
-=item height()
+=item height
 
 Set/Get the height of this rectangle.
 
-=item create_path($cairo, $x, $y)
+=item create_path
+
+  $rect->create_path($cairo, $x, $y);
 
 Creates a path using this arcs attributes.
 
@@ -59,7 +61,7 @@ sub create_path {
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

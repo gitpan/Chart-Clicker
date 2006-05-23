@@ -56,22 +56,9 @@ white and yellow.  Any case is fine, navy, NAVY or Navy.
 
 =over 4
 
-=item Chart::Clicker::Drawing::Color->new({
-    red     => $RED,
-    green   => $GREEN,
-    blue    => $BLUE,
-    alpha   => $ALPHA
-)
+=item new
 
 Creates a new Chart::Clicker::Drawing::Color.
-
-=back
-
-=head2 Class Methods
-
-=over 4
-
-=item new( )
 
 =cut
 sub new {
@@ -92,38 +79,33 @@ sub new {
     return $self;
 }
 
-=item $red = $c->red($red)
+=back
+
+=head2 Class Methods
+
+=over 4
+
+=item red
 
 Set/Get the red component of this Color.
 
-=item $green = $c->green($green)
+=item green
 
 Set/Get the green component of this Color.
 
-=item $blue = $c->blue($blue)
+=item blue
 
 Set/Get the blue component of this Color.
 
-=item $alpha = $c->alpha($alpha)
+=item alpha
 
 Set/Get the alpha component of this Color.
 
-=item $name = $c->name()
+=item name
 
 Get the name of this color.  Only valid if the color was created by name.
 
-=item @names = $c->names()
-
-Gets the list of predefined color names.
-
-=cut
-sub names {
-    my $self = shift();
-
-    return keys(%colors);
-}
-
-=item as_string()
+=item as_string
 
 Get a string version of this Color in the form of RED, GREEN, BLUE, ALPHA
 
@@ -131,15 +113,13 @@ Get a string version of this Color in the form of RED, GREEN, BLUE, ALPHA
 sub as_string {
     my $self = shift();
 
-    return join(',',
-        sprintf('%0.2f', $self->red()),
-        sprintf('%0.2f', $self->green()),
-        sprintf('%0.2f', $self->blue()),
-        sprintf('%0.2f', $self->alpha())
+    sprintf('%0.2f,%0.2f,%0.2f,%0.2f',
+        $self->red(), $self->green(),
+        $self->blue(), $self->alpha()
     );
 }
 
-=item $newcolor = $color->clone()
+=item clone
 
 Clone this color
 
@@ -153,9 +133,9 @@ sub clone {
     });
 }
 
-=item @colors = rgb()
+=item rgb
 
-Get the RGB parts as an array
+Get the RGB values as an array
 
 =cut
 sub rgb {
@@ -164,9 +144,9 @@ sub rgb {
     return ($self->red(), $self->green(), $self->blue());
 }
 
-=item @colors = rgba()
+=item rgba
 
-Get the RGBA parts as an array
+Get the RGBA values as an array
 
 =cut
 sub rgba {
@@ -177,9 +157,26 @@ sub rgba {
 
 =back
 
+=head2 Static Methods
+
+=over 4
+
+=item names
+
+Gets the list of predefined color names.
+
+=cut
+sub names {
+    my $self = shift();
+
+    return keys(%colors);
+}
+
+=back
+
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

@@ -7,7 +7,9 @@ use Chart::Clicker::Log;
 
 my @defaults = (qw(red green blue lime yellow maroon teal fuchsia));;
 
-my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Drawing::ColorAllocator');
+my $log = Chart::Clicker::Log->get_logger(
+    'Chart::Clicker::Drawing::ColorAllocator'
+);
 
 =head1 NAME
 
@@ -37,7 +39,7 @@ corresponds to the series that will be colored.
 
 =over 4
 
-=item new({ colors => \@colors })
+=item new
 
 Create a new ColorAllocator.  You can optionally pass an arrayref of colors
 to 'seed' the allocator.
@@ -67,7 +69,7 @@ sub new {
 
 =over 4
 
-=item $pos = $ca->position();
+=item position
 
 Gets the current position.
 
@@ -78,9 +80,10 @@ sub position {
     return $self->{'POSITION'};
 }
 
-=item $color = $ca->next();
+=item next
 
-Returns the next color.
+Returns the next color.  Each call to next increments the position, so
+subsequent calls will return different colors.
 
 =cut
 sub next {
@@ -113,7 +116,7 @@ sub next {
     return $self->{'COLORS'}->[$self->position()];
 }
 
-=item $ca->reset()
+=item reset
 
 Resets this allocator back to the beginning.
 
@@ -126,7 +129,7 @@ sub reset {
     $self->{'POSITION'} = -1;
 }
 
-=item $color = $ca->get($count)
+=item get
 
 Gets the color at the specified index.  Returns undef if that position has no
 color.
@@ -145,7 +148,7 @@ sub get {
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

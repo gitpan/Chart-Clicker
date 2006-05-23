@@ -20,7 +20,7 @@ Chart::Clicker::Shape represents a geometric shape.
 
 =over 4
 
-new()
+=item new
 
 Creates a new Chart::Clicker::Shape.
 
@@ -34,7 +34,7 @@ Creates a new Chart::Clicker::Shape.
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

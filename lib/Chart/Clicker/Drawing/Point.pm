@@ -14,13 +14,17 @@ Chart::Clicker::Drawing::Point represents a location in (x, y) coordinate space.
 
 =head1 SYNOPSIS
 
+  use Chart::Clicker::Drawing::Point;
+
+  my $point = Chart::Clicker::Drawing::Point->new({ x => 2, y => 0 });
+
 =head1 METHODS
 
 =head2 Constructor
 
 =over 4
 
-=item Chart::Clicker::Drawing::Point->new({ x => $X, y => $Y});
+=item new
 
 Creates a new Chart::Clicker::Drawing::Point.
 
@@ -30,11 +34,11 @@ Creates a new Chart::Clicker::Drawing::Point.
 
 =over 4
 
-=item $x = $p->x($X)
+=item x
 
 Set/Get the X coordinate.
 
-=item $y = $p->y($Y)
+=item y
 
 Set/Get the Y coordinate.
 
@@ -42,7 +46,7 @@ Set/Get the Y coordinate.
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

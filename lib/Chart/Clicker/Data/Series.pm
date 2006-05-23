@@ -18,7 +18,15 @@ Chart::Clicker::Data::Series is the core class
 
 =head1 SYNOPSIS
 
-=cut
+  use Chart::Clicker::Data::Series;
+
+  my @keys = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+  my @values = (42, 25, 86, 23, 2, 19, 103, 12, 54, 9);
+
+  my $series = new Chart::Clicker::Data::Series({
+    keys    => \@keys,
+    value   => \@values
+  });
 
 =head1 METHODS
 
@@ -26,7 +34,7 @@ Chart::Clicker::Data::Series is the core class
 
 =over 4
 
-=item new()
+=item new
 
 Creates a new, empty Series
 
@@ -42,19 +50,19 @@ sub new {
     return $self;
 }
 
-=item $name = $series->name($name)
+=item name
 
 Set/Get the name for this Series
 
-=item $keys = $series->keys(\@keys)
+=item keys
 
 Set/Get the keys for this series.
 
-=item $values = $series->values(\@values)
+=item values
 
 Set/Get the values for this series.
 
-=item $series->prepare()
+=item prepare
 
 Prepare this series.  Performs various checks and calculates
 various things.
@@ -103,20 +111,20 @@ sub prepare {
     $self->range(new Chart::Clicker::Data::Range({ lower => $min, upper => $max }));
 }
 
-=item $range = $self->range();
+=item range
 
 Returns the range for this series.
 
-=item $length = $self->max_key_length()
+=item length
 
 Returns the length of the longest key in this series.
 
-=item $count = $self->key_count()
+=item key_count
 
 Return a count of the number of keys in this series.  Only available
 after the series has been prepared.
 
-=item $count = $self->value_count()
+=item count
 
 Return a count of the number of values in this series.  Only available
 after the series has been prepared.
@@ -125,7 +133,7 @@ after the series has been prepared.
 
 =head1 AUTHOR
 
-Cory 'G' Watson <jheephat@gmail.com>
+Cory 'G' Watson <jheephat@cpan.org>
 
 =head1 SEE ALSO
 

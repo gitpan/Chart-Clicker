@@ -1,8 +1,7 @@
 package Chart::Clicker::Decoration::Base;
 use strict;
 
-use base 'Class::Accessor';
-__PACKAGE__->mk_accessors(qw());
+use base 'Chart::Clicker::Drawing::Component';
 
 =head1 NAME
 
@@ -20,7 +19,7 @@ Chart::Clicker::Decoration::Base.
 
 =over 4
 
-=item Chart::Clicker::Decoration::Base->new()
+=item new
 
 Creates a new Chart::Clicker::Decoration::Base.
 
@@ -34,7 +33,7 @@ Creates a new Chart::Clicker::Decoration::Base.
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

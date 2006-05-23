@@ -10,10 +10,19 @@ Chart::Clicker::Drawing::Insets
 
 =head1 DESCRIPTION
 
-Chart::Clicker::Drawing::Insets represents the amount of space a container must leave at
-it's edges.
+Chart::Clicker::Drawing::Insets represents the amount of space a container must
+leave at it's edges.
 
 =head1 SYNOPSIS
+
+  use Chart::Clicker::Drawing::Insets;
+
+  my $insets = Chart::Clicker::Drawing::Insets->new({
+    top     => $TOP,
+    bottom  => $BOTTOM,
+    left    => $LEFT,
+    right   => $RIGHT
+  });
 
 =head1 METHODS
 
@@ -21,12 +30,7 @@ it's edges.
 
 =over 4
 
-=item Chart::Clicker::Drawing::Insets->new({
-    top     => $TOP,
-    bottom  => $BOTTOM,
-    left    => $LEFT,
-    right   => $RIGHT
-});
+=item new
 
 Creates a new Chart::Clicker::Drawing::Insets.
 
@@ -57,19 +61,19 @@ sub new {
 
 =over 4
 
-=item $top = $i->top($TOP)
+=item top
 
 Set/Get the inset from the top.
 
-=item $left = $i->left($LEFT)
+=item left
 
 Set/Get the inset from the left.
 
-=item $right = $i->right($RIGHT)
+=item right
 
 Set/Get the inset from the right.
 
-=item $bottom = $i->bottom($BOTTOM)
+=item bottom
 
 Set/Get the inset from the bottom.
 
@@ -77,7 +81,7 @@ Set/Get the inset from the bottom.
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

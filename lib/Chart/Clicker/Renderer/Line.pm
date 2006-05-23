@@ -16,6 +16,8 @@ Chart::Clicker::Renderer::Line renders a dataset as lines.
 use Chart::Clicker::Renderer::Base;
 use base 'Chart::Clicker::Renderer::Base';
 
+use Chart::Clicker::Log;
+
 my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Renderer::Line');
 
 =head1 METHODS
@@ -24,7 +26,7 @@ my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Renderer::Line');
 
 =over 4
 
-=item $image = $r->render($color_allocator)
+=item render
 
 Render the series.
 
@@ -65,7 +67,7 @@ sub render {
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

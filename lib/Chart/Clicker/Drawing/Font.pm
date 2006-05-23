@@ -1,15 +1,28 @@
 package Chart::Clicker::Drawing::Font;
 use strict;
 
-use base 'Class::Accessor';
+use base qw(Class::Accessor Exporter);
 __PACKAGE__->mk_accessors(qw(face size slant weight));
 
-our $FONT_SLANT_NORMAL = 'normal';
-our $FONT_SLANT_ITALIC = 'italic';
-our $FONT_SLANT_OBLIQUE = 'oblique';
+@Chart::Clicker::Drawing::Font::EXPORT_OK = qw(
+    $CC_FONT_SLANT_NORMAL $CC_FONT_SLANT_ITALIC $CC_FONT_SLANT_OBLIQUE
+    $CC_FONT_WEIGHT_NORMAL $CC_FONT_WEIGHT_BOLD
+);
+%Chart::Clicker::Drawing::Font::EXPORT_TAGS = (
+    slants => [ qw(
+        $CC_FONT_SLANT_NORMAL $CC_FONT_SLANT_ITALIC $CC_FONT_SLANT_OBLIQUE
+    ) ],
+    weights => [ qw(
+        $CC_FONT_WEIGHT_NORMAL $CC_FONT_WEIGHT_BOLD
+    ) ]
+);
 
-our $FONT_WEIGHT_NORMAL = 'normal';
-our $FONT_WEIGHT_BOLD = 'bold';
+our $CC_FONT_SLANT_NORMAL = 'normal';
+our $CC_FONT_SLANT_ITALIC = 'italic';
+our $CC_FONT_SLANT_OBLIQUE = 'oblique';
+
+our $CC_FONT_WEIGHT_NORMAL = 'normal';
+our $CC_FONT_WEIGHT_BOLD = 'bold';
 
 =head1 NAME
 
@@ -20,7 +33,24 @@ Chart::Clicker::Drawing::Font
 Chart::Clicker::Drawing::Font represents the various options that are available
 when rendering text on the chart.
 
+=head1 EXPORTS
+
+$CC_FONT_SLANT_NORMAL
+$CC_FONT_SLANT_ITALIC
+$CC_FONT_SLANT_OBLIQUE
+
+$CC_FONT_WEIGHT_NORMAL
+$CC_FONT_WEIGHT_BOLD
+
 =head1 SYNOPSIS
+
+  use Chart::Clicker::Drawing::Font;
+
+  my $font = new Chart::Clicker::Drawing::Font({
+    face => 'Sans',
+    size => 12,
+    slant => $Chart::Clicker::Drawing::FONT_SLANT_NORMAL
+  });
 
 =head1 METHODS
 
@@ -28,9 +58,9 @@ when rendering text on the chart.
 
 =over 4
 
-=item Chart::Clicker::Decoration::Stroke->new({ width => $WIDTH })
+=item new
 
-Creates a new Chart::Clicker::Decoration::Stroke.
+Creates a new Chart::Clicker::Decoration::Font.
 
 =cut
 sub new {
@@ -44,10 +74,10 @@ sub new {
         $self->size(12);
     }
     unless(defined($self->slant())) {
-        $self->slant($FONT_SLANT_NORMAL);
+        $self->slant($CC_FONT_SLANT_NORMAL);
     }
     unless(defined($self->weight())) {
-        $self->weight($FONT_WEIGHT_NORMAL);
+        $self->weight($CC_FONT_WEIGHT_NORMAL);
     }
 
     return $self;
@@ -59,15 +89,15 @@ sub new {
 
 =over 4
 
-=item $size = $s->size($SIZE)
+=item size
 
 Set/Get the size of this text.
 
-=item $slant = $s->slant($slant)
+=item slant
 
 Set/Get the slant of this text.
 
-=item $weight = $s->slant($weight)
+=item weight
 
 Set/Get the weight of this text.
 
@@ -75,7 +105,7 @@ Set/Get the weight of this text.
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 

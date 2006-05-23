@@ -53,7 +53,7 @@ sub new {
 
 =over 4
 
-=item $image = $r->render($color_allocator)
+=item render
 
 Render the series.
 
@@ -90,7 +90,7 @@ sub render {
 
 =head1 AUTHOR
 
-Cory 'G' Watson <gphat@onemogin.com>
+Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 
