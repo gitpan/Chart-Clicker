@@ -1,5 +1,82 @@
 package Chart::Clicker::Renderer::Bar;
 use strict;
+use warnings;
+
+use Chart::Clicker::Renderer::Base;
+use base 'Chart::Clicker::Renderer::Base';
+
+sub prepare {
+    my $self = shift();
+
+    $self->SUPER::prepare(@_);
+
+    $self->{'COUNT'}++;
+    $self->{'SCOUNT'} = 0;
+
+    return 1;
+}
+
+sub draw {
+    my $self = shift();
+    my $clicker = shift();
+    my $cr = shift();
+    my $series = shift();
+    my $domain = shift();
+    my $range = shift();
+    my $min = shift();
+
+    my $height = $self->height();
+    my $width = $self->width();
+
+    my $xper = $domain->per();
+    my $yper = $range->per();
+
+    my @vals = @{ $series->values() };
+
+    my $color = $clicker->color_allocator->next();
+
+    my $padding = $self->get_option('padding');
+    unless($padding) {
+        $padding = 4;
+    }
+
+    # Calculate the width bar we can use to fit all the datasets.
+    my $bwidth = $xper / $self->{'COUNT'} - $padding;
+
+    for(0..($series->key_count() - 1)) {
+        # Add the series_count times the width to so that each bar
+        # gets rendered with it's partner in the other series.
+        my $x = ($xper * $_) + ($self->{'SCOUNT'} * $bwidth);
+        my $y = $height - ($yper * ($vals[$_] - $min));
+        $cr->rectangle(
+            $x + $padding / 2, $y,
+            $bwidth, $height,
+        );
+    }
+
+    my $opac = $self->get_option('opacity');
+    my $fillcolor;
+    if($opac) {
+        $fillcolor = $color->clone();
+        $fillcolor->alpha($opac);
+    } else {
+        $fillcolor = $color;
+    }
+
+
+    my $path = $cr->copy_path();
+    $cr->set_source_rgba($color->rgba());
+    $cr->stroke();
+    $cr->append_path($path);
+    $cr->set_source_rgba($fillcolor->rgba());
+    $cr->fill();
+    $self->{'SCOUNT'}++;
+
+    return 1;
+}
+
+1;
+__END__
 
 =head1 NAME
 
@@ -11,14 +88,22 @@ Chart::Clicker::Renderer::Bar renders a dataset as points.
 
 =head1 SYNOPSIS
 
-=cut
+  my $br = new Chart::Clicker::Renderer::Bar({});
 
-use Chart::Clicker::Renderer::Base;
-use base 'Chart::Clicker::Renderer::Base';
+=head1 OPTIONS
 
-use Chart::Clicker::Log;
+=over 4
 
-my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Renderer::Bar');
+=item opacity
+
+If true this value will be used when setting the opacity of the bar's fill.
+
+=item padding
+
+How much padding to put around a bar.  A padding of 4 will result in 2 pixels
+on each side.
+
+=back
 
 =head1 METHODS
 
@@ -26,51 +111,13 @@ my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Renderer::Bar');
 
 =over 4
 
-=item render
+=item prepare
 
-Render the series.
+Prepare the renderer
 
-=cut
-sub render {
-    my $self = shift();
-    my $cr = shift();
-    my $ca = shift();
-    my $dataset = shift();
-    my $domain = shift();
-    my $range = shift();
+=item draw
 
-    my $xper = $domain->per();
-    my $yper = $range->per();
-    my $min = $dataset->range()->lower();
-    my $height = $range->height();
-
-    # Calculate the width bar we can use to fit all the datasets.
-    my $width = $xper / $dataset->count();
-
-    my $scount = 0;
-    foreach my $series (@{ $dataset->series() }) {
-        my @vals = @{ $series->values() };
-        my $color = $ca->next();
-        for(my $i = 0; $i < $series->key_count(); $i++) {
-            # Add the series_count times the width to so that each bar
-            # gets rendered with it's partner in the other series.
-            my $x = ($xper * $i) + ($scount * $width);
-            my $y = $height - ($yper * ($vals[$i] - $min));
-            $log->debug("Plotting value $i (".$vals[$i].") at $x,$y.");
-            $cr->rectangle(
-                $x, $y,
-                $width, $height,
-            );
-            my $path = $cr->copy_path();
-            $cr->set_source_rgba($color->rgba());
-            $cr->stroke();
-            $cr->append_path($path);
-            $cr->set_source_rgba($color->rgba());
-            $cr->fill();
-        }
-        $scount++;
-    }
-}
+Draw the data!
 
 =back
 
@@ -82,6 +129,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
+=head1 LICENSE
 
-1;
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

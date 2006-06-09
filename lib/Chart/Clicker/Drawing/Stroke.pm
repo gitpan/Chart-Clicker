@@ -1,5 +1,6 @@
 package Chart::Clicker::Drawing::Stroke;
 use strict;
+use warnings;
 
 use base qw(Class::Accessor Exporter);
 __PACKAGE__->mk_accessors(qw(width line_cap line_join));
@@ -24,6 +25,26 @@ our $CC_LINE_CAP_SQUARE = 'square';
 our $CC_LINE_JOIN_MITER = 'miter';
 our $CC_LINE_JOIN_ROUND = 'round';
 our $CC_LINE_JOIN_BEVEL = 'bevel';
+
+sub new {
+    my $proto = shift();
+    my $self = $proto->SUPER::new(@_);
+
+    unless(defined($self->width())) {
+        $self->width(1);
+    }
+    unless(defined($self->line_cap())) {
+        $self->line_cap($CC_LINE_CAP_BUTT);
+    }
+    unless(defined($self->line_join())) {
+        $self->line_join($CC_LINE_JOIN_MITER);
+    }
+
+    return $self;
+}
+
+1;
+__END__
 
 =head1 NAME
 
@@ -67,24 +88,6 @@ Creates a new Chart::Clicker::Decoration::Stroke.  If no options are provided
 the width defaults to 1, the line_cap defaults to $CC_LINE_CAP_BUTT and the
 line_join defaults to $CC_LINE_JOIN_MITER.
 
-=cut
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
-
-    unless(defined($self->width())) {
-        $self->width(1);
-    }
-    unless(defined($self->line_cap())) {
-        $self->line_cap($CC_LINE_CAP_BUTT);
-    }
-    unless(defined($self->line_join())) {
-        $self->line_join($CC_LINE_JOIN_MITER);
-    }
-
-    return $self;
-}
-
 =back
 
 =head2 Class Methods
@@ -113,5 +116,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

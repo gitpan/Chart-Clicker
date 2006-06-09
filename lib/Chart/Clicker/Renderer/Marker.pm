@@ -1,38 +1,12 @@
 package Chart::Clicker::Renderer::Marker;
 use strict;
-
-=head1 NAME
-
-Chart::Clicker::Renderer::Marker
-
-=head1 DESCRIPTION
-
-Chart::Clicker::Renderer::Marker renders markers, not data.
-
-=head1 SYNOPSIS
-
-=cut
+use warnings;
 
 use Chart::Clicker::Renderer::Base;
 use base 'Chart::Clicker::Renderer::Base';
 
 __PACKAGE__->mk_accessors(qw(domain_markers range_markers));
 
-use Chart::Clicker::Log;
-
-my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Renderer::Marker');
-
-=head1 METHODS
-
-=head2 Class Methods
-
-=over 4
-
-=item render
-
-Render the series.
-
-=cut
 sub render {
     my $self = shift();
     my $cr = shift();
@@ -73,7 +47,34 @@ sub render {
         $cr->line_to($x2, $y2);
         $cr->stroke();
     }
+
+    return 1;
 }
+
+1;
+__END__
+
+=head1 NAME
+
+Chart::Clicker::Renderer::Marker
+
+=head1 DESCRIPTION
+
+Chart::Clicker::Renderer::Marker renders markers, not data.
+
+=head1 SYNOPSIS
+
+  my $mr = new Chart::Clicker::Renderer::Marker();
+
+=head1 METHODS
+
+=head2 Class Methods
+
+=over 4
+
+=item render
+
+Render the series.
 
 =back
 
@@ -85,6 +86,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
+=head1 LICENSE
 
-1;
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

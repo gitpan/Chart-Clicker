@@ -1,15 +1,77 @@
 package Chart::Clicker::Drawing::ColorAllocator;
 use strict;
+use warnings;
 
 use Chart::Clicker::Drawing::Color;
 
-use Chart::Clicker::Log;
-
 my @defaults = (qw(red green blue lime yellow maroon teal fuchsia));;
 
-my $log = Chart::Clicker::Log->get_logger(
-    'Chart::Clicker::Drawing::ColorAllocator'
-);
+sub new {
+    my $proto = shift();
+    my $class = ref($proto) || $proto;
+
+    my $self = {};
+    bless($self, $class);
+
+    $self->{'POSITION'} = -1;
+
+    if(defined($self->{'colors'}) and ref($self->{'colors'}) eq 'ARRAY') {
+        foreach my $color (@{ $self->{'colors'} }) {
+            push(@{ $self->{'COLORS'} }, $color);
+        }
+    }
+
+    return $self;
+}
+
+sub position {
+    my $self = shift();
+
+    return $self->{'POSITION'};
+}
+
+sub next {
+    my $self = shift();
+
+    if(defined($self->{'COLORS'}->[$self->position() + 1])) {
+        $self->{'POSITION'}++;
+        return $self->{'COLORS'}->[$self->position()];
+    }
+
+    $self->{'POSITION'}++;
+    if($self->position() <= scalar(@defaults)) {
+        $self->{'COLORS'}->[$self->position()] =
+            new Chart::Clicker::Drawing::Color({
+                name => $defaults[$self->position()]
+            });
+        return $self->{'COLORS'}->[$self->position()];
+    }
+
+    $self->{'COLORS'}->[$self->position()] = new Chart::Clicker::Drawing::Color({
+        red     => rand(1),
+        green   => rand(1),
+        blue    => rand(1),
+        alpha   => 1
+    });
+    return $self->{'COLORS'}->[$self->position()];
+}
+
+sub reset {
+    my $self = shift();
+
+    $self->{'POSITION'} = -1;
+    return 1;
+}
+
+sub get {
+    my $self = shift();
+    my $index = shift();
+
+    return $self->{'COLORS'}->[$index];
+}
+
+1;
+__END__
 
 =head1 NAME
 
@@ -44,25 +106,6 @@ corresponds to the series that will be colored.
 Create a new ColorAllocator.  You can optionally pass an arrayref of colors
 to 'seed' the allocator.
 
-=cut
-sub new {
-    my $proto = shift();
-    my $class = ref($proto) || $proto;
-
-    my $self = {};
-    bless($self, $class);
-
-    $self->{'POSITION'} = -1;
-
-    if(defined($self->{'colors'}) and ref($self->{'colors'}) eq 'ARRAY') {
-        foreach my $color (@{ $self->{'colors'} }) {
-            push(@{ $self->{'COLORS'} }, $color);
-        }
-    }
-
-    return $self;
-}
-
 =back
 
 =head2 Class Methods
@@ -73,78 +116,21 @@ sub new {
 
 Gets the current position.
 
-=cut
-sub position {
-    my $self = shift();
-
-    return $self->{'POSITION'};
-}
-
 =item next
 
 Returns the next color.  Each call to next increments the position, so
 subsequent calls will return different colors.
 
-=cut
-sub next {
-    my $self = shift();
-
-    if(defined($self->{'COLORS'}->[$self->position() + 1])) {
-        $self->{'POSITION'}++;
-        $log->debug('Color already allocated: '.$self->position());
-        return $self->{'COLORS'}->[$self->position()];
-    }
-
-    $self->{'POSITION'}++;
-    if($self->position() <= scalar(@defaults)) {
-        $log->debug('Allocating color '.$defaults[$self->position()]
-            .': '.$self->position());
-        $self->{'COLORS'}->[$self->position()] =
-            new Chart::Clicker::Drawing::Color({
-                name => $defaults[$self->position()]
-            });
-        return $self->{'COLORS'}->[$self->position()];
-    }
-
-    $log->debug('Color randomly selected: '.$self->position());
-    $self->{'COLORS'}->[$self->position()] = new Chart::Clicker::Drawing::Color({
-        red     => rand(1),
-        green   => rand(1),
-        blue    => rand(1),
-        alpha   => 1
-    });
-    return $self->{'COLORS'}->[$self->position()];
-}
-
 =item reset
 
 Resets this allocator back to the beginning.
-
-=cut
-sub reset {
-    my $self = shift();
-
-    $log->debug('Resetting position.');
-
-    $self->{'POSITION'} = -1;
-}
 
 =item get
 
 Gets the color at the specified index.  Returns undef if that position has no
 color.
 
-=cut
-sub get {
-    my $self = shift();
-    my $index = shift();
-
-    return $self->{'COLORS'}->[$index];
-}
-
 =back
-
-=cut
 
 =head1 AUTHOR
 
@@ -154,5 +140,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

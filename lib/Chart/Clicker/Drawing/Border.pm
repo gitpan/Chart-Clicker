@@ -1,11 +1,33 @@
 package Chart::Clicker::Drawing::Border;
 use strict;
+use warnings;
 
 use base 'Class::Accessor';
 __PACKAGE__->mk_accessors(qw(color stroke));
 
 use Chart::Clicker::Drawing::Color;
 use Chart::Clicker::Drawing::Stroke;
+
+sub new {
+    my $proto = shift();
+    my $self = $proto->SUPER::new(@_);
+
+    unless(defined($self->color())) {
+        $self->color(
+            new Chart::Clicker::Drawing::Color({
+                red => 0, green => 0, blue => 0, alpha => 1
+            })
+        );
+    }
+    unless($self->stroke()) {
+        $self->stroke(new Chart::Clicker::Drawing::Stroke());
+    }
+
+    return $self;
+}
+
+1;
+__END__
 
 =head1 NAME
 
@@ -36,25 +58,6 @@ component.
 Creates a new Chart::Clicker::Border.  Defaults to a color of black and
 a default stroke if none are specified.
 
-=cut
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
-
-    unless(defined($self->color())) {
-        $self->color(
-            new Chart::Clicker::Drawing::Color({
-                red => 0, green => 0, blue => 0, alpha => 1
-            })
-        );
-    }
-    unless($self->stroke()) {
-        $self->stroke(new Chart::Clicker::Drawing::Stroke());
-    }
-
-    return $self;
-}
-
 =back
 
 =head2 Class Methods
@@ -79,5 +82,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1), L<Chart::Clicker::Drawing::Stroke>
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

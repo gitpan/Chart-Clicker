@@ -1,8 +1,26 @@
 package Chart::Clicker::Shape::Rectangle;
 use strict;
+use warnings;
 
 use base 'Chart::Clicker::Shape';
 __PACKAGE__->mk_accessors(qw(width height));
+
+sub create_path {
+    my $self = shift();
+    my ($cairo, $x, $y) = @_;
+
+    $cairo->rectangle(
+        $x - ($self->width() / 2),
+        $y - ($self->height() / 2),
+        $self->width(),
+        $self->height()
+    );
+
+    return 1;
+}
+
+1;
+__END__
 
 =head1 NAME
 
@@ -44,19 +62,6 @@ Set/Get the height of this rectangle.
 
 Creates a path using this arcs attributes.
 
-=cut
-sub create_path {
-    my $self = shift();
-    my ($cairo, $x, $y) = @_;
-
-    $cairo->rectangle(
-        $x - ($self->width() / 2),
-        $y - ($self->height() / 2),
-        $self->width(),
-        $self->height()
-    );
-}
-
 =back
 
 =head1 AUTHOR
@@ -67,5 +72,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

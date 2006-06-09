@@ -1,5 +1,54 @@
 package Chart::Clicker::Renderer::Line;
 use strict;
+use warnings;
+
+use Chart::Clicker::Renderer::Base;
+use base 'Chart::Clicker::Renderer::Base';
+
+use Cairo;
+
+sub draw {
+    my $self = shift();
+    my $clicker = shift();
+    my $cr = shift();
+    my $series = shift();
+    my $domain = shift();
+    my $range = shift();
+    my $min = shift();
+
+    my $height = $self->height();
+    my $xper = $domain->per();
+    my $yper = $range->per();
+
+    my $linewidth = 1;
+    my $stroke = $self->get_option('stroke');
+    if($stroke) {
+        $linewidth = $stroke->width();
+        $cr->set_line_cap($stroke->line_cap());
+        $cr->set_line_join($stroke->line_join());
+    }
+    $cr->set_line_width($linewidth);
+
+    $cr->new_path();
+    my @vals = @{ $series->values() };
+    for(0..($series->key_count() - 1)) {
+        my $x = $xper * $_;
+        my $y = $height - ($yper * ($vals[$_] - $min));
+        if($_ == 0) {
+            $cr->move_to($x, $y);
+        } else {
+            $cr->line_to($x, $y);
+        }
+    }
+    my $color = $clicker->color_allocator()->next();
+    $cr->set_source_rgba($color->rgba());;
+    $cr->stroke();
+
+    return 1;
+}
+
+1;
+__END__
 
 =head1 NAME
 
@@ -11,14 +60,23 @@ Chart::Clicker::Renderer::Line renders a dataset as lines.
 
 =head1 SYNOPSIS
 
-=cut
+  my $lr = new Chart::Clicker::Renderer::Line();
+  # Optionally set the stroke
+  $lr->options({
+    stroke => new Chart::Clicker::Drawing::Stroke({
+      ...
+    })
+  });
 
-use Chart::Clicker::Renderer::Base;
-use base 'Chart::Clicker::Renderer::Base';
+=head1 OPTIONS
 
-use Chart::Clicker::Log;
+=over 4
 
-my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Renderer::Line');
+=item stroke
+
+Set a Stroke object to be used for the lines.
+
+=back
 
 =head1 METHODS
 
@@ -30,39 +88,6 @@ my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Renderer::Line');
 
 Render the series.
 
-=cut
-sub render {
-    my $self = shift();
-    my $cr = shift();
-    my $ca = shift();
-    my $dataset = shift();
-    my $domain = shift();
-    my $range = shift();
-
-    my $xper = $domain->per();
-    my $yper = $range->per();
-    my $min = $dataset->range()->lower();
-    my $height = $range->height();
-
-    foreach my $series (@{ $dataset->series() }) {
-        $cr->new_path();
-        my @vals = @{ $series->values() };
-        for(my $i = 0; $i < $series->key_count(); $i++) {
-            my $x = $xper * $i;
-            my $y = $height - ($yper * ($vals[$i] - $min));
-            $log->debug("Plotting value $i (".$vals[$i].") at $x,$y.");
-            if($i == 0) {
-                $cr->move_to($x, $y);
-            } else {
-                $cr->line_to($x, $y);
-            }
-        }
-        my $color = $ca->next();
-        $cr->set_source_rgba($color->rgba());;
-        $cr->stroke();
-    }
-}
-
 =back
 
 =head1 AUTHOR
@@ -73,6 +98,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
+=head1 LICENSE
 
-1;
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

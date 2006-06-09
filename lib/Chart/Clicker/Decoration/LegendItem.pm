@@ -1,10 +1,14 @@
 package Chart::Clicker::Decoration::LegendItem;
 use strict;
+use warnings;
 
 use base 'Chart::Clicker::Decoration::Base';
 __PACKAGE__->mk_accessors(qw(color label font));
 
 use Chart::Clicker::Drawing::Font;
+
+1;
+__END__
 
 =head1 NAME
 
@@ -70,5 +74,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

@@ -1,16 +1,158 @@
 package Chart::Clicker::Drawing::Component;
 use strict;
+use warnings;
 
 use Chart::Clicker::Drawing::Dimension;
 
 use base 'Class::Accessor';
 __PACKAGE__->mk_accessors(
     qw(
-        background_color border color height insets location width
+        background_color border color height insets location margins width
     )
 );
 
 use Cairo;
+
+sub dimensions {
+    my $self = shift();
+
+    return new Chart::Clicker::Drawing::Dimension({
+        width => $self->width(), height => $self->height()
+    });
+}
+
+sub draw {
+    my $self = shift();
+    my $clicker = shift();
+
+    my $width = $self->width();
+    my $height = $self->height();
+
+    my $surface = Cairo::ImageSurface->create(
+        'argb32', $width, $height
+    );
+    my $context = Cairo::Context->create($surface);
+
+    if(defined($self->background_color())) {
+        $context->set_source_rgba($self->background_color()->rgba());
+        $context->rectangle(0, 0, $width, $height);
+        $context->paint();
+    }
+
+    my $x = 0;
+    my $y = 0;
+    my $bwidth = $width;
+    my $bheight = $height;
+
+    my $margins = $self->margins();
+    my ($mx, $my, $mw, $mh) = (0, 0, 0, 0);
+    if($margins) {
+        $mx = $margins->left();
+        $my = $margins->top();
+        $mw = $margins->right();
+        $mh = $margins->bottom();
+    }
+
+    if(defined($self->border())) {
+        my $stroke = $self->border()->stroke();;
+        my $bswidth = $stroke->width();
+        $context->set_source_rgba($self->border->color()->rgba());
+        $context->set_line_width($bswidth);
+        $context->set_line_cap($stroke->line_cap());
+        $context->set_line_join($stroke->line_join());
+        $context->new_path();
+        my $swhalf = $bswidth / 2;
+        $context->rectangle(
+            $mx + $swhalf, $my + $swhalf,
+            $width - $bswidth - $mw - $mx, $height - $bswidth - $mh - $my
+        );
+        $context->stroke();
+    }
+
+    return $surface;
+}
+
+sub inside_width {
+    my $self = shift();
+
+    my $w = $self->width();
+
+    if(defined($self->insets())) {
+        $w -= $self->insets()->left() + $self->insets()->right()
+    }
+    if(defined($self->margins())) {
+        $w -= $self->margins()->left() + $self->margins()->left();
+    }
+    if(defined($self->border())) {
+        $w -= $self->border()->stroke()->width() * 2;
+    }
+
+    return $w;
+}
+
+sub inside_dimensions {
+    my $self = shift();
+
+    return new Chart::Clicker::Drawing::Dimension({
+        width   => $self->inside_width(),
+        height  => $self->inside_height()
+    });
+}
+
+sub inside_height {
+    my $self = shift();
+
+    my $h = $self->height();
+    if(defined($self->insets())) {
+        $h -= $self->insets()->bottom() + $self->insets()->top();
+    }
+    if(defined($self->margins())) {
+        $h -= $self->margins()->bottom() + $self->margins()->top();
+    }
+    if(defined($self->border())) {
+        $h -= $self->border()->stroke()->width() * 2;
+    }
+
+    return $h;
+}
+
+sub upper_left_inside_point {
+    my $self = shift();
+
+    my $point = new Chart::Clicker::Drawing::Point({ x => 0, y => 0 });
+
+    if(defined($self->insets())) {
+        $point->x($self->insets()->left());
+        $point->y($self->insets()->top());
+    }
+    if(defined($self->border())) {
+        $point->x($point->x() + $self->border()->stroke()->width());
+        $point->y($point->y() + $self->border()->stroke()->width());
+    }
+
+    return $point;
+}
+
+sub upper_right_inside_point {
+    my $self = shift();
+
+    my $point = $self->upper_left_inside_point();
+    $point->x($point->x() + $self->inside_width());
+
+    return $point;
+}
+
+sub lower_left_inside_point {
+    my $self = shift();
+
+    my $point = $self->upper_left_inside_point();
+    $point->y($point->y() + $self->inside_height());
+
+    return $point;
+}
+
+1;
+__END__
 
 =head1 NAME
 
@@ -28,8 +170,6 @@ A Component is an entity with a graphical representation.
     }),
     width => 500, height => 350
   });
-
-=cut
 
 =head1 METHODS
 
@@ -50,111 +190,31 @@ Creates a new Component.
 
 =back
 
-=cut
-sub new {
-    my $proto = shift();
-
-    my $self = $proto->SUPER::new(@_);
-
-    return $self;
-}
-
 =head2 Class Methods
 
 =over 4
 
-=item raw
+=item dimensions
+
+Get this Component's dimensions.
+
+=item draw
 
 Draw this component.
-
-=cut
-sub draw {
-    my $self = shift();
-    my $clicker = shift();
-
-    my $surface = Cairo::ImageSurface->create(
-        'argb32', $self->width(), $self->height()
-    );
-    my $context = Cairo::Context->create($surface);
-
-    if(defined($self->background_color())) {
-        $context->set_source_rgba($self->background_color()->rgba());
-        $context->rectangle(0, 0, $self->width(), $self->height());
-        $context->paint();
-    }
-
-    if(defined($self->border())) {
-        my $border = $self->border();
-        $context->set_source_rgba($border->color()->rgba());
-        $context->set_line_width($border->stroke()->width());
-        $context->set_line_cap($border->stroke()->line_cap());
-        $context->set_line_join($border->stroke()->line_join());
-        $context->new_path();
-        my $swhalf = $border->stroke()->width() / 2;
-        $context->rectangle(
-            0, 0,
-            $self->width() - $swhalf, $self->height() - $swhalf
-        );
-        $context->stroke();
-    }
-
-    return $surface;
-}
 
 =item inside_width
 
 Get the width available in this container after taking away space for
 insets and borders.
 
-=cut
-sub inside_width {
-    my $self = shift();
-
-    my $w = $self->width();
-
-    if(defined($self->insets())) {
-        $w -= $self->insets()->left() + $self->insets()->right()
-    }
-    if(defined($self->border())) {
-        $w -= $self->border()->stroke()->width() * 2;
-    }
-
-    return $w;
-}
-
 =item inside_dimension
 
 Get the dimension of this container's inside.
-
-=cut
-sub inside_dimension {
-    my $self = shift();
-
-    return new Chart::Clicker::Drawing::Dimension({
-        width   => $self->inside_width(),
-        height  => $self->inside_height()
-    });
-}
 
 =item inside_height
 
 Get the height available in this container after taking away space for
 insets and borders.
-
-=cut
-sub inside_height {
-    my $self = shift();
-
-    my $h = $self->height();
-    if(defined($self->insets())) {
-        $h -= $self->insets()->bottom() + $self->insets()->top();
-    }
-    if(defined($self->border())) {
-        $h -= $self->border()->stroke()->width() * 2;
-    }
-
-    return $h;
-}
 
 =item height
 
@@ -168,6 +228,14 @@ Set/Get this Component's location
 
 Set/Get this Component's height
 
+=item upper_left_inside_point
+
+Get the Point for this container's upper left inside.
+
+=item upper_right_inside_point
+
+Get the Point for this container's upper right inside.
+
 =back
 
 =head1 AUTHOR
@@ -178,5 +246,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

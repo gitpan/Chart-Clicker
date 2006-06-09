@@ -1,9 +1,12 @@
 package Chart::Clicker::Drawing::Point;
 use strict;
+use warnings;
 
 use base 'Class::Accessor';
 __PACKAGE__->mk_accessors(qw(x y));
 
+1;
+__END__
 =head1 NAME
 
 Chart::Clicker::Drawing::Point
@@ -52,5 +55,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

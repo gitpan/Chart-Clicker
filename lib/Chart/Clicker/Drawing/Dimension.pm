@@ -1,8 +1,12 @@
 package Chart::Clicker::Drawing::Dimension;
 use strict;
+use warnings;
 
 use base 'Class::Accessor';
 __PACKAGE__->mk_accessors(qw(height width));
+
+1;
+__END__
 
 =head1 NAME
 
@@ -13,6 +17,10 @@ Chart::Clicker::Drawing::Dimension
 Chart::Clicker::Drawing::Dimension represents the width and height of an area.
 
 =head1 SYNOPSIS
+
+  my $dim = new Chart::Clicker::Drawing::Dimension({
+    width => 300, height => 300
+  });
 
 =head1 METHODS
 
@@ -53,5 +61,7 @@ Cory 'G' Watson <gphat@cpan.org
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

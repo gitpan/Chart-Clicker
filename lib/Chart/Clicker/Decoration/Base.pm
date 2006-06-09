@@ -1,7 +1,11 @@
 package Chart::Clicker::Decoration::Base;
 use strict;
+use warnings;
 
 use base 'Chart::Clicker::Drawing::Component';
+
+1;
+__END__
 
 =head1 NAME
 
@@ -39,5 +43,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

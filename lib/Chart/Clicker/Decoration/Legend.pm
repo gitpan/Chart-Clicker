@@ -1,12 +1,11 @@
 package Chart::Clicker::Decoration::Legend;
 use strict;
+use warnings;
 
 use base 'Chart::Clicker::Drawing::Component';
 __PACKAGE__->mk_accessors(
     qw(font item_insets legend_items orientation tallest widest)
 );
-
-use Chart::Clicker::Log;
 
 use Chart::Clicker::Decoration::LegendItem;
 
@@ -15,29 +14,6 @@ use Chart::Clicker::Drawing::Border;
 use Chart::Clicker::Drawing::Font;
 use Chart::Clicker::Drawing::Insets;
 
-my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Decoration::Legend');
-
-=head1 NAME
-
-Chart::Clicker::Decoration::Legend
-
-=head1 DESCRIPTION
-
-Chart::Clicker::Decoration::Legend draws a legend on a Chart.
-
-=head1 SYNOPSIS
-
-=head1 METHODS
-
-=head2 Constructor
-
-=over 4
-
-=item new
-
-Creates a new Legend object.
-
-=cut
 sub new {
     my $proto = shift();
 
@@ -50,7 +26,7 @@ sub new {
     }
     unless(defined($self->insets())) {
         $self->insets(new Chart::Clicker::Drawing::Insets({
-            top => 0, left => 0, bottom => 3, right => 3
+            top => 3, left => 3, bottom => 3, right => 3
         }));
     }
     unless(defined($self->item_insets())) {
@@ -67,30 +43,12 @@ sub new {
     return $self;
 }
 
-=back
-
-=head2 Class Methods
-
-=over 4
-
-=item border
-
-Set/Get this Legend's border.
-
-=item insets
-
-Set/Get this Legend's insets.
-
-=item prepare
-
-Prepare this Legend by creating the LegendItems based on the datasets
-provided and testing the lengths of the series names.
-
-=cut
 sub prepare {
     my $self = shift();
     my $clicker = shift();
     my $dimension = shift();
+
+    my $ca = $clicker->color_allocator();
 
     my $font = $self->font();
 
@@ -121,7 +79,7 @@ sub prepare {
                 $tall = $extents->{'height'};
             }
             push(@items, new Chart::Clicker::Decoration::LegendItem({
-                color   => $clicker->color_allocator()->next(),
+                color   => $ca->next(),
                 font    => $font,
                 insets  => $ii,
                 label   => $label
@@ -166,6 +124,7 @@ sub prepare {
             * ($self->tallest() + $ii->top() + $ii->bottom())
             # and finally our insets
             + $self->insets()->top() + $self->insets()->bottom()
+            + $self->border->stroke()->width() * 2
         );
     } else {
         $self->height($dimension->height());
@@ -176,17 +135,20 @@ sub prepare {
             * ($self->widest() + $ii->left() + $ii->right())
             # and finally our insets
             + $self->insets()->right() + $self->insets()->left()
+            + $self->border->stroke()->width() * 2
         );
     }
+    if($self->margins()) {
+        my $margins = $self->margins();
+        $self->height($self->height() + $margins->top() + $margins->bottom());
+        $self->width($self->width() + $margins->left() + $margins->right());
+    }
 
-    $log->debug('Dimension: '.$self->width().','.$self->height());
+    $ca->reset();
+
+    return 1;
 }
 
-=item draw
-
-Draw this Legend
-
-=cut
 sub draw {
     my $self = shift();
     my $clicker = shift();
@@ -194,23 +156,23 @@ sub draw {
     my $width = $self->width();
     my $height = $self->height();
 
-    my $surface = Cairo::ImageSurface->create('argb32', $width, $height);
+    my $surface = $self->SUPER::draw($clicker);
     my $cr = Cairo::Context->create($surface);
-
-    $cr->set_source_rgba(0, 0, 0, 1);
-    $cr->rectangle(.5, .5, $width - 1, $height - 1);
-    $cr->set_line_width(1);
-    $cr->stroke();
 
     $cr->select_font_face($self->font->face(), $self->font->slant(), $self->font->weight());
     $cr->set_font_size($self->font->size());
 
-    $log->debug('Tallest is '.$self->tallest());
+    my $mx = 0;
+    my $my = 0;
+    if(defined($self->margins())) {
+        $mx = $self->margins()->left();
+        $my = $self->margins()->top();
+    }
 
-    my $x = 0 + $self->insets->left();
+    my $x = 0 + $self->insets->left() + $mx;
     # This will break if there are no items...
     # Start at the top + insets...
-    my $y = 0 + $self->insets->top()
+    my $y = 0 + $self->insets->top() + $my +
         + $self->legend_items()->[0]->insets()->top();
     foreach my $item (@{ $self->legend_items() }) {
         $x += $item->insets()->left();
@@ -222,7 +184,7 @@ sub draw {
         my $center = ($self->tallest() - $extents->{'height'}) / 2;
         $cr->move_to($x, $y + $extents->{'height'} + $center);
         $cr->text_path($item->label());
-        $cr->set_source_rgba(0, 0, 0, 1);
+        $cr->set_source_rgba($item->color()->rgba());
         $cr->fill();
         if(($x + $self->widest()) < ($width - $self->insets()->right())) {
             # No need to wrap.
@@ -238,6 +200,52 @@ sub draw {
     return $surface;
 }
 
+1;
+__END__
+
+=head1 NAME
+
+Chart::Clicker::Decoration::Legend
+
+=head1 DESCRIPTION
+
+Chart::Clicker::Decoration::Legend draws a legend on a Chart.
+
+=head1 SYNOPSIS
+
+=head1 METHODS
+
+=head2 Constructor
+
+=over 4
+
+=item new
+
+Creates a new Legend object.
+
+=back
+
+=head2 Class Methods
+
+=over 4
+
+=item border
+
+Set/Get this Legend's border.
+
+=item insets
+
+Set/Get this Legend's insets.
+
+=item prepare
+
+Prepare this Legend by creating the LegendItems based on the datasets
+provided and testing the lengths of the series names.
+
+=item draw
+
+Draw this Legend
+
 =back
 
 =head1 AUTHOR
@@ -248,5 +256,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

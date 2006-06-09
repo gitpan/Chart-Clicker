@@ -1,5 +1,51 @@
 package Chart::Clicker::Renderer::Point;
 use strict;
+use warnings;
+
+use Chart::Clicker::Renderer::Base;
+use base 'Chart::Clicker::Renderer::Base';
+
+use Chart::Clicker::Shape::Arc;
+
+sub draw {
+    my $self = shift();
+    my $clicker = shift();
+    my $cr = shift();
+    my $series = shift();
+    my $domain = shift();
+    my $range = shift();
+    my $min = shift();
+
+    my $xper = $domain->per();
+    my $yper = $range->per();
+    my $height = $self->height();
+
+    my $shape = $self->get_option('shape');
+    unless($shape) {
+        $shape = new Chart::Clicker::Shape::Arc({
+           radius => 3,
+           angle1 => 0,
+           angle2 => 360
+        });
+    }
+
+    my @vals = @{ $series->values() };
+    for(0..($series->key_count() - 1)) {
+        my $x = $xper * $_;
+        my $y = $height - ($yper * ($vals[$_] - $min));
+
+        $cr->move_to($x, $y);
+        $shape->create_path($cr, $x, $y);
+    }
+    my $color = $clicker->color_allocator()->next();
+    $cr->set_source_rgba($color->rgba());
+    $cr->fill();
+
+    return 1;
+}
+
+1;
+__END__
 
 =head1 NAME
 
@@ -11,16 +57,26 @@ Chart::Clicker::Renderer::Point renders a dataset as points.
 
 =head1 SYNOPSIS
 
-=cut
+  my $pr = new Chart::Clicker::Renderer::Point();
+  # Optionally set a shape.  Defaults to a circle.
+  $pr->options({ 
+    shape => new Chart::Clicker::Shape::Arc({
+        angle1 => 0,
+        angle2 => 180,
+        radius  => 5
+    })
+  });
 
-use Chart::Clicker::Renderer::Base;
-use base 'Chart::Clicker::Renderer::Base';
-__PACKAGE__->mk_accessors(qw(shape));
+=head1 OPTIONS
 
-use Chart::Clicker::Log;
-use Chart::Clicker::Shape::Arc;
+=over 4
 
-my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Renderer::Point');
+=item shape
+
+Specify the shape to be used at each point.  Defaults to 360 degree arc with
+a radius of 3.
+
+=back
 
 =head1 METHODS
 
@@ -28,24 +84,9 @@ my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Renderer::Point');
 
 =over 4
 
-new()
+=item new
 
-=cut
-sub new {
-    my $proto = shift();
-
-    my $self = $proto->SUPER::new(@_);
-    unless($self->shape()) {
-        $self->shape(
-            new Chart::Clicker::Shape::Arc({
-                radius => 3,
-                angle1 => 0,
-                angle2 => 360
-            })
-        );
-    }
-    return $self;
-}
+Create a new Point renderer
 
 =back
 
@@ -57,35 +98,6 @@ sub new {
 
 Render the series.
 
-=cut
-sub render {
-    my $self = shift();
-    my $cr = shift();
-    my $ca = shift();
-    my $dataset = shift();
-    my $domain = shift();
-    my $range = shift();
-
-    my $xper = $domain->per();
-    my $yper = $range->per();
-    my $min = $dataset->range()->lower();
-    my $height = $range->height();
-
-    foreach my $series (@{ $dataset->series() }) {
-        my $color = $ca->next();
-        $cr->set_source_rgba($color->rgba());
-        my @vals = @{ $series->values() };
-        for(my $i = 0; $i < $series->key_count(); $i++) {
-            my $x = $xper * $i;
-            my $y = $height - ($yper * ($vals[$i] - $min));
-            $log->debug("Plotting value $i (".$vals[$i].") at $x,$y.");
-
-            $self->shape()->create_path($cr, $x, $y);
-            $cr->fill();
-        }
-    }
-}
-
 =back
 
 =head1 AUTHOR
@@ -96,6 +108,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
+=head1 LICENSE
 
-1;
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

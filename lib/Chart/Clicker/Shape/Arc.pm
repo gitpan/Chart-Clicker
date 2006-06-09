@@ -1,10 +1,27 @@
 package Chart::Clicker::Shape::Arc;
 use strict;
+use warnings;
 
 use base 'Chart::Clicker::Shape';
 __PACKAGE__->mk_accessors(qw(angle1 angle2 radius));
 
-use constant TO_RAD => (4 * atan2(1, 1)) / 180;
+my $TO_RAD = (4 * atan2(1, 1)) / 180;
+
+sub create_path {
+    my $self = shift();
+    my ($cairo, $x, $y) = @_;
+
+    $cairo->arc(
+        $x, $y, $self->radius(),
+        $self->angle1() * $TO_RAD,
+        $self->angle2() * $TO_RAD
+    );
+
+    return 1;
+}
+
+1;
+__END__
 
 =head1 NAME
 
@@ -58,18 +75,6 @@ Set/Get the radius for this arc.
 
 Creates a path using this arcs attributes.
 
-=cut
-sub create_path {
-    my $self = shift();
-    my ($cairo, $x, $y) = @_;
-
-    $cairo->arc(
-        $x, $y, $self->radius(),
-        $self->angle1() * TO_RAD,
-        $self->angle2() * TO_RAD
-    );
-}
-
 =back
 
 =head1 AUTHOR
@@ -80,5 +85,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

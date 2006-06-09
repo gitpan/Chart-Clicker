@@ -1,5 +1,6 @@
 package Chart::Clicker::Decoration::Label;
 use strict;
+use warnings;
 
 use base 'Chart::Clicker::Drawing::Component';
 __PACKAGE__->mk_accessors(
@@ -10,29 +11,8 @@ use Chart::Clicker::Drawing qw(:positions);
 use Chart::Clicker::Drawing::Font;
 use Chart::Clicker::Drawing::Insets;
 
-use constant VERTICAL => 4.71238898;
+my $VERTICAL = 4.71238898;
 
-=head1 NAME
-
-Chart::Clicker::Decoration::Legend
-
-=head1 DESCRIPTION
-
-Chart::Clicker::Decoration::Legend draws a legend on a Chart.
-
-=head1 SYNOPSIS
-
-=head1 METHODS
-
-=head2 Constructor
-
-=over 4
-
-=item new
-
-Creates a new Legend object.
-
-=cut
 sub new {
     my $proto = shift();
 
@@ -61,25 +41,6 @@ sub new {
     return $self;
 }
 
-=back
-
-=head2 Class Methods
-
-=over 4
-
-=item border
-
-Set/Get this Legend's border.
-
-=item insets
-
-Set/Get this Legend's insets.
-
-=item prepare
-
-Prepare this Label by determining how much space it needs.
-
-=cut
 sub prepare {
     my $self = shift();
     my $clicker = shift();
@@ -99,7 +60,7 @@ sub prepare {
     my $extents;
     if($orientation == $CC_VERTICAL) {
         $cr->save();
-        $cr->rotate(VERTICAL);
+        $cr->rotate($VERTICAL);
         $extents = $cr->text_extents($self->text());
         $cr->restore();
         $self->width(
@@ -115,13 +76,10 @@ sub prepare {
     }
 
     $self->{'EXTENTS'} = $extents;
+
+    return 1;
 }
 
-=item draw
-
-Draw this Label
-
-=cut
 sub draw {
     my $self = shift();
     my $clicker = shift();
@@ -153,7 +111,7 @@ sub draw {
 
     if($self->orientation() == $CC_VERTICAL) {
         $cr->save();
-        $cr->rotate(VERTICAL);
+        $cr->rotate($VERTICAL);
         $cr->show_text($self->text());
         $cr->restore();
     } else {
@@ -162,6 +120,51 @@ sub draw {
 
     return $surface;
 }
+
+1;
+__END__
+
+=head1 NAME
+
+Chart::Clicker::Decoration::Label
+
+=head1 DESCRIPTION
+
+Chart::Clicker::Decoration::Label draws text on the chart.
+
+=head1 SYNOPSIS
+
+=head1 METHODS
+
+=head2 Constructor
+
+=over 4
+
+=item new
+
+Creates a new Label object.
+
+=back
+
+=head2 Class Methods
+
+=over 4
+
+=item border
+
+Set/Get this Label's border.
+
+=item insets
+
+Set/Get this Label's insets.
+
+=item draw
+
+Draw this Label
+
+=item prepare
+
+Prepare this Label by determining how much space it needs.
 
 =back
 
@@ -173,5 +176,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

@@ -9,7 +9,6 @@ WriteMakefile(
         {
             Cairo               => 0.03,
             'Class::Accessor'   => 0.25,
-            'Log::Log4perl'     => 1.04,
         },
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Chart/Clicker.pm', # retrieve abstract from module

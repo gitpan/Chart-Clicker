@@ -1,5 +1,6 @@
 package Chart::Clicker::Axis;
 use strict;
+use warnings;
 
 use base 'Chart::Clicker::Drawing::Component';
 __PACKAGE__->mk_accessors(
@@ -14,6 +15,195 @@ use Chart::Clicker::Drawing qw(:positions);
 use Chart::Clicker::Drawing::Color;
 use Chart::Clicker::Drawing::Font;
 use Chart::Clicker::Drawing::Stroke;
+
+sub new {
+    my $proto = shift();
+    my $self = $proto->SUPER::new(@_);
+
+    unless(defined($self->show_ticks())) {
+        $self->show_ticks(1);
+    }
+    unless(defined($self->font())) {
+        $self->font(
+            new Chart::Clicker::Drawing::Font()
+        );
+    }
+    unless(defined($self->tick_length())) {
+        $self->tick_length(3);
+    }
+    unless(defined($self->visible())) {
+        $self->visible(1);
+    }
+    unless(defined($self->color())) {
+        $self->color(
+            new Chart::Clicker::Drawing::Color({
+                red => 0, green => 0, blue => 0, alpha => 1
+            })
+        );
+    }
+    unless(defined($self->stroke())) {
+        $self->stroke(
+            new Chart::Clicker::Drawing::Stroke()
+        );
+    }
+    unless(defined($self->tick_stroke())) {
+        $self->tick_stroke(
+            new Chart::Clicker::Drawing::Stroke()
+        );
+    }
+    $self->range(new Chart::Clicker::Data::Range());
+
+
+    return $self;
+}
+
+sub prepare {
+    my $self = shift();
+    my $clicker = shift();
+    my $dimension = shift();
+
+    unless($self->visible()) {
+        return;
+    }
+    if($self->range()->span() == 0) {
+        die("This axis has a span of 0, that's fatal!");
+    }
+
+    $self->tick_values($self->range()->divvy(5));
+
+    my $cairo = $clicker->context();
+
+    my $font = $self->font();
+
+    $cairo->set_font_size($font->size());
+    $cairo->select_font_face(
+        $font->face(), $font->slant(), $font->weight()
+    );
+
+    # Determine all this once... much faster.
+    my $biggest = 0;
+    my $key;
+    if($self->orientation() == $CC_HORIZONTAL) {
+        $key = 'height';
+    } else {
+        $key = 'width';
+    }
+    my $vi = 0;
+    foreach my $val (@{ $self->tick_values() }) {
+        my $ext = $cairo->text_extents($val);
+        $self->{'extents_cache'}->[$vi] = $ext;
+        if($ext->{$key} > $biggest) {
+            $biggest = $ext->{$key};
+        }
+        $vi++;
+    }
+
+    if($self->show_ticks()) {
+        $biggest += $self->tick_length() + 2;
+    }
+
+    if($self->orientation() == $CC_HORIZONTAL) {
+        $self->height($biggest);
+        $self->width($dimension->width());
+        $self->per($self->width() / $self->range()->span());
+    } else {
+        $self->width($biggest);
+        $self->height($dimension->height());
+        $self->per($self->height() / $self->range()->span());
+    }
+
+    return 1;
+}
+
+sub draw {
+    my $self = shift();
+    my $clicker = shift();
+
+    my $x = 0;
+    my $y = 0;
+
+    my $orient = $self->orientation();
+    my $pos = $self->position();
+
+    if($pos == $CC_LEFT) {
+        $x += $self->width() - .5;
+    } elsif($pos == $CC_RIGHT) {
+        $x += .5;
+    } elsif($pos == $CC_TOP) {
+        $y += $self->height() - .5;
+    } else {
+        $y += .5;
+    }
+
+    my $surf = $self->SUPER::draw($clicker);
+    my $cr = Cairo::Context->create($surf);
+
+    my $stroke = $self->stroke();
+    $cr->set_line_width($stroke->width());
+    $cr->set_line_cap($stroke->line_cap());
+    $cr->set_line_join($stroke->line_join());
+
+    my $font = $self->font();
+    $cr->set_font_size($font->size());
+    $cr->select_font_face(
+        $font->face(), $font->slant(), $font->weight()
+    );
+
+    my $tick_length = $self->tick_length();
+    my $per = $self->per();
+
+    $cr->move_to($x, $y);
+    if($orient == $CC_HORIZONTAL) {
+        # Draw a line for our axis
+        $cr->line_to($x + $self->width(), $y);
+
+        # Draw a tick for each value.
+        my $vi = 0;
+        foreach my $val (@{ $self->tick_values() }) {
+            # Grab the extent from the cache.
+            my $ext = $self->{'extents_cache'}->[$vi];
+            my $ix = $x + int($val * $per) + .5;
+            $cr->move_to($ix, $y);
+            if($pos == $CC_TOP) {
+                $cr->line_to($ix, $y - $tick_length);
+                $cr->rel_move_to(-($ext->{'width'} / 1.8), -2);
+            } else {
+                $cr->line_to($ix, $y + $tick_length);
+                # I have NO idea why I had to use 1.8 instead of 2 here...
+                $cr->rel_move_to(-($ext->{'width'} / 1.8), $ext->{'height'});
+            }
+            $cr->show_text($val);
+            $vi++;
+        }
+
+    } else {
+        $cr->line_to($x, $y + $self->height());
+
+        my $vi = 0;
+        foreach my $val (@{ $self->tick_values() }) {
+            my $iy = int($y + $self->height() - ($val * $per)) + .5;
+            my $ext = $self->{'extents_cache'}->[$vi];
+            $cr->move_to($x, $iy);
+            if($self->position() == $CC_LEFT) {
+                $cr->line_to($x - $tick_length, $iy);
+                $cr->rel_move_to(-$ext->{'width'} - 2, $ext->{'height'} / 2);
+            } else {
+                $cr->line_to($x + $tick_length, $iy);
+                $cr->rel_move_to(0, $ext->{'height'} / 2);
+            }
+            $cr->show_text($val);
+            $vi++;
+        }
+    }
+
+    $cr->set_source_rgba($self->color()->rgba());
+    $cr->stroke();
+
+    return $surf;
+}
+
+1;
+__END__
 
 =head1 NAME
 
@@ -55,48 +245,6 @@ Creates a new Chart::Clicker::Axis.  If no arguments are given then sane
 defaults are chosen.
 
 =back
-
-=cut
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
-
-    unless(defined($self->show_ticks())) {
-        $self->show_ticks(1);
-    }
-    unless(defined($self->font())) {
-        $self->font(
-            new Chart::Clicker::Drawing::Font()
-        );
-    }
-    unless(defined($self->tick_length())) {
-        $self->tick_length(3);
-    }
-    unless(defined($self->visible())) {
-        $self->visible(1);
-    }
-    unless(defined($self->color())) {
-        $self->color(
-            new Chart::Clicker::Drawing::Color({
-                red => 0, green => 0, blue => 0, alpha => 1
-            })
-        );
-    }
-    unless(defined($self->stroke())) {
-        $self->stroke(
-            new Chart::Clicker::Drawing::Stroke()
-        );
-    }
-    unless(defined($self->tick_stroke())) {
-        $self->tick_stroke(
-            new Chart::Clicker::Drawing::Stroke()
-        );
-    }
-    $self->range(new Chart::Clicker::Data::Range());
-
-
-    return $self;
-}
 
 =head2 Class Methods
 
@@ -165,149 +313,9 @@ Set/Get this Axis' visibility
 Prepare this Axis by determining the size required.  If the orientation is
 CC_HORIZONTAL this method sets the height.  Otherwise sets the width.
 
-=cut
-sub prepare {
-    my $self = shift();
-    my $clicker = shift();
-    my $dimension = shift();
-
-    unless($self->visible()) {
-        return;
-    }
-
-    $self->tick_values($self->range()->divvy(5));
-
-    my $cairo = $clicker->context();
-
-    my $font = $self->font();
-
-    $cairo->set_font_size($font->size());
-    $cairo->select_font_face(
-        $font->face(), $font->slant(), $font->weight()
-    );
-
-    # Determine all this once... much faster.
-    my $biggest = 0;
-    my $key;
-    if($self->orientation() == $CC_HORIZONTAL) {
-        $key = 'height';
-    } else {
-        $key = 'width';
-    }
-    my $vi = 0;
-    foreach my $val (@{ $self->tick_values() }) {
-        my $ext = $cairo->text_extents($val);
-        $self->{'extents_cache'}->[$vi] = $ext;
-        if($ext->{$key} > $biggest) {
-            $biggest = $ext->{$key};
-        }
-        $vi++;
-    }
-
-    if($self->show_ticks()) {
-        $biggest += $self->tick_length() + 2;
-    }
-
-    if($self->orientation() == $CC_HORIZONTAL) {
-        $self->height($biggest);
-        $self->width($dimension->width());
-        $self->per($self->width() / $self->range()->span());
-    } else {
-        $self->width($biggest);
-        $self->height($dimension->height());
-        $self->per($self->height() / $self->range()->span());
-    }
-}
-
 =item draw
 
 Draw this axis.
-
-=cut
-sub draw {
-    my $self = shift();
-    my $clicker = shift();
-
-    my $x = 0;
-    my $y = 0;
-
-    my $orient = $self->orientation();
-    my $pos = $self->position();
-
-    if($pos == $CC_LEFT) {
-        $x += $self->width();
-    } elsif($pos == $CC_RIGHT) {
-        $x -= .5;
-    } elsif($pos == $CC_TOP) {
-        $y += $self->height() + .5;
-    }
-
-    my $surf = $self->SUPER::draw($clicker);
-    my $cr = Cairo::Context->create($surf);
-
-    my $stroke = $self->stroke();
-    $cr->set_line_width($stroke->width());
-    $cr->set_line_cap($stroke->line_cap());
-    $cr->set_line_join($stroke->line_join());
-
-    my $font = $self->font();
-    $cr->set_font_size($font->size());
-    $cr->select_font_face(
-        $font->face(), $font->slant(), $font->weight()
-    );
-
-    my $tick_length = $self->tick_length();
-    my $per = $self->per();
-
-    $cr->move_to($x, $y);
-    if($orient == $CC_HORIZONTAL) {
-        # Draw a line for our axis
-        $cr->line_to($x + $self->width(), $y);
-
-        # Draw a tick for each value.
-        my $vi = 0;
-        foreach my $val (@{ $self->tick_values() }) {
-            # Grab the extent from the cache.
-            my $ext = $self->{'extents_cache'}->[$vi];
-            my $ix = $x + int($val * $per);
-            $cr->move_to($ix, $y);
-            if($pos == $CC_TOP) {
-                $cr->line_to($ix, $y - $tick_length);
-                $cr->rel_move_to(-($ext->{'width'} / 1.8), -2);
-            } else {
-                $cr->line_to($ix, $y + $tick_length);
-                # I have NO idea why I had to use 1.8 instead of 2 here...
-                $cr->rel_move_to(-($ext->{'width'} / 1.8), $ext->{'height'});
-            }
-            $cr->show_text($val);
-            $vi++;
-        }
-
-    } else {
-        $cr->line_to($x, $y + $self->height());
-
-        my $vi = 0;
-        foreach my $val (@{ $self->tick_values() }) {
-            my $iy = $y + $self->height() - ($val * $per);
-            my $ext = $self->{'extents_cache'}->[$vi];
-            $cr->move_to($x, $iy);
-            if($self->position() == $CC_LEFT) {
-                $cr->line_to($x - $tick_length, $iy);
-                $cr->rel_move_to(-$ext->{'width'}, $ext->{'height'} / 2);
-            } else {
-                $cr->line_to($x + $tick_length, $iy);
-                $cr->rel_move_to(0, $ext->{'height'} / 2);
-            }
-            $cr->show_text($val);
-            $vi++;
-        }
-    }
-
-    $cr->set_source_rgba($self->color()->rgba());
-    $cr->stroke();
-
-    return $surf;
-}
 
 =item visible
 
@@ -327,5 +335,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

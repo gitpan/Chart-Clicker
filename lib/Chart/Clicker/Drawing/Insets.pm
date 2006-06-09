@@ -1,9 +1,32 @@
 package Chart::Clicker::Drawing::Insets;
 use strict;
+use warnings;
 
 use base 'Class::Accessor';
 __PACKAGE__->mk_accessors(qw(top bottom left right));
 
+sub new {
+    my $proto = shift();
+    my $self = $proto->SUPER::new(@_);
+
+    unless(defined($self->top())) {
+        $self->top(0);
+    }
+    unless(defined($self->bottom())) {
+        $self->bottom(0);
+    }
+    unless(defined($self->left())) {
+        $self->left(0);
+    }
+    unless(defined($self->right())) {
+        $self->right(0);
+    }
+
+    return $self;
+}
+
+1;
+__END__
 =head1 NAME
 
 Chart::Clicker::Drawing::Insets
@@ -33,27 +56,6 @@ leave at it's edges.
 =item new
 
 Creates a new Chart::Clicker::Drawing::Insets.
-
-=cut
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
-
-    unless(defined($self->top())) {
-        $self->top(0);
-    }
-    unless(defined($self->bottom())) {
-        $self->bottom(0);
-    }
-    unless(defined($self->left())) {
-        $self->left(0);
-    }
-    unless(defined($self->right())) {
-        $self->right(0);
-    }
-
-    return $self;
-}
 
 =back
 
@@ -87,5 +89,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

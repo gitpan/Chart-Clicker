@@ -1,5 +1,6 @@
 package Chart::Clicker;
 use strict;
+use warnings;
 
 use base 'Chart::Clicker::Drawing::Container';
 __PACKAGE__->mk_accessors(
@@ -8,8 +9,6 @@ __PACKAGE__->mk_accessors(
         range_axes range_markers plot surface
     )
 );
-
-use Chart::Clicker::Log;
 
 use Chart::Clicker::Drawing qw(:positions);
 use Chart::Clicker::Drawing::Border;
@@ -21,6 +20,196 @@ use Chart::Clicker::Drawing::Point;
 use Cairo;
 
 use File::Temp;
+
+our $VERSION = '0.9.6';
+
+sub new {
+    my $proto = shift();
+
+    my $self = $proto->SUPER::new(@_);
+    unless($self->width()) {
+        $self->width(500);
+    }
+    unless($self->height()) {
+        $self->height(300);
+    }
+    unless($self->insets()) {
+        $self->insets(
+            new Chart::Clicker::Drawing::Insets(
+                { top => 5, bottom => 5, left => 5, right => 5 }
+            )
+        );
+    }
+    unless($self->background_color()) {
+        $self->background_color(
+            new Chart::Clicker::Drawing::Color(
+                { red => 1, green => 1, blue => 1, alpha => 1 }
+            )
+        );
+    }
+    unless(defined($self->color_allocator())) {
+        $self->color_allocator(new Chart::Clicker::Drawing::ColorAllocator());
+    }
+    unless($self->border()) {
+        $self->border(new Chart::Clicker::Drawing::Border());
+    }
+
+    $self->range_markers([ ]);
+    $self->domain_markers([ ]);
+
+    $self->{'DSDOMAINAXIS'} = {};
+    $self->{'DSRANGEAXIS'} = {};
+
+    return $self;
+}
+sub inside_width {
+    my $self = shift();
+
+    my $w = $self->width();
+
+    if(defined($self->insets())) {
+        $w -= $self->insets()->left() + $self->insets()->right()
+    }
+    if(defined($self->border())) {
+        $w -= $self->border()->stroke()->width() * 2;
+    }
+
+    return $w;
+}
+
+sub inside_height {
+    my $self = shift();
+
+    my $h = $self->height();
+    if(defined($self->insets())) {
+        $h -= $self->insets()->bottom() + $self->insets()->top();
+    }
+    if(defined($self->border())) {
+        $h -= $self->border()->stroke()->width() * 2;
+    }
+
+    return $h;
+}
+
+sub draw {
+    my $self = shift();
+
+    $self->surface($self->SUPER::draw($self));
+    return $self->surface();
+}
+
+sub prepare {
+    my $self = shift();
+
+    # Prepare the datasets and establish ranges for the axes.
+    my $count = 0;
+    foreach my $ds (@{ $self->datasets() }) {
+        unless($ds->count() > 0) {
+            die("Dataset $count is empty.");
+        }
+        $ds->prepare();
+
+        my $daxis = $self->get_dataset_domain_axis($count);
+        if(defined($daxis)) {
+            $daxis->range->combine($ds->domain());
+        }
+
+        my $raxis = $self->get_dataset_range_axis($count);
+        if(defined($raxis)) {
+            $raxis->range()->combine($ds->range());
+        }
+
+        $count++;
+    }
+
+    $self->surface(Cairo::ImageSurface->create(
+        'argb32', $self->width(), $self->height())
+    );
+    $self->context(Cairo::Context->create($self->surface()));
+
+    $self->SUPER::prepare($self, $self->dimensions());
+    return 1;
+}
+
+sub set_dataset_domain_axis {
+    my $self = shift();
+    my $dsidx = shift();
+    my $axis = shift();
+
+    $self->{'DSDOMAINAXIS'}->{$dsidx} = $axis;
+    return 1;
+}
+
+sub get_dataset_domain_axis {
+    my $self = shift();
+    my $idx = shift();
+
+    unless(defined($self->domain_axes())) {
+        return;
+    }
+
+    my $aidx = $self->{'DSDOMAINAXIS'}->{$idx};
+    if(defined($aidx)) {
+        return $self->domain_axes()->[$aidx];
+    } else {
+        return $self->domain_axes()->[0];
+    }
+}
+
+sub set_dataset_range_axis {
+    my $self = shift();
+    my $dsidx = shift();
+    my $axisidx = shift();
+
+    $self->{'DSRANGEAXIS'}->{$dsidx} = $axisidx;
+    return 1;
+}
+
+sub get_dataset_range_axis {
+    my $self = shift();
+    my $idx = shift();
+
+    unless(defined($self->range_axes())) {
+        return;
+    }
+
+    my $aidx = $self->{'DSRANGEAXIS'}->{$idx};
+    if(defined($aidx)) {
+        return $self->range_axes()->[$aidx];
+    } else {
+        return $self->range_axes()->[0];
+    }
+}
+
+sub write {
+    my $self = shift();
+    my $file = shift();
+
+    $self->surface()->write_to_png($file);
+    return 1;
+}
+
+sub png {
+    my $self = shift();
+
+    # Write the file out
+    my $tf = new File::Temp();
+    $self->write($tf->filename());
+
+    # Reset the file
+    seek($tf, 0, 0);
+    binmode($tf);
+
+    my $buff;
+    my @stat = stat($tf->filename());
+    print $stat[7];
+    read($tf, $buff, $stat[7]);
+    return $buff;
+}
+
+1;
+
+__END__
 
 =head1 NAME
 
@@ -47,7 +236,7 @@ features missing, and pieces of it flat out do not work.  Good software is
 not Athena and therefore doesn't spring fully formed from the mind.  It will
 take some time to nail down the interface and make a 1.0 release.  You can
 find more information at L<http://dev.onemogin.com/trac>.  Feel free to send
-you criticisms, advice, patches or money to me as a way of helping.
+your criticisms, advice, patches or money to me as a way of helping.
 
 =head1 SYNOPSIS
 
@@ -93,18 +282,17 @@ you criticisms, advice, patches or money to me as a way of helping.
   $renderer->options({
     fade => 1
   });
-  $chart->add($renderer, $CC_CENTER);
+
+  my $plot = new Chart::Clicker::Decoration::Plot();
+  $plot->renderers([$renderer]);
+
+  $chart->add($plot, $CC_CENTER);
 
   $chart->prepare();
-  $chart->draw();
   $chart->draw();
   $chart->write('/path/to/chart.png');
 
 =cut
-
-our $VERSION = '0.9.5';
-
-my $log = Chart::Clicker::Log->get_logger('Chart');
 
 =head1 METHODS
 
@@ -117,46 +305,6 @@ my $log = Chart::Clicker::Log->get_logger('Chart');
 Creates a new Chart::Clicker object. If no width and height are specified then
 defaults of 500 and 300 are chosen, respectively.
 
-=cut
-sub new {
-    my $proto = shift();
-
-    my $self = $proto->SUPER::new(@_);
-    unless($self->width()) {
-        $self->width(500);
-    }
-    unless($self->height()) {
-        $self->height(300);
-    }
-    unless($self->insets()) {
-        $self->insets(
-            new Chart::Clicker::Drawing::Insets(
-                { top => 5, bottom => 5, left => 5, right => 5 }
-            )
-        );
-    }
-    unless($self->background_color()) {
-        $self->background_color(
-            new Chart::Clicker::Drawing::Color(
-                { red => 1, green => 1, blue => 1, alpha => 1 }
-            )
-        );
-    }
-    unless(defined($self->color_allocator())) {
-        $self->color_allocator(new Chart::Clicker::Drawing::ColorAllocator());
-    }
-    unless($self->border()) {
-        $self->border(new Chart::Clicker::Drawing::Border());
-    }
-
-    $self->range_markers([ ]);
-    $self->domain_markers([ ]);
-
-    $self->{'DSDOMAINAXIS'} = {};
-    $self->{'DSRANGEAXIS'} = {};
-
-    return $self;
-}
 =back
 
 =head2 Class Methods
@@ -168,164 +316,50 @@ sub new {
 Get the width available in this container after taking away space for
 insets and borders.
 
-=cut
-sub inside_width {
-    my $self = shift();
-
-    my $w = $self->width();
-
-    if(defined($self->insets())) {
-        $w -= $self->insets()->left() + $self->insets()->right()
-    }
-    if(defined($self->border())) {
-        $w -= $self->border()->stroke()->width() * 2;
-    }
-
-    return $w;
-}
-
 =item $c->inside_height()
 
 Get the height available in this container after taking away space for
 insets and borders.
 
-=cut
-sub inside_height {
-    my $self = shift();
-
-    my $h = $self->height();
-    if(defined($self->insets())) {
-        $h -= $self->insets()->bottom() + $self->insets()->top();
-    }
-    if(defined($self->border())) {
-        $h -= $self->border()->stroke()->width() * 2;
-    }
-
-    return $h;
-}
-
 =item draw
 
 Draw this chart
-
-=cut
-sub draw {
-    my $self = shift();
-
-    $self->surface($self->SUPER::draw($self));
-    return $self->surface();
-}
 
 =item prepare
 
 Prepare this chart for rendering.
 
-=cut
-sub prepare {
-    my $self = shift();
+=item set_dataset_domain_axis
 
-    # Prepare the datasets and establish ranges for the axes.
-    my $count = 0;
-    foreach my $ds (@{ $self->datasets() }) {
-        unless($ds->count() > 0) {
-            die("Dataset $count is empty.");
-        }
-        $ds->prepare();
+  $chart->set_dataset_domain_axis($dataset_index, $axis_index)
 
-        my $daxis = $self->get_domain_axis($count);
-        $daxis->range->combine($ds->domain());
+Affines the dataset at the specified index to the domain axis at the second
+index.
 
-        my $raxis = $self->get_range_axis($count);
-        $raxis->range()->combine($ds->range());
+=item get_dataset_domain_axis
 
-        $count++;
-    }
+  my $axis = $chart->get_dataset_domain_axis($index)
 
-    $self->surface(Cairo::ImageSurface->create(
-        'argb32', $self->width(), $self->height())
-    );
-    $self->context(Cairo::Context->create($self->surface()));
+Returns the domain axis to which the specified dataset is affined.
 
-    $self->SUPER::prepare($self, $self->inside_dimension());
-}
+=item set_dataset_range_axis
 
-=item set_domain_axis
+  $chart->set_dataset_range_axis($dataset_index, $axis_index)
 
-  $c->set_domain_axis($dataset_index, $axis_name)
+Affines the dataset at the specified index to the range axis at the second
+index.
 
-Set a DataSet's affinity to a certain domain axis.
+=item get_dataset_range_axis
 
-=cut
-sub set_domain_axis {
-    my $self = shift();
-    my $dsidx = shift();
-    my $axis = shift();
+  my $axis = $chart->get_dataset_range_axis($index)
 
-    $self->{'DSRANGEAXIS'}->{$dsidx} = $axis;
-}
-
-=item get_domain_axis
-
-Get the domain axis for the DataSet at the specified index.
-
-=cut
-sub get_domain_axis {
-    my $self = shift();
-    my $idx = shift();
-
-    my $aidx = $self->{'DSDOMAINAXIS'}->{$idx};
-    if(defined($aidx)) {
-        return $self->domain_axes()->[$aidx];
-    } else {
-        return $self->domain_axes()->[0];
-    }
-}
-
-=item set_range_axis
-
-  $c->set_range_axis($dataset_index, $axis_index)
-
-Set a DataSet's affinity to a certain domain axis.
-
-=cut
-sub set_range_axis {
-    my $self = shift();
-    my $dsidx = shift();
-    my $axisidx = shift();
-
-    $self->{'DSDOMAINAXIS'}->{$dsidx} = $axisidx;
-}
-
-=item get_range_axis
-
-Get the range axis for the DataSet at the specified index.
-
-=cut
-sub get_range_axis {
-    my $self = shift();
-    my $idx = shift();
-
-    my $aidx = $self->{'DSRANGEAXIS'}->{$idx};
-    if(defined($aidx)) {
-        return $self->range_axes()->[$aidx];
-    } else {
-        return $self->range_axes()->[0];
-    }
-}
+Returns the range axis to which the specified dataset is affined.
 
 =item write
 
 Write the resulting png file to the specified location.
 
   $c->write('/path/to/the.png');
-
-=cut
-sub write {
-    my $self = shift();
-    my $file = shift();
-
-    $self->surface()->write_to_png($file);
-}
 
 =item png
 
@@ -337,25 +371,6 @@ Perl's Cairo bindings it's implemented with File::Temp and read().
   binmode(FILE);
   close(FILE);
 
-=cut
-sub png {
-    my $self = shift();
-
-    # Write the file out
-    my $tf = new File::Temp();
-    $self->write($tf->filename());
-
-    # Reset the file
-    seek($tf, 0, 0);
-    binmode($tf);
-
-    my $buff;
-    my @stat = stat($tf->filename());
-    print $stat[7];
-    read($tf, $buff, $stat[7]);
-    return $buff;
-}
-
 =back
 
 =head1 AUTHOR
@@ -366,5 +381,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

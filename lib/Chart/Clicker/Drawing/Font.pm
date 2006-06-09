@@ -1,5 +1,6 @@
 package Chart::Clicker::Drawing::Font;
 use strict;
+use warnings;
 
 use base qw(Class::Accessor Exporter);
 __PACKAGE__->mk_accessors(qw(face size slant weight));
@@ -24,6 +25,28 @@ our $CC_FONT_SLANT_OBLIQUE = 'oblique';
 our $CC_FONT_WEIGHT_NORMAL = 'normal';
 our $CC_FONT_WEIGHT_BOLD = 'bold';
 
+sub new {
+    my $proto = shift();
+    my $self = $proto->SUPER::new(@_);
+
+    unless(defined($self->face())) {
+        $self->face('Sans');
+    }
+    unless(defined($self->size())) {
+        $self->size(12);
+    }
+    unless(defined($self->slant())) {
+        $self->slant($CC_FONT_SLANT_NORMAL);
+    }
+    unless(defined($self->weight())) {
+        $self->weight($CC_FONT_WEIGHT_NORMAL);
+    }
+
+    return $self;
+}
+
+1;
+__END__
 =head1 NAME
 
 Chart::Clicker::Drawing::Font
@@ -62,27 +85,6 @@ $CC_FONT_WEIGHT_BOLD
 
 Creates a new Chart::Clicker::Decoration::Font.
 
-=cut
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
-
-    unless(defined($self->face())) {
-        $self->face('Sans');
-    }
-    unless(defined($self->size())) {
-        $self->size(12);
-    }
-    unless(defined($self->slant())) {
-        $self->slant($CC_FONT_SLANT_NORMAL);
-    }
-    unless(defined($self->weight())) {
-        $self->weight($CC_FONT_WEIGHT_NORMAL);
-    }
-
-    return $self;
-}
-
 =back
 
 =head2 Class Methods
@@ -111,5 +113,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

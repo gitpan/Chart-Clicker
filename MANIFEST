@@ -1,10 +1,12 @@
 Changes
 Makefile.PL
 MANIFEST
+LICENSE
 README
+critique.pl
 document.pl
+perlcriticrc
 t/00-basic.t
-t/00-log.t
 t/00-drawing-border.t
 t/00-drawing-color.t
 t/00-drawing-colorallocator.t
@@ -34,11 +36,11 @@ t/05-decoration-grid.t
 t/05-decoration-legend.t
 t/05-decoration-legenditem.t
 t/05-decoration-marker.t
+t/800-layout.t
 t/999-newstyle.t
 t/pod.t
 lib/Chart/Clicker.pm
 lib/Chart/Clicker/Axis.pm
-lib/Chart/Clicker/Log.pm
 lib/Chart/Clicker/Data/DataSet.pm
 lib/Chart/Clicker/Data/Range.pm
 lib/Chart/Clicker/Data/Series.pm
@@ -48,6 +50,7 @@ lib/Chart/Clicker/Decoration/Label.pm
 lib/Chart/Clicker/Decoration/Legend.pm
 lib/Chart/Clicker/Decoration/LegendItem.pm
 lib/Chart/Clicker/Decoration/Marker.pm
+lib/Chart/Clicker/Decoration/Plot.pm
 lib/Chart/Clicker/Drawing.pm
 lib/Chart/Clicker/Drawing/Border.pm
 lib/Chart/Clicker/Drawing/Color.pm

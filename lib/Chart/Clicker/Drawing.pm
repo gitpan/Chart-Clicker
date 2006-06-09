@@ -1,5 +1,6 @@
 package Chart::Clicker::Drawing;
 use strict;
+use warnings;
 
 use base 'Exporter';
 
@@ -23,6 +24,9 @@ our $CC_AXIS_BOTTOM = 8;
 our $CC_AXIS_LEFT = 9;
 our $CC_AXIS_RIGHT = 10;
 
+1;
+__END__
+
 =head1 NAME
 
 Chart::Clicker::Drawing
@@ -30,6 +34,10 @@ Chart::Clicker::Drawing
 =head1 DESCRIPTION
 
 Chart::Clicker::Drawing holds some common items used in Drawing.
+
+=head1 SYNOPSIS
+
+  use Chart::Clicker::Drawing qw(:positions);
 
 =head1 EXPORTS
 
@@ -60,5 +68,7 @@ Cory 'G' Watson <gphat@cpan.org>
 
 perl(1)
 
-=cut
-1;
+=head1 LICENSE
+
+You can redistribute and/or modify this code under the same terms as Perl
+itself.

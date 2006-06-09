@@ -1,5 +1,90 @@
 package Chart::Clicker::Renderer::Area;
 use strict;
+use warnings;
+
+use Chart::Clicker::Renderer::Base;
+use base 'Chart::Clicker::Renderer::Base';
+
+use Cairo;
+
+sub draw {
+    my $self = shift();
+    my $clicker = shift();
+    my $cr = shift();
+    my $series = shift();
+    my $domain = shift();
+    my $range = shift();
+    my $min = shift();
+
+    my $height = $self->height();
+    my $width = $self->width();
+
+    my $xper = $domain->per();
+    my $yper = $range->per();
+
+    my $linewidth = 1;
+    my $stroke = $self->get_option('stroke');
+    if($stroke) {
+        $linewidth = $stroke->width();
+        $cr->set_line_cap($stroke->line_cap());
+        $cr->set_line_join($stroke->line_join());
+    }
+    $cr->set_line_width($linewidth);
+
+    $cr->new_path();
+
+    my $lastx; # used for completing the path
+    my @vals = @{ $series->values() };
+    for(0..($series->key_count() - 1)) {
+        my $x = $xper * $_;
+        my $y = $height - ($yper * ($vals[$_] - $min));
+        if($_ == 0) {
+            $cr->move_to($x + 1.5, $y);
+        } else {
+            $cr->line_to($x, $y);
+        }
+        $lastx = $x;
+    }
+    my $color = $clicker->color_allocator->next();
+    $cr->set_source_rgba($color->rgba());
+
+    my $path = $cr->copy_path();
+    $cr->stroke();
+
+    $cr->append_path($path);
+    $cr->line_to($lastx, $height);
+    $cr->line_to(0, $height);
+    $cr->close_path();
+
+    my $opac = $self->get_option('opacity');
+    if($opac) {
+
+        my $clone = $color->clone();
+        $clone->alpha($opac);
+        $cr->set_source_rgba($clone->rgba());
+    } elsif($self->get_option('fade')) {
+
+        my $patt = Cairo::LinearGradient->create(0.0, 0.0, 1.0, $height);
+        $patt->add_color_stop_rgba(
+            0.0, $color->red(), $color->green(), $color->blue(),
+            $color->alpha()
+        );
+        $patt->add_color_stop_rgba(
+            1.0, $color->red(), $color->green(), $color->blue(), 0
+        );
+        $cr->set_source($patt);
+    } else {
+
+        $cr->set_source_rgba($color->rgba());
+    }
+
+    $cr->fill();
+
+    return 1;
+}
+
+1;
+__END__
 
 =head1 NAME
 
@@ -11,16 +96,35 @@ Chart::Clicker::Renderer::Area renders a dataset as lines.
 
 =head1 SYNOPSIS
 
-=cut
+  my $ar = new Chart::Clicker::Renderer::Area();
+  # Optionally set some options
+  $ar->options({
+    fade => 1,
+    stroke => new Chart::Clicker::Drawing::Stroke({
+        width => 2
+    })
+  });
 
-use Chart::Clicker::Renderer::Base;
-use base 'Chart::Clicker::Renderer::Base';
+=head1 OPTIONS
 
-use Chart::Clicker::Log;
+=over 4
 
-use Cairo;
+=item fade
 
-my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Renderer::Area');
+If true, the color of the fill will be faded from opaque at the top to
+transparent at the bottom.
+
+=item opacity
+
+If true this value will be used when setting the opacity of the fill.  This
+setting may not be used with the 'fade' option.
+
+=item stroke
+
+Allows a Stroke object to be passed that will define the Stroke used on the
+series' line.
+
+=back
 
 =head1 METHODS
 
@@ -28,93 +132,9 @@ my $log = Chart::Clicker::Log->get_logger('Chart::Clicker::Renderer::Area');
 
 =over 4
 
-=item render
+=item draw
 
-Render the series.
-
-=cut
-sub draw {
-    my $self = shift();
-    my $clicker = shift();
-
-    $clicker->color_allocator()->reset();
-
-    my $surface = $self->SUPER::draw($clicker);
-    my $cr = Cairo::Context->create($surface);
-
-    my $count = 0;
-    foreach my $dataset (@{ $clicker->datasets() }) {
-
-        my $domain = $clicker->get_domain_axis($count);
-        my $range  = $clicker->get_range_axis($count);
-
-        my $min = $dataset->range()->lower();
-
-        my $height = $self->height();
-
-        my $xper = $domain->per();
-        my $yper = $range->per();
-
-        $cr->new_path();
-        foreach my $series (@{ $dataset->series() }) {
-            my $lastx; # used for completing the path
-            my @vals = @{ $series->values() };
-            for(my $i = 0; $i < $series->key_count(); $i++) {
-                my $x = $xper * $i;
-                my $y = $height - ($yper * ($vals[$i] - $min));
-                $log->debug("Plotting value $i (".$vals[$i].") at $x,$y.");
-                if($i == 0) {
-                    $cr->move_to($x, $y);
-                } else {
-                    $cr->line_to($x, $y);
-                }
-                $lastx = $x;
-            }
-            my $color = $clicker->color_allocator->next();
-            $cr->set_source_rgba($color->rgba());
-            $cr->line_to($lastx, $height);
-            $cr->line_to(0, $height);
-            $cr->close_path();
-
-            if($self->get_option('stroke')) {
-                my $stroke = $self->get_option('stroke');
-                $cr->set_line_width($stroke->width());
-                $cr->set_line_cap($stroke->line_cap());
-                $cr->set_line_join($stroke->line_join());
-            }
-
-            my $path = $cr->copy_path();
-            $cr->stroke();
-
-            $cr->append_path($path);
-
-            if($self->get_option('opacity')) {
-
-                my $clone = $color->clone();
-                $clone->alpha($self->get_option('opacity'));
-                $cr->set_source_rgba($clone->rgba());
-            } elsif($self->get_option('fade')) {
-
-                my $patt = Cairo::LinearGradient->create(0.0, 0.0, 1.0, $height);
-                $patt->add_color_stop_rgba(
-                    0.0, $color->red(), $color->green(), $color->blue(),
-                    $color->alpha()
-                );
-                $patt->add_color_stop_rgba(
-                    1.0, $color->red(), $color->green(), $color->blue(),
-                    0
-                );
-                $cr->set_source($patt);
-            } else {
-
-                $cr->set_source_rgba($color->rgba());
-            }
-
-            $cr->fill();
-        }
-    }
-    return $surface;
-}
+Draw the data.
 
 =back
 
@@ -124,8 +144,9 @@ Cory 'G' Watson <gphat@cpan.org>
 
 =head1 SEE ALSO
 
-perl(1)
+L<Chart::Clicker::Renderer>, perl(1)
 
-=cut
+=head1 LICENSE
 
-1;
+You can redistribute and/or modify this code under the same terms as Perl
+itself.
