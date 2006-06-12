@@ -6,7 +6,7 @@ use base 'Chart::Clicker::Drawing::Component';
 __PACKAGE__->mk_accessors(
     qw(
         font label orientation per position range show_ticks stroke
-        tick_length tick_stroke tick_values visible
+        tick_length tick_stroke tick_values ticks visible
     )
 );
 
@@ -30,6 +30,9 @@ sub new {
     }
     unless(defined($self->tick_length())) {
         $self->tick_length(3);
+    }
+    unless(defined($self->ticks())) {
+        $self->ticks(5);
     }
     unless(defined($self->visible())) {
         $self->visible(1);
@@ -69,7 +72,7 @@ sub prepare {
         die("This axis has a span of 0, that's fatal!");
     }
 
-    $self->tick_values($self->range()->divvy(5));
+    $self->tick_values($self->range()->divvy($self->ticks()));
 
     my $cairo = $clicker->context();
 
@@ -88,14 +91,13 @@ sub prepare {
     } else {
         $key = 'width';
     }
-    my $vi = 0;
-    foreach my $val (@{ $self->tick_values() }) {
+    for(0..scalar(@{ $self->tick_values() }) - 1) {
+        my $val = $self->tick_values()->[$_];
         my $ext = $cairo->text_extents($val);
-        $self->{'extents_cache'}->[$vi] = $ext;
+        $self->{'extents_cache'}->[$_] = $ext;
         if($ext->{$key} > $biggest) {
             $biggest = $ext->{$key};
         }
-        $vi++;
     }
 
     if($self->show_ticks()) {
@@ -119,6 +121,9 @@ sub draw {
     my $self = shift();
     my $clicker = shift();
 
+    unless($self->visible()) {
+        return;
+    }
     my $x = 0;
     my $y = 0;
 
@@ -158,10 +163,10 @@ sub draw {
         $cr->line_to($x + $self->width(), $y);
 
         # Draw a tick for each value.
-        my $vi = 0;
-        foreach my $val (@{ $self->tick_values() }) {
+        for(0..scalar(@{ $self->tick_values() }) - 1) {
+            my $val = $self->tick_values()->[$_];
             # Grab the extent from the cache.
-            my $ext = $self->{'extents_cache'}->[$vi];
+            my $ext = $self->{'extents_cache'}->[$_];
             my $ix = $x + int($val * $per) + .5;
             $cr->move_to($ix, $y);
             if($pos == $CC_TOP) {
@@ -173,16 +178,15 @@ sub draw {
                 $cr->rel_move_to(-($ext->{'width'} / 1.8), $ext->{'height'});
             }
             $cr->show_text($val);
-            $vi++;
         }
 
     } else {
         $cr->line_to($x, $y + $self->height());
 
-        my $vi = 0;
-        foreach my $val (@{ $self->tick_values() }) {
+        for(0..scalar(@{ $self->tick_values() }) - 1) {
+            my $val = $self->tick_values()->[$_];
             my $iy = int($y + $self->height() - ($val * $per)) + .5;
-            my $ext = $self->{'extents_cache'}->[$vi];
+            my $ext = $self->{'extents_cache'}->[$_];
             $cr->move_to($x, $iy);
             if($self->position() == $CC_LEFT) {
                 $cr->line_to($x - $tick_length, $iy);
@@ -192,7 +196,6 @@ sub draw {
                 $cr->rel_move_to(0, $ext->{'height'} / 2);
             }
             $cr->show_text($val);
-            $vi++;
         }
     }
 
@@ -303,10 +306,6 @@ Set/Get the stroke for the tick markers.
 =item tick_values
 
 Set/Get the arrayref of values show as ticks on this Axis.
-
-=item visible
-
-Set/Get this Axis' visibility
 
 =item prepare
 

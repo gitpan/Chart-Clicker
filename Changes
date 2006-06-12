@@ -1,5 +1,13 @@
 Revision history for Perl extension Chart::Clicker.
 
+0.9.7  Mon Jun 12 00:00:00 2006
+    - Don't draw invisible axes
+    - Expose the number of ticks for the axis.
+    - Fix area renderer being off by 1.5 on first point
+
+0.9.6  Thu Jun 8 00:12:54 2006
+    - I totally forgot to document...
+
 0.9.3  Mon May 22 11:24:31 2006
     - Layout based rendering.
     - Documentation updates

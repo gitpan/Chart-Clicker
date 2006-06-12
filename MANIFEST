@@ -37,6 +37,7 @@ t/05-decoration-legend.t
 t/05-decoration-legenditem.t
 t/05-decoration-marker.t
 t/800-layout.t
+t/990-normal.t
 t/999-newstyle.t
 t/pod.t
 lib/Chart/Clicker.pm

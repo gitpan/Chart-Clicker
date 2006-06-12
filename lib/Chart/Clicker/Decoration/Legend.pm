@@ -186,7 +186,9 @@ sub draw {
         $cr->text_path($item->label());
         $cr->set_source_rgba($item->color()->rgba());
         $cr->fill();
-        if(($x + $self->widest()) < ($width - $self->insets()->right())) {
+
+        # Check to see if we need to wrap
+        if(($x + $self->widest()) < $self->inside_width()) {
             # No need to wrap.
             $x += $self->widest() + $item->insets()->right();
         } else {

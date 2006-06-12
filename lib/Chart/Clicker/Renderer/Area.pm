@@ -39,7 +39,7 @@ sub draw {
         my $x = $xper * $_;
         my $y = $height - ($yper * ($vals[$_] - $min));
         if($_ == 0) {
-            $cr->move_to($x + 1.5, $y);
+            $cr->move_to($x, $y);
         } else {
             $cr->line_to($x, $y);
         }
