@@ -1,5 +1,13 @@
 Revision history for Perl extension Chart::Clicker.
 
+1.0.0 Pending
+    - Don't draw on undefined surfaces returned from Components
+    - Remove 'above' crap
+    - Increase 'divvy' to ticks + 1 and only set it if it's undefined
+    - Don't outright skip if an Axis is invisible, just skip the part
+      when we are drawing.
+    - Add format() to Axis for formatting tick values.
+
 0.9.7  Mon Jun 12 00:00:00 2006
     - Don't draw invisible axes
     - Expose the number of ticks for the axis.

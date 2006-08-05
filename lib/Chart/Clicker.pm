@@ -21,7 +21,7 @@ use Cairo;
 
 use File::Temp;
 
-our $VERSION = '0.9.7';
+our $VERSION = '1.0.0';
 
 sub new {
     my $proto = shift();
@@ -223,7 +223,7 @@ really pretty output.
 Clicker leverages the power of Cairo to create snazzy 2D graphics easily and
 quickly.
 
-At it's core, Clicker is more of a toolkit for creating charts.  It's interface
+At it's core Clicker is more of a toolkit for creating charts.  It's interface
 is a bit more complex because making pretty charts requires attention and care.
 Some fine defaults are established to make getting started easier, but to really
 unleash the potential of Clicker you must roll up your sleeves and build
@@ -235,7 +235,7 @@ Clicker is in heavy development.  The interface is not optimal, there are
 features missing, and pieces of it flat out do not work.  Good software is
 not Athena and therefore doesn't spring fully formed from the mind.  It will
 take some time to nail down the interface and make a 1.0 release.  You can
-find more information at L<http://dev.onemogin.com/trac>.  Feel free to send
+find more information at L<http://www.onemogin.com/clicker>.  Feel free to send
 your criticisms, advice, patches or money to me as a way of helping.
 
 =head1 SYNOPSIS

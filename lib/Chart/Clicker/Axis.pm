@@ -5,7 +5,7 @@ use warnings;
 use base 'Chart::Clicker::Drawing::Component';
 __PACKAGE__->mk_accessors(
     qw(
-        font label orientation per position range show_ticks stroke
+        font format label orientation per position range show_ticks stroke
         tick_length tick_stroke tick_values ticks visible
     )
 );
@@ -65,14 +65,13 @@ sub prepare {
     my $clicker = shift();
     my $dimension = shift();
 
-    unless($self->visible()) {
-        return;
-    }
     if($self->range()->span() == 0) {
-        die("This axis has a span of 0, that's fatal!");
+        die('This axis has a span of 0, that\'s fatal!');
     }
 
-    $self->tick_values($self->range()->divvy($self->ticks()));
+    unless(defined($self->tick_values())) {
+        $self->tick_values($self->range()->divvy($self->ticks() + 1));
+    }
 
     my $cairo = $clicker->context();
 
@@ -86,30 +85,37 @@ sub prepare {
     # Determine all this once... much faster.
     my $biggest = 0;
     my $key;
-    if($self->orientation() == $CC_HORIZONTAL) {
-        $key = 'height';
-    } else {
-        $key = 'width';
-    }
-    for(0..scalar(@{ $self->tick_values() }) - 1) {
-        my $val = $self->tick_values()->[$_];
-        my $ext = $cairo->text_extents($val);
-        $self->{'extents_cache'}->[$_] = $ext;
-        if($ext->{$key} > $biggest) {
-            $biggest = $ext->{$key};
+    if($self->visible()) {
+        if($self->orientation() == $CC_HORIZONTAL) {
+            $key = 'height';
+        } else {
+            $key = 'width';
+        }
+        for(0..scalar(@{ $self->tick_values() }) - 1) {
+            my $val;
+            if(defined($self->format())) {
+                $val = sprintf($self->format(), $self->tick_values()->[$_]);
+            } else {
+                $val = $self->tick_values()->[$_];
+            }
+            my $ext = $cairo->text_extents($val);
+            $self->{'extents_cache'}->[$_] = $ext;
+            if($ext->{$key} > $biggest) {
+                $biggest = $ext->{$key};
+            }
+        }
+
+        if($self->show_ticks()) {
+            $biggest += $self->tick_length();
         }
     }
 
-    if($self->show_ticks()) {
-        $biggest += $self->tick_length() + 2;
-    }
-
     if($self->orientation() == $CC_HORIZONTAL) {
-        $self->height($biggest);
+        $self->height($biggest + 3);
         $self->width($dimension->width());
         $self->per($self->width() / $self->range()->span());
     } else {
-        $self->width($biggest);
+        $self->width($biggest + 3);
         $self->height($dimension->height());
         $self->per($self->height() / $self->range()->span());
     }
@@ -164,7 +170,12 @@ sub draw {
 
         # Draw a tick for each value.
         for(0..scalar(@{ $self->tick_values() }) - 1) {
-            my $val = $self->tick_values()->[$_];
+            my $val;
+            if(defined($self->format())) {
+                $val = sprintf($self->format(), $self->tick_values()->[$_]);
+            } else {
+                $val = $self->tick_values()->[$_];
+            }
             # Grab the extent from the cache.
             my $ext = $self->{'extents_cache'}->[$_];
             my $ix = $x + int($val * $per) + .5;
@@ -174,8 +185,7 @@ sub draw {
                 $cr->rel_move_to(-($ext->{'width'} / 1.8), -2);
             } else {
                 $cr->line_to($ix, $y + $tick_length);
-                # I have NO idea why I had to use 1.8 instead of 2 here...
-                $cr->rel_move_to(-($ext->{'width'} / 1.8), $ext->{'height'});
+                $cr->rel_move_to(-($ext->{'width'} / 2), $ext->{'height'} + 2);
             }
             $cr->show_text($val);
         }
@@ -184,7 +194,12 @@ sub draw {
         $cr->line_to($x, $y + $self->height());
 
         for(0..scalar(@{ $self->tick_values() }) - 1) {
-            my $val = $self->tick_values()->[$_];
+            my $val;
+            if(defined($self->format())) {
+                $val = sprintf($self->format(), $self->tick_values()->[$_]);
+            } else {
+                $val = $self->tick_values()->[$_];
+            }
             my $iy = int($y + $self->height() - ($val * $per)) + .5;
             my $ext = $self->{'extents_cache'}->[$_];
             $cr->move_to($x, $iy);
@@ -260,6 +275,12 @@ Set/Get the color of the axis.
 =item font
 
 Set/Get the font used for the axis' labels.
+
+=item format
+
+Set/Get the format to use for the axis values.  The format is applied to each
+value 'tick' via sprintf().  See sprintf()s perldoc for details!  This is
+useful for situations where the values end up with repeating decimals.
 
 =item height
 

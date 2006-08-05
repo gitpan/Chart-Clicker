@@ -69,9 +69,12 @@ ok(defined($legend), 'new Legend');
 
 $chart->add($legend, $CC_BOTTOM);
 
+my $format = '%0.2f';
+
 my $daxis = new Chart::Clicker::Axis({
     orientation => $CC_HORIZONTAL,
-    position => $CC_TOP
+    position    => $CC_TOP,
+    format      => $format
 });
 my $tlabel = new Chart::Clicker::Decoration::Label({ text => 'Danes', orientation => $CC_HORIZONTAL});
 $chart->add($tlabel, $CC_TOP);
@@ -81,22 +84,25 @@ $chart->add($label, $CC_LEFT);
 
 my $daxis2 = new Chart::Clicker::Axis({
     orientation => $CC_HORIZONTAL,
-    position => $CC_BOTTOM
+    position    => $CC_BOTTOM,
+    format      => $format
 });
 
 my $raxis = new Chart::Clicker::Axis({
     orientation => $CC_VERTICAL,
-    position => $CC_LEFT
+    position    => $CC_LEFT,
+    format      => $format
 });
 ok(defined($raxis), 'new Axis');
 
 my $raxis2 = new Chart::Clicker::Axis({
     orientation => $CC_VERTICAL,
-    position => $CC_LEFT
+    position    => $CC_RIGHT,
+    format      => $format
 });
 
 $chart->add($daxis2, $CC_AXIS_BOTTOM);
-$chart->add($raxis2, $CC_AXIS_LEFT);
+$chart->add($raxis2, $CC_AXIS_RIGHT);
 $chart->add($daxis, $CC_AXIS_TOP);
 $chart->add($raxis, $CC_AXIS_LEFT);
 

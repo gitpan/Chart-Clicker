@@ -71,6 +71,9 @@ sub draw {
         my $comp = $child->{'component'};
         my $pos = $child->{'position'};
         my $surf = $comp->draw($clicker);
+        unless(defined($surf)) {
+            next;
+        }
         # XXX this is wrong.
         unless(defined($comp->location())) {
             $comp->location(new Chart::Clicker::Drawing::Point({
