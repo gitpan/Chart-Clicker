@@ -54,7 +54,9 @@ sub new {
             new Chart::Clicker::Drawing::Stroke()
         );
     }
-    $self->range(new Chart::Clicker::Data::Range());
+    unless(defined($self->range())) {
+        $self->range(new Chart::Clicker::Data::Range());
+    }
 
 
     return $self;
@@ -327,6 +329,11 @@ Set/Get the stroke for the tick markers.
 =item tick_values
 
 Set/Get the arrayref of values show as ticks on this Axis.
+
+=item ticks
+
+Set/Get the number of 'ticks' to show.  Setting this will divide the
+range on this axis by the specified value to establish tick values.
 
 =item prepare
 

@@ -1,6 +1,14 @@
 Revision history for Perl extension Chart::Clicker.
 
-1.0.0 Pending
+1.0.1 Thu Aug 08 20:28:42 2006
+    - Remove print of file size in png()
+    - Update examples in Chart::Clicker POD
+    - Allow setting of series in constructor or DataSet
+    - Allow setting of range in Axis constructor (was overwritten)
+    - Fix constructor of Series to use Class::Accessor
+    - Document ticks() in Axis
+
+1.0.0 Sometime
     - Don't draw on undefined surfaces returned from Components
     - Remove 'above' crap
     - Increase 'divvy' to ticks + 1 and only set it if it's undefined

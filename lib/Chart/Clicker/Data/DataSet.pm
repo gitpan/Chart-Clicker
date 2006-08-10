@@ -11,7 +11,12 @@ sub new {
     my $proto = shift();
     my $self = $proto->SUPER::new(@_);
 
-    $self->{'SERIES'} = ();
+    if($self->{'series'}) {
+        $self->{'SERIES'} = $self->{'series'};
+        $self->count(scalar(@{ $self->{'SERIES'} }));
+    } else {
+        $self->{'SERIES'} = ();
+    }
 
     return $self;
 }

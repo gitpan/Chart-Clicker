@@ -11,12 +11,8 @@ use Chart::Clicker::Data::Range;
 
 sub new {
     my $proto = shift();
-    my $class = ref($proto) || $proto;
-    my $self = {};
+    my $self = $proto->SUPER::new(@_);
 
-    $self->{'OPTIONS'} = {};
-
-    bless($self, $class);
     return $self;
 }
 

@@ -21,7 +21,7 @@ use Cairo;
 
 use File::Temp;
 
-our $VERSION = '1.0.0';
+our $VERSION = '1.0.1';
 
 sub new {
     my $proto = shift();
@@ -202,7 +202,6 @@ sub png {
 
     my $buff;
     my @stat = stat($tf->filename());
-    print $stat[7];
     read($tf, $buff, $stat[7]);
     return $buff;
 }
@@ -234,17 +233,22 @@ things by hand.
 Clicker is in heavy development.  The interface is not optimal, there are
 features missing, and pieces of it flat out do not work.  Good software is
 not Athena and therefore doesn't spring fully formed from the mind.  It will
-take some time to nail down the interface and make a 1.0 release.  You can
-find more information at L<http://www.onemogin.com/clicker>.  Feel free to send
-your criticisms, advice, patches or money to me as a way of helping.
+take some time to nail down the interface.  You can find more information at
+L<http://www.onemogin.com/clicker>.  Feel free to send your criticisms,
+advice, patches or money to me as a way of helping.
 
 =head1 SYNOPSIS
 
   use Chart::Clicker;
+  use Chart::Clicker::Axis;
   use Chart::Clicker::Data::DataSet;
   use Chart::Clicker::Data::Series;
+  use Chart::Clicker::Decoration::Grid
   use Chart::Clicker::Decoration::Legend
+  use Chart::Clicker::Decoration::Plot
   use Chart::Clicker::Drawing qw(:positions);
+  use Chart::Clicker::Drawing::Insets;
+  use Chart::Clicker::Renderer::Area
 
   my $c = new Chart::Clicker({ width => 500, height => 350 });
 
@@ -257,18 +261,24 @@ your criticisms, advice, patches or money to me as a way of helping.
     series => [ $series ]
   });
 
-  my $legend = new Chart::Clicker::Decoration::Legend();
-    $chart->add($legend, $CC_BOTTOM);
-  }
+  my $legend = new Chart::Clicker::Decoration::Legend({
+    margins => new Chart::Clicker::Drawing::Insets({
+        top => 3
+    })
+  });
+  $chart->add($legend, $CC_BOTTOM);
 
   my $daxis = new Chart::Clicker::Axis({
     orientation => $CC_HORIZONTAL,
-    position    => $CC_TOP
+    position    => $CC_BOTTOM,
+    format      => '%0.2f'
   });
   $chart->add($daxis, $CC_AXIS_BOTTOM);
+
   my $raxis = new Chart::Clicker::Axis({
     orientation => $CC_VERTICAL,
-    position    => $CC_LEFT
+    position    => $CC_LEFT,
+    format      => '%0.2f'
   });
   $chart->add($raxis, $CC_AXIS_LEFT);
 
