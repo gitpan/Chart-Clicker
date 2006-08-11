@@ -35,8 +35,9 @@ sub draw {
 
     my $lastx; # used for completing the path
     my @vals = @{ $series->values() };
+    my @keys = @{ $series->keys() };
     for(0..($series->key_count() - 1)) {
-        my $x = $xper * $_;
+        my $x = $xper * $keys[$_];
         my $y = $height - ($yper * ($vals[$_] - $min));
         if($_ == 0) {
             $cr->move_to($x, $y);

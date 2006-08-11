@@ -58,7 +58,6 @@ sub new {
         $self->range(new Chart::Clicker::Data::Range());
     }
 
-
     return $self;
 }
 

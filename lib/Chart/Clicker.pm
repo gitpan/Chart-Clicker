@@ -21,7 +21,7 @@ use Cairo;
 
 use File::Temp;
 
-our $VERSION = '1.0.1';
+our $VERSION = '1.0.2';
 
 sub new {
     my $proto = shift();

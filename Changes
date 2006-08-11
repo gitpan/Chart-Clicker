@@ -1,6 +1,9 @@
 Revision history for Perl extension Chart::Clicker.
 
-1.0.1 Thu Aug 08 20:28:42 2006
+1.0.2 Thu Aug 10 19:18:11 2006
+    - Fix broken X axis for all Renderers (reported by Peter Hicks)
+
+1.0.1 Wed Aug 09 20:28:42 2006
     - Remove print of file size in png()
     - Update examples in Chart::Clicker POD
     - Allow setting of series in constructor or DataSet
