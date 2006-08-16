@@ -19,9 +19,7 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-use File::Temp;
-
-our $VERSION = '1.0.2';
+our $VERSION = '1.0.3';
 
 sub new {
     my $proto = shift();
@@ -192,17 +190,12 @@ sub write {
 sub png {
     my $self = shift();
 
-    # Write the file out
-    my $tf = new File::Temp();
-    $self->write($tf->filename());
-
-    # Reset the file
-    seek($tf, 0, 0);
-    binmode($tf);
-
     my $buff;
-    my @stat = stat($tf->filename());
-    read($tf, $buff, $stat[7]);
+    $self->surface()->write_to_png_stream(sub {
+        my ($closure, $data) = @_;
+        $buff .= $data;
+    });
+
     return $buff;
 }
 
