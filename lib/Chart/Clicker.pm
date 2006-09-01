@@ -19,7 +19,7 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-our $VERSION = '1.0.3';
+our $VERSION = '1.0.4';
 
 sub new {
     my $proto = shift();
@@ -366,13 +366,7 @@ Write the resulting png file to the specified location.
 
 =item png
 
-Returns the PNG data as a scalar.  Since I've yet to discern how to do this with
-Perl's Cairo bindings it's implemented with File::Temp and read().
-
-  my $png = $c->png();
-  open(FILE, '>/path/to/the.png');
-  binmode(FILE);
-  close(FILE);
+Returns the PNG data as a scalar.
 
 =back
 

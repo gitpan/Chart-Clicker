@@ -1,5 +1,9 @@
 Revision history for Perl extension Chart::Clicker.
 
+1.0.4 Thu Aug 31 21:45:37 2006
+    - Remove disclaimer about using File::Temp
+    - Fix completely broken domain axis values
+
 1.0.3 Tue Aug 15 19:13:12 2006
     - Ditch File::Temp for write_to_png_stream from Cairo
 

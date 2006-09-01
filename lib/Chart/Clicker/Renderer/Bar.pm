@@ -47,7 +47,8 @@ sub draw {
     for(0..($series->key_count() - 1)) {
         # Add the series_count times the width to so that each bar
         # gets rendered with it's partner in the other series.
-        my $x = ($xper * $keys[$_]) + ($self->{'SCOUNT'} * $bwidth);
+        my $x = ($xper * ($keys[$_] - $keys[0]))
+            + ($self->{'SCOUNT'} * $bwidth);
         my $y = $height - ($yper * ($vals[$_] - $min));
         $cr->rectangle(
             $x + $padding / 2, $y,

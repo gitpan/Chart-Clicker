@@ -32,7 +32,7 @@ sub draw {
     my @vals = @{ $series->values() };
     my @keys = @{ $series->keys() };
     for(0..($series->key_count() - 1)) {
-        my $x = $xper * $keys[$_];
+        my $x = $xper * ($keys[$_] - $keys[0]);
         my $y = $height - ($yper * ($vals[$_] - $min));
 
         $cr->move_to($x, $y);
