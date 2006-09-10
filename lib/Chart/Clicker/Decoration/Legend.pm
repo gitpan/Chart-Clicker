@@ -88,8 +88,8 @@ sub prepare {
         }
     }
 
-    $self->widest($long);
-    $self->tallest($tall);
+    $self->widest($long + $ii->left() + $ii->right());
+    $self->tallest($tall + $ii->top() + $ii->bottom());
 
     $self->legend_items(\@items);
 
@@ -99,11 +99,11 @@ sub prepare {
     if($self->orientation() == $CC_HORIZONTAL) {
         $biggest = $self->widest();
         # Calculate the maximum width needed for a 'cell'
-        $per = int($dimension->width() / ($long + $ii->left() + $ii->right()));
+        $per = ($dimension->width() / $long);
     } else {
         $biggest = $self->tallest();
         # Calculate the maximum height needed for a 'cell'
-        $per = int($dimension->height() / ($tall + $ii->top() + $ii->bottom()));
+        $per = ($dimension->height() / $tall);
     }
     if($per < 1) {
         $per = 1;
@@ -121,10 +121,10 @@ sub prepare {
             # The number of rows we need
             $rows
             # The 'biggest' row (longest or tallest, depending on orientation)
-            * ($self->tallest() + $ii->top() + $ii->bottom())
+            * $self->tallest()
             # and finally our insets
-            + $self->insets()->top() + $self->insets()->bottom()
-            + $self->border->stroke()->width() * 2
+            + $self->insets->top() + $self->insets->bottom()
+            + $self->border->stroke->width() * 2
         );
     } else {
         $self->height($dimension->height());
@@ -132,10 +132,10 @@ sub prepare {
             # The number of rows we need
             $rows
             # The 'biggest' row (longest or tallest, depending on orientation)
-            * ($self->widest() + $ii->left() + $ii->right())
+            * $self->widest()
             # and finally our insets
-            + $self->insets()->right() + $self->insets()->left()
-            + $self->border->stroke()->width() * 2
+            + $self->insets->right() + $self->insets->left()
+            + $self->border->stroke->width() * 2
         );
     }
     if($self->margins()) {
@@ -172,30 +172,30 @@ sub draw {
     my $x = 0 + $self->insets->left() + $mx;
     # This will break if there are no items...
     # Start at the top + insets...
-    my $y = 0 + $self->insets->top() + $my +
-        + $self->legend_items()->[0]->insets()->top();
+    my $y = 0 + $my + $self->insets->top();
     foreach my $item (@{ $self->legend_items() }) {
-        $x += $item->insets()->left();
 
         my $extents = $cr->text_extents($item->label());
 
-        # This item's label might not be as tall as the tallest one we will
-        # draw, so we must center this item in the available space.
-        my $center = ($self->tallest() - $extents->{'height'}) / 2;
-        $cr->move_to($x, $y + $extents->{'height'} + $center);
+        # This item's label might not be as tall as the tallest (or wide as the
+        # widest) one we will draw, so we must center this item in the
+        # available space.
+        my $vcenter = int(($self->tallest() - $extents->{'height'}) / 2);
+        my $center = int(($self->widest() - $extents->{'width'}) / 2);
+
+        $cr->move_to($x + $center, $y + $extents->{'height'} + $vcenter);
         $cr->text_path($item->label());
-        $cr->set_source_rgba($item->color()->rgba());
+        $cr->set_source_rgba($item->color->rgba());
         $cr->fill();
 
         # Check to see if we need to wrap
         if(($x + $self->widest()) < $self->inside_width()) {
             # No need to wrap.
-            $x += $self->widest() + $item->insets()->right();
+            $x += $self->widest();
         } else {
             # Wrap!  Honor insets...
-            $x = $self->insets()->left();
-            $y += $self->tallest() + $item->insets()->bottom()
-                + $item->insets()->top();
+            $x = $self->insets->left();
+            $y += $self->tallest();
         }
     }
 

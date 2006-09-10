@@ -23,7 +23,6 @@ sub draw {
     my $series = shift();
     my $domain = shift();
     my $range = shift();
-    my $min = shift();
 
     my $height = $self->height();
     my $width = $self->width();
@@ -38,21 +37,21 @@ sub draw {
 
     my $padding = $self->get_option('padding');
     unless($padding) {
-        $padding = 4;
+        $padding = 1;
     }
 
-    # Calculate the width bar we can use to fit all the datasets.
-    my $bwidth = $xper / $self->{'COUNT'} - $padding;
+    # Calculate the bar width we can use to fit all the datasets.
+    #my $bwidth = ($xper * $self->{'COUNT'}) - $padding;
+    my $bwidth = ($width / scalar(@vals)) / $self->dataset_count();
 
     for(0..($series->key_count() - 1)) {
         # Add the series_count times the width to so that each bar
         # gets rendered with it's partner in the other series.
-        my $x = ($xper * ($keys[$_] - $keys[0]))
-            + ($self->{'SCOUNT'} * $bwidth);
-        my $y = $height - ($yper * ($vals[$_] - $min));
+        my $x = $domain->mark($keys[$_]) + ($self->{'SCOUNT'} * $bwidth);
+        my $y = $height - $range->mark($vals[$_]);
         $cr->rectangle(
             $x + $padding / 2, $y,
-            $bwidth, $height,
+            - $bwidth, $height,
         );
     }
 
@@ -65,10 +64,17 @@ sub draw {
         $fillcolor = $color;
     }
 
+    my $stroke = $self->get_option('stroke');
+    if(defined($stroke)) {
+        my $linewidth = $stroke->width();
+        $cr->set_line_cap($stroke->line_cap());
+        $cr->set_line_join($stroke->line_join());
+
+        $cr->set_source_rgba($color->rgba());
+        $cr->stroke();
+    }
 
     my $path = $cr->copy_path();
-    $cr->set_source_rgba($color->rgba());
-    $cr->stroke();
     $cr->append_path($path);
     $cr->set_source_rgba($fillcolor->rgba());
     $cr->fill();

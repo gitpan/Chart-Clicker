@@ -70,15 +70,16 @@ sub draw {
     my $per = $daxis->per();
     my $height = $self->height();
     foreach my $val (@{ $daxis->tick_values() }) {
-        $cr->move_to(int($val * $per) + .5, 0);
+        $cr->move_to((int($val - $daxis->range->lower()) * $per) + .5, 0);
         $cr->rel_line_to(0, $height);
     }
-
 
     $per = $raxis->per();
     my $width = $self->width();
     foreach my $val (@{ $raxis->tick_values() }) {
-        $cr->move_to(0, int($height - $val * $per) + .5);
+        $cr->move_to(0,
+            int($height - ($val - $raxis->range()->lower()) * $per) + .5
+        );
         $cr->rel_line_to($width, 0);
     }
 

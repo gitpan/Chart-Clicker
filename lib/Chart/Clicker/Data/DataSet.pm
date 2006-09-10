@@ -63,8 +63,8 @@ sub prepare {
             $self->range($series->range());
             $self->domain(
                 new Chart::Clicker::Data::Range({
-                    lower => $series->keys()->[0],
-                    upper => $series->keys()->[ $#{ $series->keys() } ]
+                    lower => $series->keys->[0],
+                    upper => $series->keys->[ $#{ $series->keys() } ]
                 })
             );
             $self->max_key_count($series->key_count());

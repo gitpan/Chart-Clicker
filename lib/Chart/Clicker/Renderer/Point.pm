@@ -14,7 +14,8 @@ sub draw {
     my $series = shift();
     my $domain = shift();
     my $range = shift();
-    my $min = shift();
+
+    my $min = $range->range->lower();
 
     my $xper = $domain->per();
     my $yper = $range->per();
@@ -32,8 +33,8 @@ sub draw {
     my @vals = @{ $series->values() };
     my @keys = @{ $series->keys() };
     for(0..($series->key_count() - 1)) {
-        my $x = $xper * ($keys[$_] - $keys[0]);
-        my $y = $height - ($yper * ($vals[$_] - $min));
+        my $x = $domain->mark($keys[$_]);
+        my $y = $height - $range->mark($vals[$_]);
 
         $cr->move_to($x, $y);
         $shape->create_path($cr, $x, $y);

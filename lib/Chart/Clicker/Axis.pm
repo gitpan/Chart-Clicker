@@ -124,6 +124,13 @@ sub prepare {
     return 1;
 }
 
+sub mark {
+    my $self = shift();
+    my $value = shift();
+
+    return $self->per() * ($value - $self->range->lower());
+}
+
 sub draw {
     my $self = shift();
     my $clicker = shift();
@@ -179,7 +186,7 @@ sub draw {
             }
             # Grab the extent from the cache.
             my $ext = $self->{'extents_cache'}->[$_];
-            my $ix = $x + int($val * $per) + .5;
+            my $ix = $x + int(($val - $self->range()->lower()) * $per) + .5;
             $cr->move_to($ix, $y);
             if($pos == $CC_TOP) {
                 $cr->line_to($ix, $y - $tick_length);
@@ -201,7 +208,7 @@ sub draw {
             } else {
                 $val = $self->tick_values()->[$_];
             }
-            my $iy = int($y + $self->height() - ($val * $per)) + .5;
+            my $iy = int($y + $self->height() - (($val - $self->range()->lower()) * $per)) + .5;
             my $ext = $self->{'extents_cache'}->[$_];
             $cr->move_to($x, $iy);
             if($self->position() == $CC_LEFT) {
@@ -333,6 +340,12 @@ Set/Get the arrayref of values show as ticks on this Axis.
 
 Set/Get the number of 'ticks' to show.  Setting this will divide the
 range on this axis by the specified value to establish tick values.
+
+=item mark
+
+Given a value, returns it's position on this axis.
+
+=cut
 
 =item prepare
 

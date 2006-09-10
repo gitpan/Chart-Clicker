@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use base 'Chart::Clicker::Drawing::Component';
-__PACKAGE__->mk_accessors( qw(options) );
+__PACKAGE__->mk_accessors( qw(options dataset_count) );
 
 sub get_option {
     my $self = shift();

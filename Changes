@@ -1,5 +1,21 @@
 Revision history for Perl extension Chart::Clicker.
 
+1.0.6 Pending
+    - Make the stroke an option (and off by default) of Bar
+    - Add max and min methods to Data::Range
+    - Fix Area renderer only showing a single series
+    - Take a stab at improving the Legend's rendering
+    - Add mark() to Axis for positioning values
+    - Adjust renderers to use Axis->mark() for positioning
+    - Fix rendering of mutiple series in Bar renderer
+
+1.0.5 Tue Sep 5 19:31:24 2006
+    - Fix broken charting of axes not based on zero lower ranges.
+    - Reverse fade color stops
+    - Use the lower on the range for Axis tick values
+    - Add Glass decoration
+    - Adjust Renderers to not take a 'min' value
+
 1.0.4 Thu Aug 31 21:45:37 2006
     - Remove disclaimer about using File::Temp
     - Fix completely broken domain axis values

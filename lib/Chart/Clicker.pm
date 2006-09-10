@@ -19,7 +19,7 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-our $VERSION = '1.0.4';
+our $VERSION = '1.0.6';
 
 sub new {
     my $proto = shift();
@@ -66,10 +66,10 @@ sub inside_width {
     my $w = $self->width();
 
     if(defined($self->insets())) {
-        $w -= $self->insets()->left() + $self->insets()->right()
+        $w -= $self->insets->left() + $self->insets->right()
     }
     if(defined($self->border())) {
-        $w -= $self->border()->stroke()->width() * 2;
+        $w -= $self->border->stroke->width() * 2;
     }
 
     return $w;
@@ -80,10 +80,10 @@ sub inside_height {
 
     my $h = $self->height();
     if(defined($self->insets())) {
-        $h -= $self->insets()->bottom() + $self->insets()->top();
+        $h -= $self->insets->bottom() + $self->insets->top();
     }
     if(defined($self->border())) {
-        $h -= $self->border()->stroke()->width() * 2;
+        $h -= $self->border->stroke->width() * 2;
     }
 
     return $h;
@@ -114,7 +114,7 @@ sub prepare {
 
         my $raxis = $self->get_dataset_range_axis($count);
         if(defined($raxis)) {
-            $raxis->range()->combine($ds->range());
+            $raxis->range->combine($ds->range());
         }
 
         $count++;
@@ -148,9 +148,9 @@ sub get_dataset_domain_axis {
 
     my $aidx = $self->{'DSDOMAINAXIS'}->{$idx};
     if(defined($aidx)) {
-        return $self->domain_axes()->[$aidx];
+        return $self->domain_axes->[$aidx];
     } else {
-        return $self->domain_axes()->[0];
+        return $self->domain_axes->[0];
     }
 }
 
@@ -173,9 +173,9 @@ sub get_dataset_range_axis {
 
     my $aidx = $self->{'DSRANGEAXIS'}->{$idx};
     if(defined($aidx)) {
-        return $self->range_axes()->[$aidx];
+        return $self->range_axes->[$aidx];
     } else {
-        return $self->range_axes()->[0];
+        return $self->range_axes->[0];
     }
 }
 
@@ -183,7 +183,7 @@ sub write {
     my $self = shift();
     my $file = shift();
 
-    $self->surface()->write_to_png($file);
+    $self->surface->write_to_png($file);
     return 1;
 }
 
@@ -191,7 +191,7 @@ sub png {
     my $self = shift();
 
     my $buff;
-    $self->surface()->write_to_png_stream(sub {
+    $self->surface->write_to_png_stream(sub {
         my ($closure, $data) = @_;
         $buff .= $data;
     });

@@ -14,12 +14,8 @@ sub draw {
     my $series = shift();
     my $domain = shift();
     my $range = shift();
-    my $min = shift();
 
     my $height = $self->height();
-    my $xper = $domain->per();
-    my $yper = $range->per();
-
     my $linewidth = 1;
     my $stroke = $self->get_option('stroke');
     if($stroke) {
@@ -33,8 +29,8 @@ sub draw {
     my @vals = @{ $series->values() };
     my @keys = @{ $series->keys() };
     for(0..($series->key_count() - 1)) {
-        my $x = $xper * ($keys[$_] - $keys[0]);
-        my $y = $height - ($yper * ($vals[$_] - $min));
+        my $x = $domain->mark($keys[$_]);
+        my $y = $height - $range->mark($vals[$_]);
         if($_ == 0) {
             $cr->move_to($x, $y);
         } else {

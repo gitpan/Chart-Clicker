@@ -63,6 +63,21 @@ sub prepare {
         $rend->prepare($clicker, $idim);
     }
 
+    my %dscount;
+    my $count = 0;
+    foreach my $dataset (@{ $clicker->datasets() }) {
+        my $ridx = $self->get_renderer_for_dataset($count);
+        $dscount{$ridx} += scalar(@{ $dataset->series() });
+        $count++;
+    }
+
+    my $renderers = $self->renderers();
+    $count = 0;
+    foreach my $rend (@{ $self->renderers() }) {
+        $rend->dataset_count($dscount{$count});
+        $count++;
+    }
+
     return 1;
 }
 
@@ -86,11 +101,10 @@ sub draw {
         my $range = $clicker->get_dataset_range_axis($count);
         my $ridx = $self->get_renderer_for_dataset($count);
         my $rend = $renderers->[$ridx];
-        my $min = $dataset->range()->lower();
 
         foreach my $series (@{ $dataset->series() }) {
             $rcr->save();
-            $rend->draw($clicker, $rcr, $series, $domain, $range, $min);
+            $rend->draw($clicker, $rcr, $series, $domain, $range);
             $rcr->restore();
         }
         $count++;

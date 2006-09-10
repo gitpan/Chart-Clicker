@@ -14,13 +14,9 @@ sub draw {
     my $series = shift();
     my $domain = shift();
     my $range = shift();
-    my $min = shift();
 
     my $height = $self->height();
     my $width = $self->width();
-
-    my $xper = $domain->per();
-    my $yper = $range->per();
 
     my $linewidth = 1;
     my $stroke = $self->get_option('stroke');
@@ -36,12 +32,16 @@ sub draw {
     my $lastx; # used for completing the path
     my @vals = @{ $series->values() };
     my @keys = @{ $series->keys() };
+
+    my $startx;
+
     for(0..($series->key_count() - 1)) {
 
-        my $x = $xper * ($keys[$_] - $keys[0]);
+        my $x = $domain->mark($keys[$_]);
 
-        my $y = $height - ($yper * ($vals[$_] - $min));
+        my $y = $height - $range->mark($vals[$_]);
         if($_ == 0) {
+            $startx = $x;
             $cr->move_to($x, $y);
         } else {
             $cr->line_to($x, $y);
@@ -56,7 +56,7 @@ sub draw {
 
     $cr->append_path($path);
     $cr->line_to($lastx, $height);
-    $cr->line_to(0, $height);
+    $cr->line_to($startx, $height);
     $cr->close_path();
 
     my $opac = $self->get_option('opacity');
@@ -69,11 +69,11 @@ sub draw {
 
         my $patt = Cairo::LinearGradient->create(0.0, 0.0, 1.0, $height);
         $patt->add_color_stop_rgba(
-            0.0, $color->red(), $color->green(), $color->blue(),
+            1.0, $color->red(), $color->green(), $color->blue(),
             $color->alpha()
         );
         $patt->add_color_stop_rgba(
-            1.0, $color->red(), $color->green(), $color->blue(), 0
+            0.0, $color->red(), $color->green(), $color->blue(), 0
         );
         $cr->set_source($patt);
     } else {
