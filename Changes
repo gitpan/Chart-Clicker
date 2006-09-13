@@ -1,6 +1,10 @@
 Revision history for Perl extension Chart::Clicker.
 
-1.0.6 Pending
+1.0.7 Tue Sep 12 20:12:34 2006
+    - Adjust Axis to make subclassing better
+    - Add Axis::DateTime
+
+1.0.6 Sometime
     - Make the stroke an option (and off by default) of Bar
     - Add max and min methods to Data::Range
     - Fix Area renderer only showing a single series

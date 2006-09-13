@@ -24,6 +24,7 @@ t/01-shape.t
 t/01-shape-arc.t
 t/01-shape-rectangle.t
 t/03-axis.t
+t/03-axis-datetime.t
 t/03-renderer-base.t
 t/04-renderer-area.t
 t/04-renderer-bar.t
@@ -42,10 +43,12 @@ t/999-newstyle.t
 t/pod.t
 lib/Chart/Clicker.pm
 lib/Chart/Clicker/Axis.pm
+lib/Chart/Clicker/Axis/DateTime.pm
 lib/Chart/Clicker/Data/DataSet.pm
 lib/Chart/Clicker/Data/Range.pm
 lib/Chart/Clicker/Data/Series.pm
 lib/Chart/Clicker/Decoration/Base.pm
+lib/Chart/Clicker/Decoration/Glass.pm
 lib/Chart/Clicker/Decoration/Grid.pm
 lib/Chart/Clicker/Decoration/Label.pm
 lib/Chart/Clicker/Decoration/Legend.pm

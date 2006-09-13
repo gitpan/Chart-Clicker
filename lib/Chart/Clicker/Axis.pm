@@ -92,13 +92,9 @@ sub prepare {
         } else {
             $key = 'width';
         }
-        for(0..scalar(@{ $self->tick_values() }) - 1) {
-            my $val;
-            if(defined($self->format())) {
-                $val = sprintf($self->format(), $self->tick_values()->[$_]);
-            } else {
-                $val = $self->tick_values()->[$_];
-            }
+        my @values = @{ $self->tick_values() };
+        for(0..scalar(@values) - 1) {
+            my $val = $self->format_value($values[$_]);
             my $ext = $cairo->text_extents($val);
             $self->{'extents_cache'}->[$_] = $ext;
             if($ext->{$key} > $biggest) {
@@ -176,14 +172,10 @@ sub draw {
         # Draw a line for our axis
         $cr->line_to($x + $self->width(), $y);
 
+        my @values = @{ $self->tick_values() };
         # Draw a tick for each value.
-        for(0..scalar(@{ $self->tick_values() }) - 1) {
-            my $val;
-            if(defined($self->format())) {
-                $val = sprintf($self->format(), $self->tick_values()->[$_]);
-            } else {
-                $val = $self->tick_values()->[$_];
-            }
+        for(0..scalar(@values) - 1) {
+            my $val = $values[$_];
             # Grab the extent from the cache.
             my $ext = $self->{'extents_cache'}->[$_];
             my $ix = $x + int(($val - $self->range()->lower()) * $per) + .5;
@@ -195,19 +187,15 @@ sub draw {
                 $cr->line_to($ix, $y + $tick_length);
                 $cr->rel_move_to(-($ext->{'width'} / 2), $ext->{'height'} + 2);
             }
-            $cr->show_text($val);
+            $cr->show_text($self->format_value($val));
         }
 
     } else {
         $cr->line_to($x, $y + $self->height());
 
-        for(0..scalar(@{ $self->tick_values() }) - 1) {
-            my $val;
-            if(defined($self->format())) {
-                $val = sprintf($self->format(), $self->tick_values()->[$_]);
-            } else {
-                $val = $self->tick_values()->[$_];
-            }
+        my @values = @{ $self->tick_values() };
+        for(0..scalar(@values) - 1) {
+            my $val = $values[$_];
             my $iy = int($y + $self->height() - (($val - $self->range()->lower()) * $per)) + .5;
             my $ext = $self->{'extents_cache'}->[$_];
             $cr->move_to($x, $iy);
@@ -218,7 +206,7 @@ sub draw {
                 $cr->line_to($x + $tick_length, $iy);
                 $cr->rel_move_to(0, $ext->{'height'} / 2);
             }
-            $cr->show_text($val);
+            $cr->show_text($self->format_value($val));
         }
     }
 
@@ -226,6 +214,16 @@ sub draw {
     $cr->stroke();
 
     return $surf;
+}
+
+sub format_value {
+    my $self = shift;
+    my $value = shift;
+
+    if($self->format()) {
+        return sprintf($self->format(), $value);
+    }
+    return $value;
 }
 
 1;

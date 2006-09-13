@@ -7,7 +7,7 @@ WriteMakefile(
     VERSION_FROM      => 'lib/Chart/Clicker.pm', # finds $VERSION
     PREREQ_PM         =>
         {
-            Cairo               => 0.92,
+            Cairo               => 1.00,
             'Class::Accessor'   => 0.25,
         },
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
