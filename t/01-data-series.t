@@ -1,4 +1,4 @@
-use Test::More tests => 19;
+use Test::More tests => 22;
 
 BEGIN { use_ok('Chart::Clicker::Data::Series'); }
 
@@ -39,3 +39,11 @@ ok($series->key_count() == @keys, 'Key Count');
 ok($series->value_count() == @values, 'Value Count');
 ok($series->range()->lower() == $values[0], 'Minimum Value');
 ok($series->range()->upper() == $values[2], 'Maximum Value');
+
+my $fooseries = new Chart::Clicker::Data::Series({
+    keys => [ 1, 2, 3, 4 ],
+    values => [ 5, 6, 7, 8]
+});
+ok($fooseries->keys->[0] == 1, 'Verify first key');
+ok($fooseries->values->[0] == 5, 'Verify first value');
+ok($fooseries->key_count() == 4, 'Verify key count');

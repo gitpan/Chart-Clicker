@@ -124,7 +124,8 @@ sub mark {
     my $self = shift();
     my $value = shift();
 
-    return $self->per() * ($value - $self->range->lower());
+    # This is rounded and .5'ed to get the lines nice and sharp for Cairo.
+    return int($self->per() * ($value - $self->range->lower())) + .5;
 }
 
 sub draw {

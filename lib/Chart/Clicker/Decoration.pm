@@ -1,4 +1,4 @@
-package Chart::Clicker::Decoration::Base;
+package Chart::Clicker::Decoration;
 use strict;
 use warnings;
 
@@ -9,11 +9,11 @@ __END__
 
 =head1 NAME
 
-Chart::Clicker::Decoration::Base
+Chart::Clicker::Decoration
 
 =head1 DESCRIPTION
 
-Chart::Clicker::Decoration::Base.
+Chart::Clicker::Decoration
 
 =head1 SYNOPSIS
 
@@ -25,7 +25,7 @@ Chart::Clicker::Decoration::Base.
 
 =item new
 
-Creates a new Chart::Clicker::Decoration::Base.
+Creates a new Chart::Clicker::Decoration
 
 =back
 

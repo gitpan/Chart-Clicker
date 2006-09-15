@@ -2,7 +2,7 @@ package Chart::Clicker::Decoration::Legend;
 use strict;
 use warnings;
 
-use base 'Chart::Clicker::Drawing::Component';
+use base 'Chart::Clicker::Decoration';
 __PACKAGE__->mk_accessors(
     qw(font item_insets legend_items orientation tallest widest)
 );

@@ -5,8 +5,8 @@ use warnings;
 use base 'Chart::Clicker::Drawing::Container';
 __PACKAGE__->mk_accessors(
     qw(
-        color_allocator context datasets domain_axes domain_markers
-        range_axes range_markers plot surface
+        color_allocator context datasets domain_axes markers
+        range_axes plot surface
     )
 );
 
@@ -19,7 +19,7 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-our $VERSION = '1.0.7';
+our $VERSION = '1.1.0';
 
 sub new {
     my $proto = shift();
@@ -52,11 +52,13 @@ sub new {
         $self->border(new Chart::Clicker::Drawing::Border());
     }
 
-    $self->range_markers([ ]);
-    $self->domain_markers([ ]);
+    $self->markers([ ]);
 
     $self->{'DSDOMAINAXIS'} = {};
     $self->{'DSRANGEAXIS'} = {};
+
+    $self->{'RDOMAINAXIS'} = {};
+    $self->{'RRANGEAXIS'} = {};
 
     return $self;
 }
@@ -172,6 +174,56 @@ sub get_dataset_range_axis {
     }
 
     my $aidx = $self->{'DSRANGEAXIS'}->{$idx};
+    if(defined($aidx)) {
+        return $self->range_axes->[$aidx];
+    } else {
+        return $self->range_axes->[0];
+    }
+}
+
+sub set_marker_domain_axis {
+    my $self = shift();
+    my $midx = shift();
+    my $axis = shift();
+
+    $self->{'RDOMAINAXIS'}->{$midx} = $axis;
+    return 1;
+}
+
+sub get_marker_domain_axis {
+    my $self = shift();
+    my $idx = shift();
+
+    unless(defined($self->markers())) {
+        return;
+    }
+
+    my $aidx = $self->{'RDOMAINAXIS'}->{$idx};
+    if(defined($aidx)) {
+        return $self->domain_axes->[$aidx];
+    } else {
+        return $self->domain_axes->[0];
+    }
+}
+
+sub set_marker_range_axis {
+    my $self = shift();
+    my $midx = shift();
+    my $axisidx = shift();
+
+    $self->{'RRANGEAXIS'}->{$midx} = $axisidx;
+    return 1;
+}
+
+sub get_marker_range_axis {
+    my $self = shift();
+    my $idx = shift();
+
+    unless(defined($self->markers())) {
+        return;
+    }
+
+    my $aidx = $self->{'RRANGEAXIS'}->{$idx};
     if(defined($aidx)) {
         return $self->range_axes->[$aidx];
     } else {

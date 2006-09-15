@@ -1,9 +1,10 @@
-use Test::More tests => 19;
+use Test::More tests => 20;
 
 BEGIN {
     use_ok('Chart::Clicker');
     use_ok('Chart::Clicker::Axis');
     use_ok('Chart::Clicker::Data::DataSet');
+    use_ok('Chart::Clicker::Data::Marker');
     use_ok('Chart::Clicker::Data::Series');
     use_ok('Chart::Clicker::Decoration::Grid');
     use_ok('Chart::Clicker::Decoration::Label');
@@ -19,7 +20,7 @@ BEGIN {
 
 use Chart::Clicker::Drawing qw(:positions);
 
-my $chart = new Chart::Clicker({ width => 300, height => 250 });
+my $chart = new Chart::Clicker({ width => 400, height => 250 });
 ok(defined($chart), 'new Chart::Clicker');
 
 my $series = new Chart::Clicker::Data::Series();
@@ -118,6 +119,16 @@ $chart->add($grid, $CC_CENTER, 0);
 my $plot = new Chart::Clicker::Decoration::Plot();
 $chart->add($plot, $CC_CENTER);
 ok(defined($plot), 'new Plot');
+
+my $dmark = new Chart::Clicker::Data::Marker({
+    key => 6,
+    key2 => 8,
+});
+my $rmark = new Chart::Clicker::Data::Marker({
+    value => 225,
+    value2 => 320
+});
+$chart->markers([ $dmark, $rmark ]);
 
 my $area = new Chart::Clicker::Renderer::Area();
 ok(defined($area), 'new Renderer');

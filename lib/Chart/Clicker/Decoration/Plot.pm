@@ -4,9 +4,10 @@ use warnings;
 
 use base 'Chart::Clicker::Drawing::Component';
 __PACKAGE__->mk_accessors(
-    qw(renderers)
+    qw(renderers markers)
 );
 
+use Chart::Clicker::Decoration::MarkerOverlay;
 use Chart::Clicker::Drawing::Border;
 
 sub new {
@@ -18,6 +19,9 @@ sub new {
         $self->border(
             new Chart::Clicker::Drawing::Border()
         );
+    }
+    unless(defined($self->markers())) {
+        $self->markers(1);
     }
 
     $self->{'DSRENDERERS'} = {};
@@ -110,6 +114,16 @@ sub draw {
         $count++;
     }
 
+    if($self->markers()) {
+        if(scalar(@{ $clicker->markers() })) {
+            my $mo = new Chart::Clicker::Decoration::MarkerOverlay();
+            $mo->prepare($clicker, $self->inside_dimensions());
+            my $marksurf = $mo->draw($clicker);
+            $rcr->set_source_surface($marksurf, 0, 0);
+            $rcr->paint();
+        }
+    }
+
     my $ul = $self->upper_left_inside_point();
     $cr->set_source_surface($rendsurface, $ul->x(), $ul->y());
     $cr->paint();
@@ -126,7 +140,8 @@ Chart::Clicker::Decoration::Plot
 
 =head1 DESCRIPTION
 
-A Component that handles the rendering of data via Renderers.
+A Component that handles the rendering of data via Renderers.  Also
+handles rendering the markers that come from the Clicker object.
 
 =head1 SYNOPSIS
 
@@ -154,6 +169,10 @@ Set/Get this Plot's border.
 =item insets
 
 Set/Get this Plot's insets.
+
+=item markers
+
+Set/Get the flag that determines if markers are drawn on this plot.
 
 =item renderers
 

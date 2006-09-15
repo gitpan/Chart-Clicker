@@ -2,7 +2,7 @@ package Chart::Clicker::Decoration::LegendItem;
 use strict;
 use warnings;
 
-use base 'Chart::Clicker::Decoration::Base';
+use base 'Chart::Clicker::Decoration';
 __PACKAGE__->mk_accessors(qw(color label font));
 
 use Chart::Clicker::Drawing::Font;

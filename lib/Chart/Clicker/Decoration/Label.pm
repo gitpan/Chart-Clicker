@@ -2,7 +2,7 @@ package Chart::Clicker::Decoration::Label;
 use strict;
 use warnings;
 
-use base 'Chart::Clicker::Drawing::Component';
+use base 'Chart::Clicker::Decoration';
 __PACKAGE__->mk_accessors(
     qw(color font insets orientation text)
 );

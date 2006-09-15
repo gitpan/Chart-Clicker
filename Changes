@@ -1,5 +1,13 @@
 Revision history for Perl extension Chart::Clicker.
 
+1.1.0 Thu Sep 14 20:06:37 2006
+    - Remove (range|domain)_markers from Chart::Clicker
+    - Fix rendering of Axis grid lines by using Axis mark()
+    - Fix Series with keys given in constructor
+    - Add Marker support via Data::Marker and Plot's use of
+      Decoration::MarkerOverlay
+    - Make pseudo-smart date stuff in DateTime
+
 1.0.7 Tue Sep 12 20:12:34 2006
     - Adjust Axis to make subclassing better
     - Add Axis::DateTime

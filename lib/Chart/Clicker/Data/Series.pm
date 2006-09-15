@@ -13,6 +13,10 @@ sub new {
     my $proto = shift();
     my $self = $proto->SUPER::new(@_);
 
+    if(defined($self->keys())) {
+        $self->key_count(scalar(@{ $self->keys() }));
+    }
+
     return $self;
 }
 

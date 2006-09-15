@@ -2,11 +2,10 @@ package Chart::Clicker::Decoration::Grid;
 use strict;
 use warnings;
 
-use base 'Chart::Clicker::Decoration::Base';
+use base 'Chart::Clicker::Decoration';
 
 __PACKAGE__->mk_accessors(qw(background_color color domain_values range_values stroke));
 
-use Chart::Clicker::Decoration::Marker;
 use Chart::Clicker::Drawing::Color;
 use Chart::Clicker::Drawing::Stroke;
 
@@ -70,16 +69,14 @@ sub draw {
     my $per = $daxis->per();
     my $height = $self->height();
     foreach my $val (@{ $daxis->tick_values() }) {
-        $cr->move_to((int($val - $daxis->range->lower()) * $per) + .5, 0);
+        $cr->move_to($daxis->mark($val), 0);
         $cr->rel_line_to(0, $height);
     }
 
     $per = $raxis->per();
     my $width = $self->width();
     foreach my $val (@{ $raxis->tick_values() }) {
-        $cr->move_to(0,
-            int($height - ($val - $raxis->range()->lower()) * $per) + .5
-        );
+        $cr->move_to(0, $height - $raxis->mark($val));
         $cr->rel_line_to($width, 0);
     }
 
