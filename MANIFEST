@@ -31,8 +31,9 @@ t/04-renderer-bar.t
 t/04-renderer-line.t
 t/04-renderer-point.t
 t/04-renderer-point.t
-t/05-decoration-grid.t
+t/05-decoration.t
 t/05-decoration-legend.t
+t/05-decoration-grid.t
 t/05-decoration-legenditem.t
 t/05-decoration-markeroverlay.t
 t/06-data-marker.t

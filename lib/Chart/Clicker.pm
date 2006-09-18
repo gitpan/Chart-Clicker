@@ -19,7 +19,7 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-our $VERSION = '1.1.0';
+our $VERSION = '1.1.1';
 
 sub new {
     my $proto = shift();
@@ -371,7 +371,7 @@ defaults of 500 and 300 are chosen, respectively.
 Get the width available in this container after taking away space for
 insets and borders.
 
-=item $c->inside_height()
+=item inside_height
 
 Get the height available in this container after taking away space for
 insets and borders.

@@ -113,15 +113,15 @@ Generates a collection of Markers for use as a background.
 
 Creates a new Chart::Clicker::Decoration::Grid object.
 
-=item prepare
-
-Prepare this Grid for drawing
-
 =back
 
 =head2 Class Methods
 
 =over 4
+
+=item prepare
+
+Prepare this Grid for drawing
 
 =item color
 

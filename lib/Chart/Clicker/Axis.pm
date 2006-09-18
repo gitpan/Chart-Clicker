@@ -140,13 +140,15 @@ sub draw {
 
     my $orient = $self->orientation();
     my $pos = $self->position();
+    my $width = $self->width();
+    my $height = $self->height();
 
     if($pos == $CC_LEFT) {
-        $x += $self->width() - .5;
+        $x += $width - .5;
     } elsif($pos == $CC_RIGHT) {
         $x += .5;
     } elsif($pos == $CC_TOP) {
-        $y += $self->height() - .5;
+        $y += $height - .5;
     } else {
         $y += .5;
     }
@@ -168,10 +170,12 @@ sub draw {
     my $tick_length = $self->tick_length();
     my $per = $self->per();
 
+    my $lower = $self->range->lower();
+
     $cr->move_to($x, $y);
     if($orient == $CC_HORIZONTAL) {
         # Draw a line for our axis
-        $cr->line_to($x + $self->width(), $y);
+        $cr->line_to($x + $width, $y);
 
         my @values = @{ $self->tick_values() };
         # Draw a tick for each value.
@@ -179,7 +183,7 @@ sub draw {
             my $val = $values[$_];
             # Grab the extent from the cache.
             my $ext = $self->{'extents_cache'}->[$_];
-            my $ix = $x + int(($val - $self->range()->lower()) * $per) + .5;
+            my $ix = int($x + ($val - $lower) * $per) + .5;
             $cr->move_to($ix, $y);
             if($pos == $CC_TOP) {
                 $cr->line_to($ix, $y - $tick_length);
@@ -192,12 +196,12 @@ sub draw {
         }
 
     } else {
-        $cr->line_to($x, $y + $self->height());
+        $cr->line_to($x, $y + $height);
 
         my @values = @{ $self->tick_values() };
         for(0..scalar(@values) - 1) {
             my $val = $values[$_];
-            my $iy = int($y + $self->height() - (($val - $self->range()->lower()) * $per)) + .5;
+            my $iy = int($y + $height - (($val - $lower) * $per)) + .5;
             my $ext = $self->{'extents_cache'}->[$_];
             $cr->move_to($x, $iy);
             if($self->position() == $CC_LEFT) {
@@ -344,7 +348,13 @@ range on this axis by the specified value to establish tick values.
 
 Given a value, returns it's position on this axis.
 
-=cut
+=item format_value
+
+Given a value, returns it formatted using this Axis' formatter.
+
+=item examine_values
+
+Gives the axis an opportunity to examine values.
 
 =item prepare
 

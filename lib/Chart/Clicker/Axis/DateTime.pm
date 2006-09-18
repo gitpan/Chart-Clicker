@@ -15,16 +15,9 @@ __PACKAGE__->mk_accessors(qw(formatter));
 sub prepare {
     my $self = shift();
 
-    $self->SUPER::prepare(@_);
-
-    my $clicker = shift();
-
-    my @markers = @{ $clicker->markers() };
-
     my $dstart = DateTime->from_epoch(epoch => $self->range->lower());
     my $dend = DateTime->from_epoch(epoch => $self->range->upper());
     my $dur = $dend - $dstart;
-    print STDERR "#### ".$dur->weeks()."\n";
 
     if($dur->years()) {
         $self->format('%b %Y');
@@ -37,6 +30,12 @@ sub prepare {
     } else {
         $self->format('%H:%M');
     }
+
+    $self->SUPER::prepare(@_);
+
+    my $clicker = shift();
+
+    my @markers = @{ $clicker->markers() };
 
     my $set = DateTime::Span->from_datetimes(
         start => $dstart, end => $dend
@@ -97,6 +96,8 @@ sub format_value {
 
         return $dt->strftime($self->format());
     }
+
+    return $value;
 }
 
 1;
