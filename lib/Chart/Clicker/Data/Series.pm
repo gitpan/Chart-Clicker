@@ -4,7 +4,7 @@ use warnings;
 
 use base 'Class::Accessor';
 __PACKAGE__->mk_accessors(
-    qw(key_count keys max_key_length name range value_count values)
+    qw(error_count errors key_count keys max_key_length name range value_count values)
 );
 
 use Chart::Clicker::Data::Range;
@@ -31,6 +31,15 @@ sub prepare {
 
     if($self->key_count() != $self->value_count()) {
         die('Series key/value counts dont match.');
+    }
+
+    if($self->errors()) {
+        my @errors = @{ $self->errors() };
+        $self->error_count(scalar(@errors));
+
+        if($self->error_count() != $self->value_count()) {
+            die('Series error/value counts don\'t match');
+        }
     }
 
     my ($long, $max, $min);
@@ -111,6 +120,10 @@ Set/Get the keys for this series.
 =item values
 
 Set/Get the values for this series.
+
+=item errors
+
+Set/Get the errors for this series.
 
 =item prepare
 

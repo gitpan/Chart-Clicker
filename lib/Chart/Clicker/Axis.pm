@@ -10,6 +10,8 @@ __PACKAGE__->mk_accessors(
     )
 );
 
+use constant PI => 4 * atan2 1, 1;
+
 use Chart::Clicker::Data::Range;
 use Chart::Clicker::Drawing qw(:positions);
 use Chart::Clicker::Drawing::Color;
@@ -96,7 +98,7 @@ sub prepare {
         for(0..scalar(@values) - 1) {
             my $val = $self->format_value($values[$_]);
             my $ext = $cairo->text_extents($val);
-            $self->{'extents_cache'}->[$_] = $ext;
+            $self->{'ticks_extents_cache'}->[$_] = $ext;
             if($ext->{$key} > $biggest) {
                 $biggest = $ext->{$key};
             }
@@ -107,12 +109,24 @@ sub prepare {
         }
     }
 
+    if ($self->label()) {
+        my $ext = $cairo->text_extents($self->label());
+        $self->{'label_extents_cache'} = $ext;
+      }
+
     if($self->orientation() == $CC_HORIZONTAL) {
-        $self->height($biggest + 3);
+        my $label_height = $self->label()
+            ? $self->{'label_extents_cache'}->{'height'} + 3
+            : 0;
+        $self->height($biggest + $label_height + 4);
         $self->width($dimension->width());
         $self->per($self->width() / $self->range()->span());
     } else {
-        $self->width($biggest + 3);
+        # The label will be rotated, so use height here too.
+        my $label_width = $self->label()
+            ? $self->{'label_extents_cache'}->{'height'} + 3
+            : 0;
+        $self->width($biggest + $label_width + 4);
         $self->height($dimension->height());
         $self->per($self->height() / $self->range()->span());
     }
@@ -182,7 +196,7 @@ sub draw {
         for(0..scalar(@values) - 1) {
             my $val = $values[$_];
             # Grab the extent from the cache.
-            my $ext = $self->{'extents_cache'}->[$_];
+            my $ext = $self->{'ticks_extents_cache'}->[$_];
             my $ix = int($x + ($val - $lower) * $per) + .5;
             $cr->move_to($ix, $y);
             if($pos == $CC_TOP) {
@@ -195,6 +209,17 @@ sub draw {
             $cr->show_text($self->format_value($val));
         }
 
+        # Draw the label
+        if($self->label()) {
+            my $ext = $self->{'label_extents_cache'};
+            if ($pos == $CC_BOTTOM) {
+                $cr->move_to(($width - $ext->{'width'}) / 2, $height);
+            } else {
+                $cr->move_to(($width - $ext->{'width'}) / 2, $ext->{'height'} + 2);
+            }
+            $cr->show_text($self->label());
+        }
+
     } else {
         $cr->line_to($x, $y + $height);
 
@@ -202,7 +227,7 @@ sub draw {
         for(0..scalar(@values) - 1) {
             my $val = $values[$_];
             my $iy = int($y + $height - (($val - $lower) * $per)) + .5;
-            my $ext = $self->{'extents_cache'}->[$_];
+            my $ext = $self->{'ticks_extents_cache'}->[$_];
             $cr->move_to($x, $iy);
             if($self->position() == $CC_LEFT) {
                 $cr->line_to($x - $tick_length, $iy);
@@ -212,6 +237,19 @@ sub draw {
                 $cr->rel_move_to(0, $ext->{'height'} / 2);
             }
             $cr->show_text($self->format_value($val));
+        }
+
+        # Draw the label
+        if($self->label()) {
+            my $ext = $self->{'label_extents_cache'};
+            if ($pos == $CC_LEFT) {
+                $cr->move_to($ext->{'height'}, ($height + $ext->{'width'}) / 2);
+                $cr->rotate(3*PI/2);
+            } else {
+                $cr->move_to($width - $ext->{'height'}, ($height - $ext->{'width'}) / 2);
+                $cr->rotate(PI/2);
+            }
+            $cr->show_text($self->label());
         }
     }
 

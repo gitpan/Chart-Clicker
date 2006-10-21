@@ -11,8 +11,10 @@ sub create_path {
     my $self = shift();
     my ($cairo, $x, $y) = @_;
 
+    my $halfrad = $self->radius() / 2;
+
     $cairo->arc(
-        $x, $y, $self->radius(),
+        $x + $halfrad, $y + $halfrad, $self->radius(),
         $self->angle1() * $TO_RAD,
         $self->angle2() * $TO_RAD
     );
