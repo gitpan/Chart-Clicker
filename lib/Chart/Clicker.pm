@@ -19,7 +19,7 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-our $VERSION = '1.1.2';
+our $VERSION = '1.1.3';
 
 sub new {
     my $proto = shift();
@@ -234,9 +234,46 @@ sub get_marker_range_axis {
 sub write {
     my $self = shift();
     my $file = shift();
+    my $type = shift();
+
+    unless(defined($type)) {
+        $file =~ /.(\w*$)/;
+        $type = $1;
+    }
+
+    if(lc($type) eq 'png') {
+        $self->write_png($file);
+    } elsif(lc($type) eq 'svg') {
+        $self->write_svg($file);
+    } else {
+        $self->write_png($file);
+    }
+    return 1;
+}
+
+sub write_png {
+    my $self = shift();
+    my $file = shift();
 
     $self->surface->write_to_png($file);
-    return 1;
+}
+
+sub write_svg {
+    my $self = shift();
+    my $file = shift();
+
+    return undef unless Cairo::HAS_SVG_SURFACE;
+
+    my $surface = Cairo::SvgSurface->create($file, $self->width, $self->height);
+
+    my $cr = Cairo::Context->create($surface);
+    $cr->set_source_surface($self->surface, 0, 0);
+    $cr->paint();
+    $cr->show_page();
+
+    # Unset the context and the surface to force them to do the actual drawing.
+    $cr = undef;
+    $surface = undef;
 }
 
 sub png {
@@ -249,6 +286,29 @@ sub png {
     });
 
     return $buff;
+}
+
+sub svg {
+    my $self = shift();
+
+    return undef unless Cairo::HAS_SVG_SURFACE;
+
+    my $buffer;
+    my $surface = Cairo::SvgSurface->create_for_stream(sub {
+        my ($closure, $data) = @_;
+        $buffer .= $data;
+    }, undef, $self->width, $self->height);
+
+    my $cr = Cairo::Context->create($surface);
+    $cr->set_source_surface($self->surface, 0, 0);
+    $cr->paint();
+    $cr->show_page();
+
+    # Unset the context and the surface to force them to do the actual drawing.
+    $cr = undef;
+    $surface = undef;
+
+    return $buffer;
 }
 
 1;
@@ -275,12 +335,15 @@ things by hand.
 
 =head1 WARNING
 
-Clicker is in heavy development.  The interface is not optimal, there are
-features missing, and pieces of it flat out do not work.  Good software is
-not Athena and therefore doesn't spring fully formed from the mind.  It will
-take some time to nail down the interface.  You can find more information at
-L<http://www.onemogin.com/clicker>.  Feel free to send your criticisms,
-advice, patches or money to me as a way of helping.
+Clicker has aspirations to do more and be better.  Good software is not Athena
+and therefore doesn't spring fully formed from the mind.  It is entirely
+possible that new features will be added that may change behavior. You can
+find more information at L<http://www.onemogin.com/clicker>.  Feel free to
+send your criticisms, advice, patches or money to me as a way of helping.
+
+=head1 FORMATS
+
+Clicker supports PNG and SVG output.
 
 =head1 SYNOPSIS
 
@@ -288,14 +351,14 @@ advice, patches or money to me as a way of helping.
   use Chart::Clicker::Axis;
   use Chart::Clicker::Data::DataSet;
   use Chart::Clicker::Data::Series;
-  use Chart::Clicker::Decoration::Grid
-  use Chart::Clicker::Decoration::Legend
-  use Chart::Clicker::Decoration::Plot
+  use Chart::Clicker::Decoration::Grid;
+  use Chart::Clicker::Decoration::Legend;
+  use Chart::Clicker::Decoration::Plot;
   use Chart::Clicker::Drawing qw(:positions);
   use Chart::Clicker::Drawing::Insets;
-  use Chart::Clicker::Renderer::Area
+  use Chart::Clicker::Renderer::Area;
 
-  my $c = new Chart::Clicker({ width => 500, height => 350 });
+  my $chart = new Chart::Clicker({ width => 500, height => 350 });
 
   my $series = new Chart::Clicker::Data::Series({
     keys    => [1, 2, 3, 4, 5, 6],
@@ -305,6 +368,7 @@ advice, patches or money to me as a way of helping.
   my $dataset = new Chart::Clicker::Data::DataSet({
     series => [ $series ]
   });
+  $chart->datasets([ $dataset ]);
 
   my $legend = new Chart::Clicker::Decoration::Legend({
     margins => new Chart::Clicker::Drawing::Insets({
@@ -412,7 +476,9 @@ Returns the range axis to which the specified dataset is affined.
 
 =item write
 
-Write the resulting png file to the specified location.
+Write the chart output to the specified location.  Choose a format based on the
+extension of the filename you provide. You may optionally specify the format
+to override the guessing.  If you confuse it, it will default to a PNG.
 
   $c->write('/path/to/the.png');
 
@@ -420,11 +486,19 @@ Write the resulting png file to the specified location.
 
 Returns the PNG data as a scalar.
 
+=item svg
+
+Returns the SVG data as a scalar.
+
 =back
 
 =head1 AUTHOR
 
 Cory 'G' Watson <gphat@cpan.org>
+
+=head1 CONTRIBUTORS
+
+Torsten Schoenfeld
 
 =head1 SEE ALSO
 

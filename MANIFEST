@@ -71,6 +71,7 @@ lib/Chart/Clicker/Renderer/Area.pm
 lib/Chart/Clicker/Renderer/Bar.pm
 lib/Chart/Clicker/Renderer/Base.pm
 lib/Chart/Clicker/Renderer/Line.pm
+lib/Chart/Clicker/Renderer/Measurement.pm
 lib/Chart/Clicker/Renderer/Point.pm
 lib/Chart/Clicker/Shape.pm
 lib/Chart/Clicker/Shape/Arc.pm
