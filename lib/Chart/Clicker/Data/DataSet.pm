@@ -83,7 +83,10 @@ Chart::Clicker::Data::DataSet
 
 =head1 DESCRIPTION
 
-Chart::Clicker::Data::DataSet is the core class 
+Chart::Clicker::Data::DataSet is a set of Series that are grouped for some
+logical reason or another.  DatasSets can be associated with Renderers in the
+Chart.   Unless you are doing something fancy like that you have no reason
+to use more than one in your chart.
 
 =head1 SYNOPSIS
 

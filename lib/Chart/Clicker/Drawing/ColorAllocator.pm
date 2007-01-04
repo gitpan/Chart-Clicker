@@ -2,23 +2,24 @@ package Chart::Clicker::Drawing::ColorAllocator;
 use strict;
 use warnings;
 
+use base 'Class::Accessor';
+
+# I'm not using C::A's accessors here because there are so few accessors
+# and a few of them need custom attention.  position could've been handled
+# with C::A but I think it's too much overhead there.
+
 use Chart::Clicker::Drawing::Color;
 
 my @defaults = (qw(red green blue lime yellow maroon teal fuchsia));;
 
 sub new {
     my $proto = shift();
-    my $class = ref($proto) || $proto;
-
-    my $self = {};
-    bless($self, $class);
+    my $self = $proto->SUPER::new(@_);
 
     $self->{'POSITION'} = -1;
 
-    if(defined($self->{'colors'}) and ref($self->{'colors'}) eq 'ARRAY') {
-        foreach my $color (@{ $self->{'colors'} }) {
-            push(@{ $self->{'COLORS'} }, $color);
-        }
+    if(defined($self->{'colors'}) && ref($self->{'colors'}) eq 'ARRAY') {
+        $self->{'COLORS'} = $self->{'colors'};
     }
 
     return $self;

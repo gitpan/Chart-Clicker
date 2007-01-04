@@ -15,11 +15,6 @@ sub new {
 
     my $self = $proto->SUPER::new(@_);
 
-    unless(defined($self->border())) {
-        $self->border(
-            new Chart::Clicker::Drawing::Border()
-        );
-    }
     unless(defined($self->markers())) {
         $self->markers(1);
     }

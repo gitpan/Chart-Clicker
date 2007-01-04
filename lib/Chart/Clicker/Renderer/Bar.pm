@@ -11,7 +11,7 @@ sub prepare {
     $self->SUPER::prepare(@_);
 
     $self->{'COUNT'}++;
-    $self->{'SCOUNT'} = 0;
+    $self->{'SCOUNT'} = 1;
 
     return 1;
 }

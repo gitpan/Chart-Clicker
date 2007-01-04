@@ -68,12 +68,12 @@ sub prepare {
     my $clicker = shift();
     my $dimension = shift();
 
-    if($self->range()->span() == 0) {
+    if($self->range->span() == 0) {
         die('This axis has a span of 0, that\'s fatal!');
     }
 
     unless(defined($self->tick_values())) {
-        $self->tick_values($self->range()->divvy($self->ticks() + 1));
+        $self->tick_values($self->range->divvy($self->ticks() + 1));
     }
 
     my $cairo = $clicker->context();
@@ -120,7 +120,7 @@ sub prepare {
             : 0;
         $self->height($biggest + $label_height + 4);
         $self->width($dimension->width());
-        $self->per($self->width() / $self->range()->span());
+        $self->per($self->width() / $self->range->span());
     } else {
         # The label will be rotated, so use height here too.
         my $label_width = $self->label()
@@ -128,7 +128,7 @@ sub prepare {
             : 0;
         $self->width($biggest + $label_width + 4);
         $self->height($dimension->height());
-        $self->per($self->height() / $self->range()->span());
+        $self->per($self->height() / $self->range->span());
     }
 
     return 1;
@@ -253,7 +253,7 @@ sub draw {
         }
     }
 
-    $cr->set_source_rgba($self->color()->rgba());
+    $cr->set_source_rgba($self->color->rgba());
     $cr->stroke();
 
     return $surf;

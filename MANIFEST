@@ -39,10 +39,12 @@ t/05-decoration-markeroverlay.t
 t/06-data-marker.t
 t/800-layout.t
 t/990-normal.t
-t/999-newstyle.t
+t/995-newstyle.t
+t/999-simple.t
 t/pod.t
 lib/Chart/Clicker.pm
 lib/Chart/Clicker/Axis.pm
+lib/Chart/Clicker/Simple.pm
 lib/Chart/Clicker/Axis/DateTime.pm
 lib/Chart/Clicker/Data/DataSet.pm
 lib/Chart/Clicker/Data/Marker.pm
