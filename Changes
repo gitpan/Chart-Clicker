@@ -1,5 +1,8 @@
 Revision history for Perl extension Chart::Clicker.
 
+1.1.5 Sat Feb 24 12:48:03 2007
+	- Return 1 for 0 span ranges.
+	
 1.1.4 Wed Jan 02 09:31:21 2007
     - Add Chart::Clicker::Simple
     - Fix bug in ColorAllocator's constructor

@@ -19,7 +19,7 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-our $VERSION = '1.1.4';
+our $VERSION = '1.1.5';
 
 sub new {
     my $proto = shift();
@@ -332,6 +332,9 @@ is a bit more complex because making pretty charts requires attention and care.
 Some fine defaults are established to make getting started easier, but to really
 unleash the potential of Clicker you must roll up your sleeves and build
 things by hand.
+
+The API is a bit intimidating, so it is recommended that you begin with
+L<Chart::Clicker::Simple>.
 
 =head1 WARNING
 
