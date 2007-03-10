@@ -78,3 +78,4 @@ lib/Chart/Clicker/Renderer/Point.pm
 lib/Chart/Clicker/Shape.pm
 lib/Chart/Clicker/Shape/Arc.pm
 lib/Chart/Clicker/Shape/Rectangle.pm
+META.yml                                 Module meta-data (added by MakeMaker)

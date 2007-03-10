@@ -1,7 +1,10 @@
 Revision history for Perl extension Chart::Clicker.
 
+1.1.6 Fri Mar 09 18:24:12 2007
+    - Remove Mac OS X specific files (thanks jshirley)
+
 1.1.5 Sat Feb 24 12:48:03 2007
-	- Return 1 for 0 span ranges.
+	- Return 1 for 0 span ranges. (thanks Daniel Kasak)
 	
 1.1.4 Wed Jan 02 09:31:21 2007
     - Add Chart::Clicker::Simple

@@ -7,8 +7,10 @@ WriteMakefile(
     VERSION_FROM      => 'lib/Chart/Clicker.pm', # finds $VERSION
     PREREQ_PM         =>
         {
-            Cairo               => 1.00,
+            'Cairo'             => 1.00,
             'Class::Accessor'   => 0.25,
+			'DateTime'			=> 0.36,
+			'DateTime::Set'		=> 0.25
         },
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Chart/Clicker.pm', # retrieve abstract from module
