@@ -10,7 +10,7 @@ use DateTime::Set;
 
 use base 'Chart::Clicker::Axis';
 
-__PACKAGE__->mk_accessors(qw(formatter));
+__PACKAGE__->mk_accessors(qw(formatter time_zone));
 
 sub prepare {
     my $self = shift();
@@ -19,16 +19,18 @@ sub prepare {
     my $dend = DateTime->from_epoch(epoch => $self->range->upper());
     my $dur = $dend - $dstart;
 
-    if($dur->years()) {
-        $self->format('%b %Y');
-    } elsif($dur->months()) {
-        $self->format('i%d %b');
-    } elsif($dur->weeks()) {
-        $self->format('%d %b');
-    } elsif($dur->days()) {
-        $self->format('%m/%d %H:%M');
-    } else {
-        $self->format('%H:%M');
+    unless(defined($self->format()) && length($self->format())) {
+        if($dur->years()) {
+            $self->format('%b %Y');
+        } elsif($dur->months()) {
+            $self->format('i%d %b');
+        } elsif($dur->weeks()) {
+            $self->format('%d %b');
+        } elsif($dur->days()) {
+            $self->format('%m/%d %H:%M');
+        } else {
+            $self->format('%H:%M');
+        }
     }
 
     $self->SUPER::prepare(@_);
@@ -49,7 +51,7 @@ sub prepare {
     });
 
     my @dmarkers;
-    my $day = $set->start()->truncate(to => 'day');
+    my $day = $set->start->truncate(to => 'day');
 
     my $dayval;
     while($day < $set->end()) {
@@ -91,13 +93,15 @@ sub format_value {
     my $self = shift();
     my $value = shift();
 
-    if($self->format()) {
-        my $dt = DateTime->from_epoch(epoch => int($value));
-
-        return $dt->strftime($self->format());
+    my %dtargs = (
+        'epoch' => $value
+    );
+    if($self->time_zone()) {
+        $dtargs{'time_zone'} = $self->time_zone();
     }
+    my $dt = DateTime->from_epoch(%dtargs);
 
-    return $value;
+    return $dt->strftime($self->format());
 }
 
 1;
@@ -109,7 +113,9 @@ Chart::Clicker::Axis::DateTime
 
 =head1 DESCRIPTION
 
-A temporal Axis.  Requires DateTime and DateTime::Set.
+A temporal Axis.  Requires DateTime and DateTime::Set.  Inherits from
+Axis, so check the methods there as well.  Expects that times will be in
+unix format.
 
 =head1 SYNOPSIS
 
@@ -135,6 +141,11 @@ Creates a new DateTime Axis.
 
 Set/Get the formatting string used to format the DateTime.  See DateTime's
 strftime.
+
+=item time_zone
+
+Set/Get the time zone to use when creating DateTime objects!  Accepts an
+object or a string ('America/Chicago').
 
 =back
 
