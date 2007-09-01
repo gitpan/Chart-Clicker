@@ -2,7 +2,7 @@ package Chart::Clicker::Drawing::ColorAllocator;
 use strict;
 use warnings;
 
-use base 'Class::Accessor';
+use base 'Class::Accessor::Fast';
 
 # I'm not using C::A's accessors here because there are so few accessors
 # and a few of them need custom attention.  position could've been handled
@@ -40,21 +40,22 @@ sub next {
     }
 
     $self->{'POSITION'}++;
-    if($self->position() <= scalar(@defaults)) {
-        $self->{'COLORS'}->[$self->position()] =
+    my $pos = $self->{'POSITION'};
+    if($pos <= scalar(@defaults)) {
+        $self->{'COLORS'}->[$pos] =
             new Chart::Clicker::Drawing::Color({
-                name => $defaults[$self->position()]
+                name => $defaults[$pos]
             });
-        return $self->{'COLORS'}->[$self->position()];
+        return $self->{'COLORS'}->[$pos];
     }
 
-    $self->{'COLORS'}->[$self->position()] = new Chart::Clicker::Drawing::Color({
+    $self->{'COLORS'}->[$pos] = new Chart::Clicker::Drawing::Color({
         red     => rand(1),
         green   => rand(1),
         blue    => rand(1),
         alpha   => 1
     });
-    return $self->{'COLORS'}->[$self->position()];
+    return $self->{'COLORS'}->[$pos];
 }
 
 sub reset {

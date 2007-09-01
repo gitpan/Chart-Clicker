@@ -2,7 +2,7 @@ package Chart::Clicker::Drawing::Font;
 use strict;
 use warnings;
 
-use base qw(Class::Accessor Exporter);
+use base qw(Class::Accessor::Fast Exporter);
 __PACKAGE__->mk_accessors(qw(face size slant weight));
 
 @Chart::Clicker::Drawing::Font::EXPORT_OK = qw(

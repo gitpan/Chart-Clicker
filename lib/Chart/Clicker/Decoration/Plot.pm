@@ -109,10 +109,11 @@ sub draw {
         $count++;
     }
 
+    my $id = $self->inside_dimensions();
     if($self->markers()) {
         if(scalar(@{ $clicker->markers() })) {
             my $mo = new Chart::Clicker::Decoration::MarkerOverlay();
-            $mo->prepare($clicker, $self->inside_dimensions());
+            $mo->prepare($clicker, $id);
             my $marksurf = $mo->draw($clicker);
             $rcr->set_source_surface($marksurf, 0, 0);
             $rcr->paint();

@@ -44,7 +44,7 @@ sub draw {
     my $cr = Cairo::Context->create($surface);
 
     if($self->background_color()) {
-        $cr->set_source_rgba($self->background_color()->rgba());
+        $cr->set_source_rgba($self->background_color->rgba());
         $cr->fill();
     }
 
@@ -60,7 +60,7 @@ sub draw {
     $cr->line_to(0, $twentypofheight);
 
     #$cr->close_path();
-    $cr->set_source_rgba($self->glare_color()->rgba());
+    $cr->set_source_rgba($self->glare_color->rgba());
     $cr->fill();
     $cr->restore();
 

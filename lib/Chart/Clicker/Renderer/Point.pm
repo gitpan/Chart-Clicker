@@ -37,9 +37,9 @@ sub draw {
         my $y = $height - $range->mark($vals[$_]);
 
         $cr->move_to($x, $y);
-        $shape->create_path($cr, $x, $y);
+        $shape->create_path($cr, $x , $y);
     }
-    my $color = $clicker->color_allocator()->next();
+    my $color = $clicker->color_allocator->next();
     $cr->set_source_rgba($color->rgba());
     $cr->fill();
 

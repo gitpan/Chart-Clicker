@@ -165,8 +165,8 @@ sub draw {
     my $mx = 0;
     my $my = 0;
     if(defined($self->margins())) {
-        $mx = $self->margins()->left();
-        $my = $self->margins()->top();
+        $mx = $self->margins->left();
+        $my = $self->margins->top();
     }
 
     my $x = 0 + $self->insets->left() + $mx;

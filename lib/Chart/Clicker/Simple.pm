@@ -13,7 +13,7 @@ use Chart::Clicker::Decoration::Plot;
 use Chart::Clicker::Drawing qw(:positions);
 use Chart::Clicker::Drawing::Insets;
 
-use base 'Class::Accessor';
+use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_accessors(
     qw(data domain_label height range_label renderer width)
 );

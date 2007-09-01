@@ -90,7 +90,7 @@ sub draw {
     my $surface = Cairo::ImageSurface->create('argb32', $width, $height);
     my $cr = Cairo::Context->create($surface);
 
-    $cr->set_source_rgba($self->color()->rgba());
+    $cr->set_source_rgba($self->color->rgba());
     $cr->select_font_face(
         $self->font->face(), $self->font->slant(), $self->font->weight()
     );

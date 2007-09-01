@@ -2,7 +2,7 @@ package Chart::Clicker::Drawing::Border;
 use strict;
 use warnings;
 
-use base 'Class::Accessor';
+use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_accessors(qw(color stroke));
 
 use Chart::Clicker::Drawing::Color;

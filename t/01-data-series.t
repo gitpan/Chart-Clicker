@@ -37,8 +37,8 @@ ok($series->max_key_length() == length($keys[2]), 'Key Length');
 
 ok($series->key_count() == @keys, 'Key Count');
 ok($series->value_count() == @values, 'Value Count');
-ok($series->range()->lower() == $values[0], 'Minimum Value');
-ok($series->range()->upper() == $values[2], 'Maximum Value');
+ok($series->range->lower() == $values[0], 'Minimum Value');
+ok($series->range->upper() == $values[2], 'Maximum Value');
 
 my $fooseries = new Chart::Clicker::Data::Series({
     keys => [ 1, 2, 3, 4 ],

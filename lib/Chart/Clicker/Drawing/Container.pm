@@ -82,7 +82,7 @@ sub draw {
             }))
         }
         $context->set_source_surface(
-            $surf, $comp->location()->x(), $comp->location->y()
+            $surf, $comp->location->x(), $comp->location->y()
         );
         $context->paint();
     }
@@ -195,20 +195,20 @@ sub pack_axes {
         my $pos = $child->{'position'};
         if(($pos == $CC_AXIS_BOTTOM) || ($pos == $CC_AXIS_TOP)) {
             if($apos == $CC_AXIS_LEFT) {
-                $comp->location()->x($comp->location->x() + $amt);
+                $comp->location->x($comp->location->x() + $amt);
             }
             if(($apos == $CC_AXIS_LEFT) || ($apos == $CC_AXIS_RIGHT)) {
                 $comp->width($comp->width() - $amt);
             }
-            $comp->per($comp->width() / $comp->range()->span());
+            $comp->per($comp->width() / $comp->range->span());
         } elsif(($pos == $CC_AXIS_LEFT) || ($pos == $CC_AXIS_RIGHT)) {
             if($apos == $CC_AXIS_TOP) {
-                $comp->location()->y($comp->location->y() + $amt);
+                $comp->location->y($comp->location->y() + $amt);
             }
             if(($apos == $CC_AXIS_TOP) || ($apos == $CC_AXIS_BOTTOM)) {
                 $comp->height($comp->height() - $amt);
             }
-            $comp->per($comp->height() / $comp->range()->span());
+            $comp->per($comp->height() / $comp->range->span());
         }
 
         $item = shift(@indices);

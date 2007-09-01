@@ -10,7 +10,7 @@ use DateTime::Set;
 
 use base 'Chart::Clicker::Axis';
 
-__PACKAGE__->mk_accessors(qw(formatter time_zone));
+__PACKAGE__->mk_accessors(qw(format time_zone));
 
 sub prepare {
     my $self = shift();
@@ -137,7 +137,7 @@ Creates a new DateTime Axis.
 
 =over 4
 
-=item formatter
+=item format
 
 Set/Get the formatting string used to format the DateTime.  See DateTime's
 strftime.

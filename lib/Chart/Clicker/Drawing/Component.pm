@@ -4,7 +4,7 @@ use warnings;
 
 use Chart::Clicker::Drawing::Dimension;
 
-use base 'Class::Accessor';
+use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_accessors(
     qw(
         background_color border color height insets location margins width
@@ -34,7 +34,7 @@ sub draw {
     my $context = Cairo::Context->create($surface);
 
     if(defined($self->background_color())) {
-        $context->set_source_rgba($self->background_color()->rgba());
+        $context->set_source_rgba($self->background_color->rgba());
         $context->rectangle(0, 0, $width, $height);
         $context->paint();
     }
@@ -54,9 +54,9 @@ sub draw {
     }
 
     if(defined($self->border())) {
-        my $stroke = $self->border()->stroke();;
+        my $stroke = $self->border->stroke();;
         my $bswidth = $stroke->width();
-        $context->set_source_rgba($self->border->color()->rgba());
+        $context->set_source_rgba($self->border->color->rgba());
         $context->set_line_width($bswidth);
         $context->set_line_cap($stroke->line_cap());
         $context->set_line_join($stroke->line_join());
@@ -77,14 +77,17 @@ sub inside_width {
 
     my $w = $self->width();
 
-    if(defined($self->insets())) {
-        $w -= $self->insets()->left() + $self->insets()->right()
+    my $ins = $self->insets();
+    if(defined($ins)) {
+        $w -= $ins->left() + $ins->right()
     }
-    if(defined($self->margins())) {
-        $w -= $self->margins()->left() + $self->margins()->left();
+    my $marg = $self->margins();
+    if(defined($marg)) {
+        $w -= $marg->left() + $marg->right();
     }
-    if(defined($self->border())) {
-        $w -= $self->border()->stroke()->width() * 2;
+    my $bord = $self->border();
+    if(defined($bord)) {
+        $w -= $bord->stroke->width() * 2;
     }
 
     return $w;
@@ -103,14 +106,18 @@ sub inside_height {
     my $self = shift();
 
     my $h = $self->height();
-    if(defined($self->insets())) {
-        $h -= $self->insets()->bottom() + $self->insets()->top();
+
+    my $ins = $self->insets();
+    if(defined($ins)) {
+        $h -= $ins->bottom() + $ins->top();
     }
-    if(defined($self->margins())) {
-        $h -= $self->margins()->bottom() + $self->margins()->top();
+    my $marg = $self->margins();
+    if(defined($marg)) {
+        $h -= $marg->bottom() + $marg->top();
     }
-    if(defined($self->border())) {
-        $h -= $self->border()->stroke()->width() * 2;
+    my $bord = $self->border();
+    if(defined($bord)) {
+        $h -= $bord->stroke->width() * 2;
     }
 
     return $h;
@@ -122,12 +129,12 @@ sub upper_left_inside_point {
     my $point = new Chart::Clicker::Drawing::Point({ x => 0, y => 0 });
 
     if(defined($self->insets())) {
-        $point->x($self->insets()->left());
-        $point->y($self->insets()->top());
+        $point->x($self->insets->left());
+        $point->y($self->insets->top());
     }
     if(defined($self->border())) {
-        $point->x($point->x() + $self->border()->stroke()->width());
-        $point->y($point->y() + $self->border()->stroke()->width());
+        $point->x($point->x() + $self->border->stroke->width());
+        $point->y($point->y() + $self->border->stroke->width());
     }
 
     return $point;

@@ -58,11 +58,11 @@ sub draw {
     my $surface = $self->SUPER::draw($clicker);
     my $cr = Cairo::Context->create($surface);
 
-    $cr->set_source_rgba($self->background_color()->rgba());
+    $cr->set_source_rgba($self->background_color->rgba());
     $cr->paint();
 
-    my $daxis = $clicker->domain_axes()->[0];
-    my $raxis = $clicker->range_axes()->[0];
+    my $daxis = $clicker->domain_axes->[0];
+    my $raxis = $clicker->range_axes->[0];
 
     # Make the grid
 
@@ -80,7 +80,7 @@ sub draw {
         $cr->rel_line_to($width, 0);
     }
 
-    $cr->set_source_rgba($self->color()->rgba());
+    $cr->set_source_rgba($self->color->rgba());
     my $stroke = $self->stroke();
     $cr->set_line_width($stroke->width());
     $cr->set_line_cap($stroke->line_cap());

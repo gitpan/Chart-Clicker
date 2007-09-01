@@ -2,7 +2,7 @@ package Chart::Clicker::Drawing::Color;
 use strict;
 use warnings;
 
-use base 'Class::Accessor';
+use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_accessors(qw(red green blue alpha name));
 
 my %colors = (
@@ -30,11 +30,12 @@ sub new {
 
     unless(defined($self->red())) {
         if($self->name()) {
-            if(exists($colors{lc($self->name())})) {
-                $self->red($colors{lc($self->name())}->[0]);
-                $self->green($colors{lc($self->name())}->[1]);
-                $self->blue($colors{lc($self->name())}->[2]);
-                $self->alpha($colors{lc($self->name())}->[3]);
+            my $name = lc($self->name());
+            if(exists($colors{$name})) {
+                $self->red($colors{$name}->[0]);
+                $self->green($colors{$name}->[1]);
+                $self->blue($colors{$name}->[2]);
+                $self->alpha($colors{$name}->[3]);
             }
         }
     }

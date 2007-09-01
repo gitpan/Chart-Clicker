@@ -2,7 +2,7 @@ package Chart::Clicker::Drawing::Insets;
 use strict;
 use warnings;
 
-use base 'Class::Accessor';
+use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_accessors(qw(top bottom left right));
 
 sub new {

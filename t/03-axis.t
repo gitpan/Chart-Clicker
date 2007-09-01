@@ -32,5 +32,5 @@ my $lower = 0;
 my $upper = 100;
 $axis->range->lower($lower);
 $axis->range->upper($upper);
-ok($axis->range()->lower() == $lower, 'Lower value');
-ok($axis->range()->upper() == $upper, 'Upper value');
+ok($axis->range->lower() == $lower, 'Lower value');
+ok($axis->range->upper() == $upper, 'Upper value');

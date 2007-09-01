@@ -2,7 +2,7 @@ package Chart::Clicker::Drawing::Stroke;
 use strict;
 use warnings;
 
-use base qw(Class::Accessor Exporter);
+use base qw(Class::Accessor::Fast Exporter);
 __PACKAGE__->mk_accessors(qw(width line_cap line_join));
 
 @Chart::Clicker::Drawing::Stroke::EXPORT_OK = qw(

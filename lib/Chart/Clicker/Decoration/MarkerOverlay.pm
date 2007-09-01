@@ -34,8 +34,8 @@ sub draw {
         my $value = $marker->value();
         my $value2 = $marker->value2();
 
-        $cr->set_line_width($marker->stroke()->width());
-        $cr->set_source_rgba($marker->color()->rgba());
+        $cr->set_line_width($marker->stroke->width());
+        $cr->set_source_rgba($marker->color->rgba());
 
         if($key && $value) {
         } elsif($key) {
@@ -48,7 +48,7 @@ sub draw {
                 $x2 = $domain->mark($key2);
                 $cr->rectangle($x, 0, ($x2 - $x), $height);
                 $cr->save();
-                $cr->set_source_rgba($marker->inside_color()->rgba());
+                $cr->set_source_rgba($marker->inside_color->rgba());
                 $cr->fill();
                 $cr->restore();
             }
@@ -72,7 +72,7 @@ sub draw {
                 $y2 = $range->mark($value2);
                 $cr->rectangle(0, $y, $width, ($y2 - $y));
                 $cr->save();
-                $cr->set_source_rgba($marker->inside_color()->rgba());
+                $cr->set_source_rgba($marker->inside_color->rgba());
                 $cr->fill();
                 $cr->restore();
             }

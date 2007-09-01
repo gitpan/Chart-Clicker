@@ -2,7 +2,7 @@ package Chart::Clicker::Shape;
 use strict;
 use warnings;
 
-use base 'Class::Accessor';
+use base 'Class::Accessor::Fast';
 
 1;
 __END__

@@ -41,5 +41,5 @@ $chart->add($tlabel, $CC_TOP);
 
 $chart->prepare();
 
-ok($tlabel->location()->x() == ($chart->insets()->left() + 1), 'Label X position');
-ok($tlabel->location()->y() == ($chart->insets()->top() + 1), 'Label Y position');
+ok($tlabel->location->x() == ($chart->insets->left() + 1), 'Label X position');
+ok($tlabel->location->y() == ($chart->insets->top() + 1), 'Label Y position');

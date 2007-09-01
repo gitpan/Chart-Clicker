@@ -2,7 +2,7 @@ package Chart::Clicker::Drawing::Point;
 use strict;
 use warnings;
 
-use base 'Class::Accessor';
+use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_accessors(qw(x y));
 
 1;

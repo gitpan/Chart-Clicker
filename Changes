@@ -1,5 +1,12 @@
 Revision history for Perl extension Chart::Clicker.
 
+1.1.8 Sat Sep 1 10:38:01
+    - Remove lots of ()->
+    - Try and make some things faster after watching dprofpp output
+    - Fix format accessor in Axis::DateTime
+    - Fix bug in Component::inside_width
+    - Add shape to line renderer
+
 1.1.7 Thu Aug 30 20:43:21
     - Add time_zone to Axis::DateTime (thanks Johannes Hoerburger)
     - Add test for formatter and document inheritance

@@ -10,7 +10,7 @@ sub get_option {
     my $key = shift();
 
     if(defined($self->options())) {
-        return $self->options()->{$key};
+        return $self->options->{$key};
     }
 
     return;

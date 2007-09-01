@@ -2,7 +2,7 @@ package Chart::Clicker::Data::Marker;
 use strict;
 use warnings;
 
-use base 'Class::Accessor';
+use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_accessors(qw(inside_color color stroke key value key2 value2));
 
 use Chart::Clicker::Drawing::Color;

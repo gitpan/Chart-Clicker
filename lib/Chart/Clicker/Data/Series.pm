@@ -2,7 +2,7 @@ package Chart::Clicker::Data::Series;
 use strict;
 use warnings;
 
-use base 'Class::Accessor';
+use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_accessors(
     qw(error_count errors key_count keys max_key_length name range value_count values)
 );
@@ -23,11 +23,11 @@ sub new {
 sub prepare {
     my $self = shift();
 
-    my @values = @{ $self->values() };
-    my @keys = @{ $self->keys() };
+    my $values = $self->values();
+    my $keys = $self->keys();
 
-    $self->key_count(scalar(@keys));
-    $self->value_count(scalar(@values));
+    $self->key_count(scalar(@{ $keys }));
+    $self->value_count(scalar(@{ $values }));
 
     if($self->key_count() != $self->value_count()) {
         die('Series key/value counts dont match.');
@@ -44,12 +44,12 @@ sub prepare {
 
     my ($long, $max, $min);
     $long = 0;
-    $max = $values[0];
-    $min = $values[0];
+    $max = $values->[0];
+    $min = $values->[0];
     my $count = 0;
-    foreach my $key (@keys) {
+    foreach my $key (@{ $self->keys() }) {
 
-        my $val = $values[$count];
+        my $val = $values->[$count];
 
         # Length!
         my $l = length($key);

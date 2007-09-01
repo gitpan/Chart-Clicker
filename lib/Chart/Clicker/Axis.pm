@@ -138,8 +138,13 @@ sub mark {
     my $self = shift();
     my $value = shift();
 
+    # 'caching' this here speeds things up.  Calling after changing the
+    # range would result in a messed up chart anyway...
+    if(!defined($self->{'LOWER'})) {
+        $self->{'LOWER'} = $self->range->lower();
+    }
     # This is rounded and .5'ed to get the lines nice and sharp for Cairo.
-    return int($self->per() * ($value - $self->range->lower())) + .5;
+    return int($self->per() * ($value - $self->{'LOWER'})) + .5;
 }
 
 sub draw {

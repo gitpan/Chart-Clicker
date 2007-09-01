@@ -25,7 +25,7 @@ sub draw {
     my @keys = @{ $series->keys() };
     my @errors = @{ $series->errors() };
 
-    my $color = $clicker->color_allocator()->next();
+    my $color = $clicker->color_allocator->next();
     $cr->set_source_rgba($color->rgba());
 
     # Draw the lines

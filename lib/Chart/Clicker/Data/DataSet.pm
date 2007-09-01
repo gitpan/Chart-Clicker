@@ -2,7 +2,7 @@ package Chart::Clicker::Data::DataSet;
 use strict;
 use warnings;
 
-use base 'Class::Accessor';
+use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_accessors(qw(count domain max_key_count range));
 
 use Chart::Clicker::Data::Range;
@@ -44,11 +44,11 @@ sub prepare {
 
         # If RANGE is defined, combine it.
         if(defined($self->range())) {
-            $self->range()->combine($series->range());
+            $self->range->combine($series->range());
 
             my @keys = @{ $series->keys() };
 
-            $self->domain()->combine(
+            $self->domain->combine(
                 new Chart::Clicker::Data::Range({
                     lower => $keys[0], upper => $keys[ $#keys ]
                 })

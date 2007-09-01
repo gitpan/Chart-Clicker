@@ -11,7 +11,7 @@ sub create_path {
     my $self = shift();
     my ($cairo, $x, $y) = @_;
 
-    my $halfrad = $self->radius() / 2;
+    my $halfrad = 0;
 
     $cairo->arc(
         $x + $halfrad, $y + $halfrad, $self->radius(),
@@ -20,6 +20,19 @@ sub create_path {
     );
 
     return 1;
+}
+
+# Convenience method...
+sub width {
+    my $self = shift();
+
+    return $self->radius();
+}
+
+sub height {
+    my $self = shift();
+
+    return $self->radius();
 }
 
 1;
