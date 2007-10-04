@@ -11,8 +11,6 @@ use Chart::Clicker::Drawing::Color;
 use Chart::Clicker::Drawing::Font;
 use Chart::Clicker::Drawing::Stroke;
 
-use Chart::Math::Axis;
-
 has 'font' => (
     is => 'rw',
     isa => 'Chart::Clicker::Drawing::Font',
