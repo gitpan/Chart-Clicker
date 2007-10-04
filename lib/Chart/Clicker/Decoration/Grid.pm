@@ -1,44 +1,36 @@
 package Chart::Clicker::Decoration::Grid;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Chart::Clicker::Decoration';
+extends 'Chart::Clicker::Decoration';
 
-__PACKAGE__->mk_accessors(qw(background_color color domain_values range_values stroke));
+has 'background_color' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Color',
+    default => sub {
+        new Chart::Clicker::Drawing::Color(
+            red => 0.9, green => 0.9, blue => 0.9, alpha => 1
+        )
+    }
+);
+has 'color' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Color',
+    default => sub {
+        new Chart::Clicker::Drawing::Color(
+            red => 0, green => 0, blue => 0, alpha => .30
+        )
+    }
+);
+has 'stroke' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Stroke',
+    default => sub { new Chart::Clicker::Drawing::Stroke() }
+);
 
 use Chart::Clicker::Drawing::Color;
 use Chart::Clicker::Drawing::Stroke;
 
 use Cairo;
-
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
-
-    unless(defined($self->background_color())) {
-        $self->background_color(
-            new Chart::Clicker::Drawing::Color({
-                red => 0.9, green => 0.9, blue => 0.9, alpha => 1
-            })
-        );
-    }
-
-    unless(defined($self->color())) {
-        $self->color(
-            new Chart::Clicker::Drawing::Color({
-                red => 0, green => 0, blue => 0, alpha => .30
-            })
-        );
-    }
-
-    unless(defined($self->stroke())) {
-        $self->stroke(
-            new Chart::Clicker::Drawing::Stroke()
-        );
-    }
-
-    return $self;
-}
 
 sub prepare {
     my $self = shift();

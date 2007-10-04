@@ -4,7 +4,7 @@ name        'Chart-Clicker';
 all_from    'lib/Chart/Clicker.pm';
 
 requires    'Cairo'             => 1.00;
-requires    'Class::Accessor::Fast'   => 0.31;
+requires    'Moose'             => 0.25;
 requires    'DateTime'          => 0.36;
 requires    'DateTime::Set'     => 0.25;
 

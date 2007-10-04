@@ -1,9 +1,11 @@
 package Chart::Clicker::Drawing::Color;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(qw(red green blue alpha name));
+has 'red' => ( is => 'rw', isa => 'Num' );
+has 'green' => ( is => 'rw', isa => 'Num' );
+has 'blue' => ( is => 'rw', isa => 'Num' );
+has 'alpha' => ( is => 'rw', isa => 'Num' );
+has 'name' => ( is => 'rw', isa => 'Str' );
 
 my %colors = (
     'aqua'      => [   0,   1,   1,  1 ],
@@ -24,6 +26,7 @@ my %colors = (
     'yellow'    => [   1,   1,   0,  1 ],
 );
 
+# TODO How to moose this up?
 sub new {
     my $proto = shift();
     my $self = $proto->SUPER::new(@_);

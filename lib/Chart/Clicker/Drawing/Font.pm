@@ -1,9 +1,8 @@
 package Chart::Clicker::Drawing::Font;
-use strict;
-use warnings;
+use Moose;
+use Moose::Util::TypeConstraints;
 
-use base qw(Class::Accessor::Fast Exporter);
-__PACKAGE__->mk_accessors(qw(face size slant weight));
+use Exporter 'import';
 
 @Chart::Clicker::Drawing::Font::EXPORT_OK = qw(
     $CC_FONT_SLANT_NORMAL $CC_FONT_SLANT_ITALIC $CC_FONT_SLANT_OBLIQUE
@@ -22,28 +21,40 @@ our $CC_FONT_SLANT_NORMAL = 'normal';
 our $CC_FONT_SLANT_ITALIC = 'italic';
 our $CC_FONT_SLANT_OBLIQUE = 'oblique';
 
+enum 'Slants' => (
+    $CC_FONT_SLANT_NORMAL, $CC_FONT_SLANT_ITALIC, $CC_FONT_SLANT_OBLIQUE
+);
+
 our $CC_FONT_WEIGHT_NORMAL = 'normal';
 our $CC_FONT_WEIGHT_BOLD = 'bold';
 
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
+enum 'Weights' => (
+    $CC_FONT_WEIGHT_NORMAL, $CC_FONT_WEIGHT_BOLD
+);
 
-    unless(defined($self->face())) {
-        $self->face('Sans');
-    }
-    unless(defined($self->size())) {
-        $self->size(12);
-    }
-    unless(defined($self->slant())) {
-        $self->slant($CC_FONT_SLANT_NORMAL);
-    }
-    unless(defined($self->weight())) {
-        $self->weight($CC_FONT_WEIGHT_NORMAL);
-    }
+has 'face' => (
+    is => 'rw',
+    isa => 'Str',
+    default => 'Sans'
+);
 
-    return $self;
-}
+has 'size' => (
+    is => 'rw',
+    isa => 'Num',
+    default => 12
+);
+
+has 'slant' => (
+    is => 'rw',
+    isa => 'Str',
+    default => $CC_FONT_SLANT_NORMAL
+);
+
+has 'weight' => (
+    is => 'rw',
+    isa => 'Str',
+    default => $CC_FONT_WEIGHT_NORMAL
+);
 
 1;
 __END__

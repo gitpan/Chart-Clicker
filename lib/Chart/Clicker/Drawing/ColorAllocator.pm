@@ -1,67 +1,49 @@
 package Chart::Clicker::Drawing::ColorAllocator;
-use strict;
-use warnings;
-
-use base 'Class::Accessor::Fast';
-
-# I'm not using C::A's accessors here because there are so few accessors
-# and a few of them need custom attention.  position could've been handled
-# with C::A but I think it's too much overhead there.
+use Moose;
 
 use Chart::Clicker::Drawing::Color;
 
 my @defaults = (qw(red green blue lime yellow maroon teal fuchsia));;
 
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
-
-    $self->{'POSITION'} = -1;
-
-    if(defined($self->{'colors'}) && ref($self->{'colors'}) eq 'ARRAY') {
-        $self->{'COLORS'} = $self->{'colors'};
-    }
-
-    return $self;
-}
-
-sub position {
-    my $self = shift();
-
-    return $self->{'POSITION'};
-}
+has 'colors' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
+has 'position' => ( is => 'rw', isa => 'Int', default => -1 );
 
 sub next {
     my $self = shift();
 
-    if(defined($self->{'COLORS'}->[$self->position() + 1])) {
-        $self->{'POSITION'}++;
-        return $self->{'COLORS'}->[$self->position()];
-    }
+    $self->position($self->position() + 1);
 
-    $self->{'POSITION'}++;
-    my $pos = $self->{'POSITION'};
-    if($pos <= scalar(@defaults)) {
-        $self->{'COLORS'}->[$pos] =
-            new Chart::Clicker::Drawing::Color({
-                name => $defaults[$pos]
-            });
-        return $self->{'COLORS'}->[$pos];
-    }
-
-    $self->{'COLORS'}->[$pos] = new Chart::Clicker::Drawing::Color({
-        red     => rand(1),
-        green   => rand(1),
-        blue    => rand(1),
-        alpha   => 1
-    });
-    return $self->{'COLORS'}->[$pos];
+    return $self->colors->[$self->position()];
 }
+
+# Before we attempt to get the next color, we'll instantiate it if we need it
+# that way we don't waste a bunch of memory with useless colors.
+before 'next' => sub {
+    my $self = shift();
+
+    my $pos = $self->position();
+    if(!defined($self->colors->[$pos + 1])) {
+
+        if($self->position() <= scalar(@defaults)) {
+            $self->colors->[$pos + 1] =
+                new Chart::Clicker::Drawing::Color({
+                    name => $defaults[$pos + 1]
+                });
+        } else {
+            $self->colors->[$pos + 1] = new Chart::Clicker::Drawing::Color(
+                red     => rand(1),
+                green   => rand(1),
+                blue    => rand(1),
+                alpha   => 1
+            );
+        }
+    }
+};
 
 sub reset {
     my $self = shift();
 
-    $self->{'POSITION'} = -1;
+    $self->position(-1);
     return 1;
 }
 
@@ -69,7 +51,7 @@ sub get {
     my $self = shift();
     my $index = shift();
 
-    return $self->{'COLORS'}->[$index];
+    return $self->colors->[$index];
 }
 
 1;

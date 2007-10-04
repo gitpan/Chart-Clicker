@@ -1,6 +1,5 @@
 package Chart::Clicker::Simple;
-use strict;
-use warnings;
+use Moose;
 
 use Chart::Clicker;
 use Chart::Clicker::Axis;
@@ -13,18 +12,20 @@ use Chart::Clicker::Decoration::Plot;
 use Chart::Clicker::Drawing qw(:positions);
 use Chart::Clicker::Drawing::Insets;
 
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(
-    qw(data domain_label height range_label renderer width)
+has 'data' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] });
+has 'domain_label' => ( is => 'rw', isa => 'Str' );
+has 'height' => ( is => 'rw', isa => 'Int', default => 300 );
+has 'range_label' => ( is => 'rw', isa => 'Str' );
+has 'renderer' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Renderer::Line',
+    default => sub { new Chart::Clicker::Renderer::Line() }
 );
+has 'width' => ( is => 'rw', isa => 'Int', default => 400 );
 
 sub new {
     my $proto = shift();
     my $self = $proto->SUPER::new(@_);
-
-    if(ref($self->data() ne 'ARRAY')) {
-        die('Please provide an arrayref of data!');
-    }
 
     my @serieses;
     foreach my $d (@{ $self->data() }) {
@@ -89,7 +90,6 @@ sub new {
     $plot->set_renderer_for_dataset(1, 1);
 
     $chart->prepare();
-    $chart->draw();
 
     return $chart;
 }

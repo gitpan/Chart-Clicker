@@ -1,9 +1,11 @@
 package Chart::Clicker::Shape::Arc;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Chart::Clicker::Shape';
-__PACKAGE__->mk_accessors(qw(angle1 angle2 radius));
+extends 'Chart::Clicker::Shape';
+
+has 'angle1' => ( is => 'rw', isa => 'Num' );
+has 'angle2' => ( is => 'rw', isa => 'Num' );
+has 'radius' => ( is => 'rw', isa => 'Num' );
 
 my $TO_RAD = (4 * atan2(1, 1)) / 180;
 

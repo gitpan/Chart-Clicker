@@ -1,11 +1,10 @@
 package Chart::Clicker::Decoration::Plot;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Chart::Clicker::Drawing::Component';
-__PACKAGE__->mk_accessors(
-    qw(renderers markers)
-);
+extends 'Chart::Clicker::Drawing::Component';
+
+has 'renderers' => ( is => 'rw', isa => 'ArrayRef', default => sub { [ ] } );
+has 'markers' => ( is => 'rw', isa => 'Bool', default => 1 );
 
 use Chart::Clicker::Decoration::MarkerOverlay;
 use Chart::Clicker::Drawing::Border;
@@ -15,10 +14,7 @@ sub new {
 
     my $self = $proto->SUPER::new(@_);
 
-    unless(defined($self->markers())) {
-        $self->markers(1);
-    }
-
+    # TODO Fix this
     $self->{'DSRENDERERS'} = {};
     return $self;
 }
@@ -54,19 +50,13 @@ sub prepare {
 
     my $idim = $self->inside_dimensions();
 
-    if(ref($self->renderers()) ne 'ARRAY') {
-        die('A Plot must have Renderers!');
-    }
-
-    foreach my $rend (@{ $self->renderers() }) {
-        $rend->prepare($clicker, $idim);
-    }
-
     my %dscount;
+    my %rend_ds;
     my $count = 0;
     foreach my $dataset (@{ $clicker->datasets() }) {
         my $ridx = $self->get_renderer_for_dataset($count);
         $dscount{$ridx} += scalar(@{ $dataset->series() });
+        push(@{ $rend_ds{$ridx} }, $dataset);
         $count++;
     }
 
@@ -74,6 +64,7 @@ sub prepare {
     $count = 0;
     foreach my $rend (@{ $self->renderers() }) {
         $rend->dataset_count($dscount{$count});
+        $rend->prepare($clicker, $idim, $rend_ds{$count});
         $count++;
     }
 

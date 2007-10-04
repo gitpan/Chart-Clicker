@@ -1,9 +1,10 @@
 package Chart::Clicker::Shape::Rectangle;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Chart::Clicker::Shape';
-__PACKAGE__->mk_accessors(qw(width height));
+extends 'Chart::Clicker::Shape';
+
+has 'width' => ( is => 'rw', isa => 'Num' );
+has 'height' => ( is => 'rw', isa => 'Num' );
 
 sub create_path {
     my $self = shift();

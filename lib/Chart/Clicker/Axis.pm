@@ -1,14 +1,7 @@
 package Chart::Clicker::Axis;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Chart::Clicker::Drawing::Component';
-__PACKAGE__->mk_accessors(
-    qw(
-        font format label orientation per position range show_ticks stroke
-        tick_length tick_stroke tick_values ticks visible
-    )
-);
+extends 'Chart::Clicker::Drawing::Component';
 
 use constant PI => 4 * atan2 1, 1;
 
@@ -18,50 +11,57 @@ use Chart::Clicker::Drawing::Color;
 use Chart::Clicker::Drawing::Font;
 use Chart::Clicker::Drawing::Stroke;
 
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
+use Chart::Math::Axis;
 
-    unless(defined($self->show_ticks())) {
-        $self->show_ticks(1);
-    }
-    unless(defined($self->font())) {
-        $self->font(
-            new Chart::Clicker::Drawing::Font()
-        );
-    }
-    unless(defined($self->tick_length())) {
-        $self->tick_length(3);
-    }
-    unless(defined($self->ticks())) {
-        $self->ticks(5);
-    }
-    unless(defined($self->visible())) {
-        $self->visible(1);
-    }
-    unless(defined($self->color())) {
-        $self->color(
-            new Chart::Clicker::Drawing::Color({
-                red => 0, green => 0, blue => 0, alpha => 1
-            })
-        );
-    }
-    unless(defined($self->stroke())) {
-        $self->stroke(
-            new Chart::Clicker::Drawing::Stroke()
-        );
-    }
-    unless(defined($self->tick_stroke())) {
-        $self->tick_stroke(
-            new Chart::Clicker::Drawing::Stroke()
-        );
-    }
-    unless(defined($self->range())) {
-        $self->range(new Chart::Clicker::Data::Range());
-    }
+has 'font' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Font',
+    default => sub { new Chart::Clicker::Drawing::Font(); }
+);
+has 'format' => ( is => 'rw', isa => 'Str' );
+has 'label' => ( is => 'rw', isa => 'Str' );
+has 'per' => ( is => 'rw', isa => 'Num' );
+has 'position' => ( is => 'rw', isa => 'Positions' );
+has 'show_ticks' => ( is => 'rw', isa => 'Bool', default => 1 );
+has 'tick_length' => ( is => 'rw', isa => 'Num', default => 3 );
+has 'ticks' => ( is => 'rw', isa => 'Int', default => 5 );
+has 'visible' => ( is => 'rw', isa => 'Bool', default => 1 );
 
-    return $self;
-}
+has 'stroke' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Stroke',
+    default => sub { new Chart::Clicker::Drawing::Stroke(); }
+);
+
+has 'tick_stroke' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Stroke',
+    default => sub { new Chart::Clicker::Drawing::Stroke(); }
+);
+
+has 'tick_values' => (
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] }
+);
+
+has 'range' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Data::Range',
+    default => sub { new Chart::Clicker::Data::Range() }
+);
+
+has '+color' => (
+    default => sub {
+        new Chart::Clicker::Drawing::Color({
+            red => 0, green => 0, blue => 0, alpha => 1
+        })
+    }
+);
+
+has 'orientation' => ( is => 'rw', isa => 'Orientations' );
+
+has 'positions' => ( is => 'rw', isa => 'Positions' );
 
 sub prepare {
     my $self = shift();
@@ -72,7 +72,7 @@ sub prepare {
         die('This axis has a span of 0, that\'s fatal!');
     }
 
-    unless(defined($self->tick_values())) {
+    if($self->tick_values()) {
         $self->tick_values($self->range->divvy($self->ticks() + 1));
     }
 
@@ -112,7 +112,7 @@ sub prepare {
     if ($self->label()) {
         my $ext = $cairo->text_extents($self->label());
         $self->{'label_extents_cache'} = $ext;
-      }
+    }
 
     if($self->orientation() == $CC_HORIZONTAL) {
         my $label_height = $self->label()

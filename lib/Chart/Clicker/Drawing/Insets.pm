@@ -1,29 +1,10 @@
 package Chart::Clicker::Drawing::Insets;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(qw(top bottom left right));
-
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
-
-    unless(defined($self->top())) {
-        $self->top(0);
-    }
-    unless(defined($self->bottom())) {
-        $self->bottom(0);
-    }
-    unless(defined($self->left())) {
-        $self->left(0);
-    }
-    unless(defined($self->right())) {
-        $self->right(0);
-    }
-
-    return $self;
-}
+has 'top' => ( is => 'rw', isa => 'Num', default => 0 );
+has 'bottom' => ( is => 'rw', isa => 'Num', default => 0 );
+has 'left' => ( is => 'rw', isa => 'Num', default => 0 );
+has 'right' => ( is => 'rw', isa => 'Num', default => 0 );
 
 1;
 __END__

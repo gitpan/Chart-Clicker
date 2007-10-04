@@ -1,8 +1,8 @@
 package Chart::Clicker::Decoration;
-use strict;
-use warnings;
 
-use base 'Chart::Clicker::Drawing::Component';
+use Moose;
+
+extends 'Chart::Clicker::Drawing::Component';
 
 1;
 __END__

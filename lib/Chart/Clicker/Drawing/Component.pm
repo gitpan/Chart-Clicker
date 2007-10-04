@@ -1,17 +1,33 @@
 package Chart::Clicker::Drawing::Component;
-use strict;
-use warnings;
 
+use Moose;
+use Moose::Util::TypeConstraints;
+
+use Chart::Clicker::Drawing qw(:positions);
 use Chart::Clicker::Drawing::Dimension;
-
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(
-    qw(
-        background_color border color height insets location margins width
-    )
-);
+use Chart::Clicker::Drawing::Insets;
 
 use Cairo;
+
+enum 'Orientations' => ($CC_HORIZONTAL, $CC_VERTICAL);
+enum 'Positions' => ($CC_TOP, $CC_BOTTOM, $CC_LEFT, $CC_RIGHT );
+
+has 'background_color' => ( is => 'rw', isa => 'Chart::Clicker::Drawing::Color' );
+has 'border' => ( is => 'rw', isa => 'Chart::Clicker::Drawing::Border' );
+has 'color' => ( is => 'rw', isa => 'Chart::Clicker::Drawing::Color' );
+has 'height' => ( is => 'rw', isa => 'Num' );
+has 'width' => ( is => 'rw', isa => 'Num' );
+has 'location' => ( is => 'rw', isa => 'Chart::Clicker::Drawing::Point' );
+has 'insets' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Insets',
+    default => sub { new Chart::Clicker::Drawing::Insets() }
+);
+has 'margins' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Insets',
+    default => sub { new Chart::Clicker::Drawing::Insets() }
+);
 
 sub dimensions {
     my $self = shift();

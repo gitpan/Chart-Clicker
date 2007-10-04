@@ -1,45 +1,52 @@
 package Chart::Clicker::Decoration::Label;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Chart::Clicker::Decoration';
-__PACKAGE__->mk_accessors(
-    qw(color font insets orientation text)
-);
+extends 'Chart::Clicker::Decoration';
 
 use Chart::Clicker::Drawing qw(:positions);
 use Chart::Clicker::Drawing::Font;
 use Chart::Clicker::Drawing::Insets;
 
+has 'color' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Color',
+    default => sub {
+        new Chart::Clicker::Drawing::Color(
+            red => 0, green => 0, blue => 0, alpha => .30
+        )
+    }
+);
+
+has 'font' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Font',
+    default => sub {
+        new Chart::Clicker::Drawing::Font()
+    }
+);
+
+has 'insets' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Insets',
+    default => sub {
+        new Chart::Clicker::Drawing::Insets(
+            top => 0, left => 0, bottom => 3, right => 3
+        )
+    }
+);
+
+has 'orientation' => (
+    is => 'rw',
+    isa => 'Orientations',
+    default => $CC_HORIZONTAL
+);
+
+has 'text' => (
+    is => 'rw',
+    isa => 'Str'
+);
+
 my $VERTICAL = 4.71238898;
-
-sub new {
-    my $proto = shift();
-
-    my $self = $proto->SUPER::new(@_);
-    unless(defined($self->font())) {
-        $self->font(new Chart::Clicker::Drawing::Font());
-    }
-    unless(defined($self->color())) {
-        $self->color(
-            new Chart::Clicker::Drawing::Color({
-                red => 0, green => 0, blue => 0, alpha => 1
-            })
-        );
-    }
-    unless(defined($self->insets())) {
-        $self->insets(
-            new Chart::Clicker::Drawing::Insets({
-                top => 0, left => 0, bottom => 3, right => 3
-            })
-        );
-    }
-    unless(defined($self->orientation())) {
-        $self->orientation($CC_HORIZONTAL);
-    }
-
-    return $self;
-}
 
 sub prepare {
     my $self = shift();

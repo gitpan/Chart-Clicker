@@ -1,9 +1,7 @@
 package Chart::Clicker::Renderer::Point;
-use strict;
-use warnings;
+use Moose;
 
-use Chart::Clicker::Renderer::Base;
-use base 'Chart::Clicker::Renderer::Base';
+extends 'Chart::Clicker::Renderer::Base';
 
 use Chart::Clicker::Shape::Arc;
 

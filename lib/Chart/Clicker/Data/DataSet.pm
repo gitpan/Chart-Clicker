@@ -1,40 +1,40 @@
 package Chart::Clicker::Data::DataSet;
-use strict;
-use warnings;
-
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(qw(count domain max_key_count range));
+use Moose;
 
 use Chart::Clicker::Data::Range;
 
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
-
-    if($self->{'series'}) {
-        $self->{'SERIES'} = $self->{'series'};
-        $self->count(scalar(@{ $self->{'SERIES'} }));
-    } else {
-        $self->{'SERIES'} = ();
-    }
-
-    return $self;
-}
-
-sub series {
-    my $self = shift();
-
-    if(@_) {
-        $self->{'SERIES'} = shift();
-        $self->count(scalar(@{ $self->{'SERIES'} }));
-    }
-    return $self->{'SERIES'};
-}
+has 'count' => (
+    is => 'rw',
+    isa => 'Int',
+    default => 0,
+);
+has 'series' => (
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] },
+    trigger => sub { my ($self, $series) = @_; $self->count(scalar(@{ $series })) }
+);
+has 'domain' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Data::Range',
+    default => sub { new Chart::Clicker::Data::Range() }
+);
+has 'max_key_count' => ( is => 'rw', isa => 'Int', default => 0 );
+has 'range' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Data::Range',
+    default => sub { new Chart::Clicker::Data::Range() }
+);
+has 'combined_range' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Data::Range',
+    default => sub { new Chart::Clicker::Data::Range() }
+);
 
 sub prepare {
     my $self = shift();
 
-    unless($self->count() and $self->count() > 0) {
+    unless($self->count() && $self->count() > 0) {
         die('Dataset has no series.');
     }
 
@@ -45,6 +45,7 @@ sub prepare {
         # If RANGE is defined, combine it.
         if(defined($self->range())) {
             $self->range->combine($series->range());
+            $self->combined_range->add($series->range());
 
             my @keys = @{ $series->keys() };
 
@@ -60,7 +61,21 @@ sub prepare {
         } else {
             # ...or if it's not defined then set it to the values of
             # this first series.
-            $self->range($series->range());
+
+            $self->range(
+                new Chart::Clicker::Data::Range({
+                    lower => $series->range->lower(),
+                    upper => $series->range->upper()
+                })
+            );
+
+            $self->combined_range(
+                new Chart::Clicker::Data::Range({
+                    lower => $series->range->lower(),
+                    upper => $series->range->upper()
+                })
+            );
+
             $self->domain(
                 new Chart::Clicker::Data::Range({
                     lower => $series->keys->[0],

@@ -1,30 +1,27 @@
 package Chart::Clicker::Drawing::Border;
-use strict;
-use warnings;
 
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(qw(color stroke));
+use Moose;
 
 use Chart::Clicker::Drawing::Color;
 use Chart::Clicker::Drawing::Stroke;
 
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
 
-    unless(defined($self->color())) {
-        $self->color(
-            new Chart::Clicker::Drawing::Color({
-                red => 0, green => 0, blue => 0, alpha => 1
-            })
-        );
-    }
-    unless($self->stroke()) {
-        $self->stroke(new Chart::Clicker::Drawing::Stroke());
-    }
+has 'color' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Color',
+    default => sub { new Chart::Clicker::Drawing::Color(
+        red     => 0,
+        green   => 0,
+        blue    => 0,
+        alpha   => 1
+    ) }
+);
 
-    return $self;
-}
+has 'stroke' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Stroke',
+    default => sub { new Chart::Clicker::Drawing::Stroke(); }
+);
 
 1;
 __END__

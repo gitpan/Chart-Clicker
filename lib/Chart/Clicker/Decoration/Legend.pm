@@ -1,11 +1,7 @@
 package Chart::Clicker::Decoration::Legend;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Chart::Clicker::Decoration';
-__PACKAGE__->mk_accessors(
-    qw(font item_insets legend_items orientation tallest widest)
-);
+extends 'Chart::Clicker::Decoration';
 
 use Chart::Clicker::Decoration::LegendItem;
 
@@ -14,34 +10,50 @@ use Chart::Clicker::Drawing::Border;
 use Chart::Clicker::Drawing::Font;
 use Chart::Clicker::Drawing::Insets;
 
-sub new {
-    my $proto = shift();
+has 'tallest' => ( is => 'rw', isa => 'Num' );
+has 'widest' => ( is => 'rw', isa => 'Num' );
 
-    my $self = $proto->SUPER::new(@_);
-    unless(defined($self->border())) {
-        $self->border(new Chart::Clicker::Drawing::Border());
-    }
-    unless(defined($self->font())) {
-        $self->font(new Chart::Clicker::Drawing::Font());
-    }
-    unless(defined($self->insets())) {
-        $self->insets(new Chart::Clicker::Drawing::Insets({
+has '+border' => (
+    default => sub { new Chart::Clicker::Drawing::Border() }
+);
+
+has '+insets' => (
+    default => sub {
+        new Chart::Clicker::Drawing::Insets(
             top => 3, left => 3, bottom => 3, right => 3
-        }));
+        )
     }
-    unless(defined($self->item_insets())) {
-        $self->item_insets(
-            new Chart::Clicker::Drawing::Insets({
-                top => 3, left => 3, bottom => 0, right => 0
-            })
-        );
-    }
-    unless(defined($self->orientation())) {
-        $self->orientation($CC_HORIZONTAL)
-    }
+);
 
-    return $self;
-}
+has 'item_insets' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Insets',
+    default => sub {
+        new Chart::Clicker::Drawing::Insets({
+            top => 3, left => 3, bottom => 0, right => 0
+        })
+    }
+);
+
+has 'legend_items' => (
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [ ] }
+);
+
+has 'font' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Font',
+    default => sub {
+        new Chart::Clicker::Drawing::Font()
+    }
+);
+
+has 'orientation' => (
+    is => 'rw',
+    isa => 'Orientations',
+    default => $CC_HORIZONTAL
+);
 
 sub prepare {
     my $self = shift();
@@ -69,6 +81,7 @@ sub prepare {
 
             my $label = $s->name();
             unless(defined($label)) {
+                $s->name("Series $count");
                 $label = "Series $count";
             }
             my $extents = $cr->text_extents($label);

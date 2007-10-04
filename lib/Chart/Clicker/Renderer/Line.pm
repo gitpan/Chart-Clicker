@@ -1,11 +1,7 @@
 package Chart::Clicker::Renderer::Line;
-use strict;
-use warnings;
+use Moose;
 
-use Chart::Clicker::Shape::Arc;
-
-use Chart::Clicker::Renderer::Base;
-use base 'Chart::Clicker::Renderer::Base';
+extends 'Chart::Clicker::Renderer::Base';
 
 use Cairo;
 

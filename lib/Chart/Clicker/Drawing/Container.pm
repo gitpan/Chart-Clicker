@@ -1,8 +1,7 @@
 package Chart::Clicker::Drawing::Container;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Chart::Clicker::Drawing::Component';
+extends 'Chart::Clicker::Drawing::Component';
 
 use Chart::Clicker::Drawing qw(:positions);
 use Chart::Clicker::Drawing::Border;
@@ -17,6 +16,7 @@ sub new {
 
     my $self = $proto->SUPER::new(@_);
 
+    # TODO Moose these.
     $self->{'AXISLEFT'} = 0;
     $self->{'AXISRIGHT'} = 0;
     $self->{'AXISBOTTOM'} = 0;

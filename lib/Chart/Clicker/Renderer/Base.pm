@@ -1,9 +1,10 @@
 package Chart::Clicker::Renderer::Base;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Chart::Clicker::Drawing::Component';
-__PACKAGE__->mk_accessors( qw(options dataset_count) );
+extends 'Chart::Clicker::Drawing::Component';
+
+has 'options' => ( is => 'rw', isa => 'HashRef' );
+has 'dataset_count' => ( is => 'rw', isa => 'Int' );
 
 sub get_option {
     my $self = shift();

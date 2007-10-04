@@ -1,8 +1,8 @@
 package Chart::Clicker::Decoration::MarkerOverlay;
-use strict;
-use warnings;
 
-use base 'Chart::Clicker::Decoration';
+use Moose;
+
+extends 'Chart::Clicker::Decoration';
 
 sub prepare {
     my $self = shift();

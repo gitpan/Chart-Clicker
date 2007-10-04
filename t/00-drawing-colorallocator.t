@@ -10,11 +10,11 @@ isa_ok($ca, 'Chart::Clicker::Drawing::ColorAllocator');
 
 my $red = $ca->next();
 ok(defined($red), 'First Color');
-ok($red->name() eq 'red', 'First is red');
-ok($red->red() == 1.0, 'Red value');
+cmp_ok($red->name(), 'eq', 'red', 'First is red');
+cmp_ok($red->red(), '==', 1.0, 'Red value');
 my $green = $ca->next();
 ok(defined($green), 'Second Color');
-ok($green->name() eq 'green', 'Second is green');
+cmp_ok($green->name(), 'eq', 'green', 'Second is green');
 
 my @seedcolors = (
     new Chart::Clicker::Drawing::Color({
@@ -30,5 +30,5 @@ my $ca2 = new Chart::Clicker::Drawing::ColorAllocator({
 });
 my $shouldbeblack = $ca2->next();
 ok(defined($shouldbeblack), 'Seeded color seems to be there');
-ok($shouldbeblack->name() eq 'black', 'Seeded color is black');
+cmp_ok($shouldbeblack->name(), 'eq', 'black', 'Seeded color is black');
 

@@ -43,15 +43,17 @@ lib/Chart/Clicker/Renderer/Bar.pm
 lib/Chart/Clicker/Renderer/Base.pm
 lib/Chart/Clicker/Renderer/Line.pm
 lib/Chart/Clicker/Renderer/Measurement.pm
+lib/Chart/Clicker/Renderer/Pie.pm
 lib/Chart/Clicker/Renderer/Point.pm
+lib/Chart/Clicker/Renderer/StackedBar.pm
 lib/Chart/Clicker/Shape.pm
 lib/Chart/Clicker/Shape/Arc.pm
 lib/Chart/Clicker/Shape/Rectangle.pm
 lib/Chart/Clicker/Simple.pm
 LICENSE
 Makefile.PL
-MANIFEST
-META.yml			Module meta-data (added by MakeMaker)
+MANIFEST			This list of files
+META.yml
 perlcriticrc
 README
 t/00-basic.t
@@ -66,6 +68,7 @@ t/00-drawing-insets.t
 t/00-drawing-point.t
 t/00-drawing-stroke.t
 t/01-data-dataset.t
+t/01-data-marker.t
 t/01-data-range.t
 t/01-data-series.t
 t/01-shape-arc.t
@@ -77,12 +80,15 @@ t/03-renderer-base.t
 t/04-renderer-area.t
 t/04-renderer-bar.t
 t/04-renderer-line.t
+t/04-renderer-pie.t
 t/04-renderer-point.t
 t/05-decoration-glass.t
 t/05-decoration-grid.t
+t/05-decoration-label.t
 t/05-decoration-legend.t
 t/05-decoration-legenditem.t
 t/05-decoration-markeroverlay.t
+t/05-decoration-plot.t
 t/05-decoration.t
 t/06-data-marker.t
 t/800-layout.t

@@ -1,29 +1,22 @@
 package Chart::Clicker::Decoration::Glass;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Chart::Clicker::Decoration';
+extends 'Chart::Clicker::Decoration';
 
-__PACKAGE__->mk_accessors(qw(background_color glare_color));
+has 'background_color' => ( is => 'rw', isa => 'Chart::Clicker::Drawing::Color' );
+has 'glare_color' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Color',
+    default => sub {
+        new Chart::Clicker::Drawing::Color(
+            red => 1, green => 1, blue => 1, alpha => 1
+        )
+    }
+);
 
 use Chart::Clicker::Drawing::Color;
 
 use Cairo;
-
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
-
-    unless(defined($self->color())) {
-        $self->glare_color(
-            new Chart::Clicker::Drawing::Color({
-                red => 1, green => 1, blue => 1, alpha => .40
-            })
-        );
-    }
-
-    return $self;
-}
 
 sub prepare {
     my $self = shift();
@@ -59,7 +52,6 @@ sub draw {
     $cr->line_to(0, 0);
     $cr->line_to(0, $twentypofheight);
 
-    #$cr->close_path();
     $cr->set_source_rgba($self->glare_color->rgba());
     $cr->fill();
     $cr->restore();

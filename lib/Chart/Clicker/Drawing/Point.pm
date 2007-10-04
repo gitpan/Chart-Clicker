@@ -1,9 +1,8 @@
 package Chart::Clicker::Drawing::Point;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(qw(x y));
+has 'x' => ( is => 'rw', isa => 'Num' );
+has 'y' => ( is => 'rw', isa => 'Num' );
 
 1;
 __END__

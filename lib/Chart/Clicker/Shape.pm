@@ -1,8 +1,5 @@
 package Chart::Clicker::Shape;
-use strict;
-use warnings;
-
-use base 'Class::Accessor::Fast';
+use Moose;
 
 1;
 __END__

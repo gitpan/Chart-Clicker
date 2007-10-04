@@ -1,9 +1,8 @@
 package Chart::Clicker::Drawing::Dimension;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(qw(height width));
+has 'height' => ( is => 'rw', isa => 'Int' );
+has 'width' => ( is => 'rw', isa => 'Int' );
 
 1;
 __END__

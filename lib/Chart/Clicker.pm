@@ -1,13 +1,81 @@
 package Chart::Clicker;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Chart::Clicker::Drawing::Container';
-__PACKAGE__->mk_accessors(
-    qw(
-        color_allocator context datasets domain_axes markers
-        range_axes plot surface
-    )
+extends 'Chart::Clicker::Drawing::Container';
+
+has 'color_allocator' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::ColorAllocator',
+    default => sub { new Chart::Clicker::Drawing::ColorAllocator()  }
+);
+
+has 'context' => (
+    is => 'rw',
+    isa => 'Cairo::Context',
+);
+
+has 'datasets' => (
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] }
+);
+
+has 'domain_axes' => (
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] }
+);
+
+has 'markers' => (
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] }
+);
+
+has 'range_axes' => (
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] }
+);
+
+has 'plot' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Decoration::Plot'
+);
+
+has 'surface' => (
+    is => 'rw',
+    isa => 'Cairo::ImageSurface'
+);
+
+has '+width' => (
+    default => 500
+);
+
+has '+height' => (
+    default => 300
+);
+
+has '+insets' => (
+    default => sub {
+        new Chart::Clicker::Drawing::Insets(
+            { top => 5, bottom => 5, left => 5, right => 5 }
+        )
+    }
+);
+
+has '+border' => (
+    default => sub {
+        new Chart::Clicker::Drawing::Border()
+    }
+);
+
+has '+background_color' => (
+    default => sub {
+        new Chart::Clicker::Drawing::Color(
+            { red => 1, green => 1, blue => 1, alpha => 1 }
+        )
+    }
 );
 
 use Chart::Clicker::Drawing qw(:positions);
@@ -19,40 +87,44 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-our $VERSION = '1.1.8';
+our $VERSION = '1.2.0';
 
 sub new {
     my $proto = shift();
 
     my $self = $proto->SUPER::new(@_);
-    unless($self->width()) {
-        $self->width(500);
-    }
-    unless($self->height()) {
-        $self->height(300);
-    }
-    unless($self->insets()) {
-        $self->insets(
-            new Chart::Clicker::Drawing::Insets(
-                { top => 5, bottom => 5, left => 5, right => 5 }
-            )
-        );
-    }
-    unless($self->background_color()) {
-        $self->background_color(
-            new Chart::Clicker::Drawing::Color(
-                { red => 1, green => 1, blue => 1, alpha => 1 }
-            )
-        );
-    }
-    unless(defined($self->color_allocator())) {
-        $self->color_allocator(new Chart::Clicker::Drawing::ColorAllocator());
-    }
-    unless($self->border()) {
-        $self->border(new Chart::Clicker::Drawing::Border());
-    }
 
-    $self->markers([ ]);
+    # unless($self->width()) {
+    #     $self->width(500);
+    # }
+    # unless($self->height()) {
+    #     $self->height(300);
+    # }
+
+    # unless($self->insets()) {
+    #     $self->insets(
+    #         new Chart::Clicker::Drawing::Insets(
+    #             { top => 5, bottom => 5, left => 5, right => 5 }
+    #         )
+    #     );
+    # }
+
+    # unless($self->background_color()) {
+    #     $self->background_color(
+    #         new Chart::Clicker::Drawing::Color(
+    #             { red => 1, green => 1, blue => 1, alpha => 1 }
+    #         )
+    #     );
+    # }
+
+    # unless(defined($self->color_allocator())) {
+    #     $self->color_allocator(new Chart::Clicker::Drawing::ColorAllocator());
+    # }
+    # unless($self->border()) {
+    #     $self->border(new Chart::Clicker::Drawing::Border());
+    # }
+
+    # $self->markers([ ]);
 
     $self->{'DSDOMAINAXIS'} = {};
     $self->{'DSRANGEAXIS'} = {};

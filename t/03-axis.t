@@ -3,15 +3,14 @@ use Test::More tests => 11;
 BEGIN {
     use_ok('Chart::Clicker::Axis');
 }
-
-my $axis = new Chart::Clicker::Axis();
-
 my $label = 'Foo';
-$axis->label($label);
+
+my $axis = new Chart::Clicker::Axis({ label => $label });
+
 ok($axis->label() eq $label, 'label()');
 
 ok($axis->show_ticks(), 'Default show_ticks()');
-ok($axis->tick_length() > 0, 'Default tick_length()');
+cmp_ok($axis->tick_length(), '>', 0, 'Default tick_length()');
 ok($axis->visible(), 'Default visible');
 
 my $showticks = 0;

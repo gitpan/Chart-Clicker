@@ -1,9 +1,7 @@
 package Chart::Clicker::Drawing::Stroke;
-use strict;
-use warnings;
 
-use base qw(Class::Accessor::Fast Exporter);
-__PACKAGE__->mk_accessors(qw(width line_cap line_join));
+use Moose;
+use Moose::Util::TypeConstraints;
 
 @Chart::Clicker::Drawing::Stroke::EXPORT_OK = qw(
   $CC_LINE_CAP_BUTT $CC_LINE_CAP_ROUND $CC_LINE_CAP_SQUARE
@@ -26,22 +24,12 @@ our $CC_LINE_JOIN_MITER = 'miter';
 our $CC_LINE_JOIN_ROUND = 'round';
 our $CC_LINE_JOIN_BEVEL = 'bevel';
 
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
+enum 'LineCap' => ($CC_LINE_CAP_BUTT, $CC_LINE_CAP_ROUND, $CC_LINE_CAP_SQUARE);
+enum 'LineJoin' => ($CC_LINE_JOIN_MITER, $CC_LINE_JOIN_ROUND, $CC_LINE_JOIN_BEVEL);
 
-    unless(defined($self->width())) {
-        $self->width(1);
-    }
-    unless(defined($self->line_cap())) {
-        $self->line_cap($CC_LINE_CAP_BUTT);
-    }
-    unless(defined($self->line_join())) {
-        $self->line_join($CC_LINE_JOIN_MITER);
-    }
-
-    return $self;
-}
+has 'width' => ( is => 'rw', isa => 'Int', default => 1 );
+has 'line_cap' => ( is => 'rw', isa => 'LineCap', default => $CC_LINE_CAP_BUTT );
+has 'line_join' => ( is => 'rw', isa => 'LineJoin', default => $CC_LINE_JOIN_MITER );
 
 1;
 __END__

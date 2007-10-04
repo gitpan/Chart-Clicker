@@ -1,6 +1,5 @@
 package Chart::Clicker::Axis::DateTime;
-use strict;
-use warnings;
+use Moose;
 
 use Chart::Clicker::Data::Marker;
 use Chart::Clicker::Drawing::Color;
@@ -8,9 +7,17 @@ use Chart::Clicker::Drawing::Color;
 use DateTime;
 use DateTime::Set;
 
-use base 'Chart::Clicker::Axis';
+extends 'Chart::Clicker::Axis';
 
-__PACKAGE__->mk_accessors(qw(format time_zone));
+has 'format' => (
+    is => 'rw',
+    isa => 'Str'
+);
+
+has 'time_zone' => (
+    is => 'rw',
+    isa => 'Str'
+);
 
 sub prepare {
     my $self = shift();
@@ -33,7 +40,7 @@ sub prepare {
         }
     }
 
-    $self->SUPER::prepare(@_);
+    super();
 
     my $clicker = shift();
 

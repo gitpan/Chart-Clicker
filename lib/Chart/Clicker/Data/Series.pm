@@ -1,24 +1,31 @@
 package Chart::Clicker::Data::Series;
-use strict;
-use warnings;
-
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(
-    qw(error_count errors key_count keys max_key_length name range value_count values)
-);
+use Moose;
 
 use Chart::Clicker::Data::Range;
 
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
-
-    if(defined($self->keys())) {
-        $self->key_count(scalar(@{ $self->keys() }));
-    }
-
-    return $self;
-}
+has 'error_count' => ( is => 'rw', isa => 'Int' );
+has 'errors' => ( is => 'rw', isa => 'Num' );
+has 'key_count' => ( is => 'rw', isa => 'Int' );
+has 'value_count' => ( is => 'rw', isa => 'Int' );
+has 'max_key_length' => ( is => 'rw', isa => 'Int' );
+has 'name' => ( is => 'rw', isa => 'Str' );
+has 'range' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Data::Range',
+    default => sub { new Chart::Clicker::Data::Range() }
+);
+has 'keys' => (
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] },
+    trigger => sub { my ($self, $keys) = @_; $self->key_count(scalar(@{ $keys })) }
+);
+has 'values' => (
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] },
+    trigger => sub { my ($self, $values) = @_; $self->value_count(scalar(@{ $values })) }
+);
 
 sub prepare {
     my $self = shift();

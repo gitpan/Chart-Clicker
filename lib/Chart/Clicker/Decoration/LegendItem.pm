@@ -1,11 +1,24 @@
 package Chart::Clicker::Decoration::LegendItem;
-use strict;
-use warnings;
+use Moose;
 
-use base 'Chart::Clicker::Decoration';
-__PACKAGE__->mk_accessors(qw(color label font));
+extends 'Chart::Clicker::Decoration';
 
 use Chart::Clicker::Drawing::Font;
+
+has 'color' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Color'
+);
+
+has 'font' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Font'
+);
+
+has 'label' => (
+    is => 'rw',
+    isa => 'Str'
+);
 
 1;
 __END__

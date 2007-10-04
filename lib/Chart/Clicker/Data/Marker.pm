@@ -1,39 +1,38 @@
 package Chart::Clicker::Data::Marker;
-use strict;
-use warnings;
-
-use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(qw(inside_color color stroke key value key2 value2));
+use Moose;
 
 use Chart::Clicker::Drawing::Color;
 use Chart::Clicker::Drawing::Stroke;
 
-sub new {
-    my $proto = shift();
-    my $self = $proto->SUPER::new(@_);
-
-    unless(defined($self->color())) {
-        $self->color(
-            new Chart::Clicker::Drawing::Color({
-                red => 0, green => 0, blue => 0, alpha => 1
-            })
+has 'key' => ( is => 'rw', isa => 'Num' );
+has 'key2' => ( is => 'rw', isa => 'Num' );
+has 'value' => ( is => 'rw', isa => 'Num' );
+has 'value2' => ( is => 'rw', isa => 'Num' );
+has 'inside_color' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Color',
+    default => sub {
+        new Chart::Clicker::Drawing::Color(
+            red => 0, green => 0, blue => 0, alpha => 1
         );
     }
-    unless(defined($self->inside_color())) {
-        $self->inside_color(
-            new Chart::Clicker::Drawing::Color({
-                red => 0, green => 0, blue => 0, alpha => .60
-            })
+);
+has 'color' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Color',
+    default => sub {
+        new Chart::Clicker::Drawing::Color(
+            red => 0, green => 0, blue => 0, alpha => 1
         );
     }
-    unless(defined($self->stroke())) {
-        $self->stroke(
-            new Chart::Clicker::Drawing::Stroke()
-        );
+);
+has 'stroke' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Stroke',
+    default => sub {
+        new Chart::Clicker::Drawing::Stroke();
     }
-
-    return $self;
-}
+);
 
 1;
 __END__

@@ -1,5 +1,9 @@
 Revision history for Perl extension Chart::Clicker.
 
+1.2.0
+    - Add Pie renderer.
+    - Moose
+
 1.1.8 Sat Sep 1 10:38:01
     - Remove lots of ()->
     - Try and make some things faster after watching dprofpp output
