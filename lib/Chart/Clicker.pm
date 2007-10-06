@@ -87,44 +87,12 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-our $VERSION = '1.2.1';
+our $VERSION = '1.2.2';
 
 sub new {
     my $proto = shift();
 
     my $self = $proto->SUPER::new(@_);
-
-    # unless($self->width()) {
-    #     $self->width(500);
-    # }
-    # unless($self->height()) {
-    #     $self->height(300);
-    # }
-
-    # unless($self->insets()) {
-    #     $self->insets(
-    #         new Chart::Clicker::Drawing::Insets(
-    #             { top => 5, bottom => 5, left => 5, right => 5 }
-    #         )
-    #     );
-    # }
-
-    # unless($self->background_color()) {
-    #     $self->background_color(
-    #         new Chart::Clicker::Drawing::Color(
-    #             { red => 1, green => 1, blue => 1, alpha => 1 }
-    #         )
-    #     );
-    # }
-
-    # unless(defined($self->color_allocator())) {
-    #     $self->color_allocator(new Chart::Clicker::Drawing::ColorAllocator());
-    # }
-    # unless($self->border()) {
-    #     $self->border(new Chart::Clicker::Drawing::Border());
-    # }
-
-    # $self->markers([ ]);
 
     $self->{'DSDOMAINAXIS'} = {};
     $self->{'DSRANGEAXIS'} = {};

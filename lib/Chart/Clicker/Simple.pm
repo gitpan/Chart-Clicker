@@ -18,7 +18,7 @@ has 'height' => ( is => 'rw', isa => 'Int', default => 300 );
 has 'range_label' => ( is => 'rw', isa => 'Str' );
 has 'renderer' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Renderer::Line',
+    isa => 'Chart::Clicker::Renderer::Base',
     default => sub { new Chart::Clicker::Renderer::Line() }
 );
 has 'width' => ( is => 'rw', isa => 'Int', default => 400 );

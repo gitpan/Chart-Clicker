@@ -60,8 +60,8 @@ sub draw {
     for(0..$sksent) {
         # Add the series_count times the width to so that each bar
         # gets rendered with it's partner in the other series.
-         #my $x = $domain->mark($keys[$_]) + ($self->{'SCOUNT'} * $bwidth);
-        my $x = ($xper * ($keys[$_] - $domain->range->lower())) + ($self->{'SCOUNT'} * $bwidth);
+        my $x = $domain->mark($keys[$_]) + ($self->{'SCOUNT'} * $bwidth);
+        # my $x = ($xper * ($keys[$_] - $domain->range->lower())) + ($self->{'SCOUNT'} * $bwidth);
         my $y = int($height - $range->mark($vals[$_]));
         $cr->rectangle(
             $x + $padding / 2, $y,

@@ -19,18 +19,27 @@ has 'time_zone' => (
     isa => 'Str'
 );
 
-sub prepare {
-    my $self = shift();
+override 'prepare' => sub {
+     my $self = shift();
 
-    my $dstart = DateTime->from_epoch(epoch => $self->range->lower());
-    my $dend = DateTime->from_epoch(epoch => $self->range->upper());
+    my ($dstart, $dend);
+    eval {
+        $dstart = DateTime->from_epoch(epoch => $self->range->lower());
+        $dend = DateTime->from_epoch(epoch => $self->range->upper());
+    };
+
+    if(!defined($dstart) || !defined($dend)) {
+        $dstart = DateTime->now();
+        $dend = DateTime->now();
+    }
+
     my $dur = $dend - $dstart;
 
     unless(defined($self->format()) && length($self->format())) {
         if($dur->years()) {
             $self->format('%b %Y');
         } elsif($dur->months()) {
-            $self->format('i%d %b');
+            $self->format('%d %b');
         } elsif($dur->weeks()) {
             $self->format('%d %b');
         } elsif($dur->days()) {
@@ -43,6 +52,9 @@ sub prepare {
     super();
 
     my $clicker = shift();
+    if(!defined($clicker)) {
+        die('No clicker?')
+    }
 
     my @markers = @{ $clicker->markers() };
 
@@ -94,7 +106,7 @@ sub prepare {
     $clicker->markers(\@dmarkers);
 
     return 1;
-}
+};
 
 sub format_value {
     my $self = shift();

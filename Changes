@@ -1,7 +1,12 @@
 Revision history for Perl extension Chart::Clicker.
 
+1.2.2
+    - Fix broken Axis::DateTime
+    - Fix broken type for Simple's renderer
+    - Fix busted Bar renderer
+
 1.2.1
-    _ Remove unused and un-required depedency
+    _ Remove unused and un-required dependency
 
 1.2.0
     - Add Pie renderer.
