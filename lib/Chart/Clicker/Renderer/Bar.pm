@@ -51,21 +51,31 @@ sub draw {
         $padding = 1;
     }
 
-    my $xper = $self->width() / ($self->{'KEYCOUNT'});
+    my $stroke = $self->get_option('stroke');
+    if(defined($stroke)) {
+        $padding += $stroke->width();
+    }
+
+    #my $xper = $self->width() / ($self->{'KEYCOUNT'});
 
     # Calculate the bar width we can use to fit all the datasets.
-    my $bwidth = int(($width / scalar(@vals)) / $self->dataset_count());
+    if(!$self->{'BWIDTH'}) {
+        $self->{'BWIDTH'} = int(($width / scalar(@vals)) / $self->dataset_count() / 2);
+    }
+
+    if(!$self->{'XOFFSET'}) {
+        $self->{'XOFFSET'} = int((($self->{'BWIDTH'} + $padding) * $self->dataset_count()) / 2);
+    }
 
     my $sksent = $series->key_count() - 1;
     for(0..$sksent) {
         # Add the series_count times the width to so that each bar
         # gets rendered with it's partner in the other series.
-        my $x = $domain->mark($keys[$_]) + ($self->{'SCOUNT'} * $bwidth);
-        # my $x = ($xper * ($keys[$_] - $domain->range->lower())) + ($self->{'SCOUNT'} * $bwidth);
+        my $x = $domain->mark($keys[$_]) + ($self->{'SCOUNT'} * $self->{'BWIDTH'});
         my $y = int($height - $range->mark($vals[$_]));
         $cr->rectangle(
-            $x + $padding / 2, $y,
-            - $bwidth, $height,
+            ($x + $padding) - $self->{'XOFFSET'}, $y,
+            - ($self->{'BWIDTH'} - $padding), $height,
         );
     }
 
@@ -81,9 +91,8 @@ sub draw {
     $cr->set_source_rgba($fillcolor->rgba());
     $cr->fill_preserve();
 
-    my $stroke = $self->get_option('stroke');
     if(defined($stroke)) {
-        my $linewidth = $stroke->width();
+        $cr->set_line_width($stroke->width());
         $cr->set_line_cap($stroke->line_cap());
         $cr->set_line_join($stroke->line_join());
 
@@ -105,7 +114,7 @@ Chart::Clicker::Renderer::Bar
 
 =head1 DESCRIPTION
 
-Chart::Clicker::Renderer::Bar renders a dataset as points.
+Chart::Clicker::Renderer::Bar renders a dataset as bars.
 
 =head1 SYNOPSIS
 

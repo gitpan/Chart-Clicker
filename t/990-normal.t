@@ -112,4 +112,4 @@ $plot->renderers([$area, $point, $line]);
 
 $chart->prepare();
 my $surf = $chart->draw();
-$chart->write('/Users/gphat/test.png');
+#$chart->write('/Users/gphat/test.png');

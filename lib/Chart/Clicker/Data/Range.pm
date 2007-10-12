@@ -9,7 +9,7 @@ has 'max' => ( is => 'rw', isa => 'Num' );
 after 'lower' => sub {
     my $self = shift();
 
-    if($self->{'min'}) {
+    if(defined($self->{'min'})) {
         $self->{'lower'} = $self->{'min'};
     }
 };
@@ -17,7 +17,7 @@ after 'lower' => sub {
 after 'upper' => sub {
     my $self = shift();
 
-    if($self->{'max'}) {
+    if(defined($self->{'max'})) {
         $self->{'upper'} = $self->{'max'};
     }
 };
@@ -25,7 +25,7 @@ after 'upper' => sub {
 after 'min' => sub {
     my $self = shift();
 
-    if($self->{'min'}) {
+    if(defined($self->{'min'})) {
         $self->{'lower'} = $self->{'min'};
     }
 };
@@ -33,7 +33,7 @@ after 'min' => sub {
 after 'max' => sub {
     my $self = shift();
 
-    if($self->{'max'}) {
+    if(defined($self->{'max'})) {
         $self->{'upper'} = $self->{'max'};
     }
 };
@@ -48,13 +48,13 @@ sub combine {
     my $self = shift();
     my $range = shift();
 
-    unless($self->min()) {
+    unless(defined($self->min())) {
         if(!defined($self->lower()) || ($range->lower() < $self->lower())) {
             $self->lower($range->lower());
         }
     }
 
-    unless($self->max()) {
+    unless(defined($self->max())) {
         if(!defined($self->upper()) || ($range->upper() > $self->upper())) {
             $self->upper($range->upper());
         }
@@ -81,6 +81,10 @@ sub add {
 sub divvy {
     my $self = shift();
     my $n = shift();
+
+    if(!$n) {
+        return [];
+    }
 
     my $per = $self->span() / $n;
 
@@ -147,7 +151,8 @@ Returns the span of this range, or UPPER - LOWER.
 =item combine
 
 Combine this range with the specified so that this range encompasses the
-values specified.
+values specified.  For example, adding a range with an upper-lower of 1-10
+with one of 5-20 will result in a combined range of 1-20.
 
 =item add
 

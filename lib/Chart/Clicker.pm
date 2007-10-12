@@ -3,6 +3,8 @@ use Moose;
 
 extends 'Chart::Clicker::Drawing::Container';
 
+use Chart::Clicker::Decoration::Plot;
+
 has 'color_allocator' => (
     is => 'rw',
     isa => 'Chart::Clicker::Drawing::ColorAllocator',
@@ -40,7 +42,10 @@ has 'range_axes' => (
 
 has 'plot' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Decoration::Plot'
+    isa => 'Chart::Clicker::Decoration::Plot',
+    default => sub {
+        new Chart::Clicker::Decoration::Plot()
+    }
 );
 
 has 'surface' => (
@@ -87,7 +92,7 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-our $VERSION = '1.2.2';
+our $VERSION = '1.2.3';
 
 sub new {
     my $proto = shift();
@@ -141,12 +146,16 @@ sub draw {
 sub prepare {
     my $self = shift();
 
+    my $plot = $self->plot();
+
     # Prepare the datasets and establish ranges for the axes.
     my $count = 0;
     foreach my $ds (@{ $self->datasets() }) {
         unless($ds->count() > 0) {
             die("Dataset $count is empty.");
         }
+
+        my $rend = $plot->renderers->[$plot->get_renderer_for_dataset($count)];
         $ds->prepare();
 
         my $daxis = $self->get_dataset_domain_axis($count);
@@ -155,8 +164,15 @@ sub prepare {
         }
 
         my $raxis = $self->get_dataset_range_axis($count);
+
         if(defined($raxis)) {
-            $raxis->range->combine($ds->range());
+            if(defined($rend)) {
+                if($rend->additive()) {
+                    $raxis->range->combine($ds->combined_range());
+                } else {
+                    $raxis->range->combine($ds->range());
+                }
+            }
         }
 
         $count++;

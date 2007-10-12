@@ -1,5 +1,13 @@
 Revision history for Perl extension Chart::Clicker.
 
+1.2.3
+    - Fix broken Bar renderer
+    - Add hide_axes and hide_grid to Simple
+    - StackedBar renderer
+    - 'additive' renderer attribute
+    - combine the 'combined' range of a DataSet for additive renderers
+    - Fix bug when setting range max/min to 0
+
 1.2.2
     - Fix broken Axis::DateTime
     - Fix broken type for Simple's renderer

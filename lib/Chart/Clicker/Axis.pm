@@ -70,8 +70,8 @@ sub prepare {
         die('This axis has a span of 0, that\'s fatal!');
     }
 
-    if($self->tick_values()) {
-        $self->tick_values($self->range->divvy($self->ticks() + 1));
+    if(!scalar(@{ $self->tick_values() })) {
+        $self->tick_values($self->range->divvy($self->ticks()));
     }
 
     my $cairo = $clicker->context();

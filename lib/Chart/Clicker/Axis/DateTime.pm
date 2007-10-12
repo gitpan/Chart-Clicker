@@ -39,9 +39,9 @@ override 'prepare' => sub {
         if($dur->years()) {
             $self->format('%b %Y');
         } elsif($dur->months()) {
-            $self->format('%d %b');
+            $self->format('%d');
         } elsif($dur->weeks()) {
-            $self->format('%d %b');
+            $self->format('%d');
         } elsif($dur->days()) {
             $self->format('%m/%d %H:%M');
         } else {

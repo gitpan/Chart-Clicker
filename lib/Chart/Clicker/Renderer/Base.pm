@@ -5,6 +5,7 @@ extends 'Chart::Clicker::Drawing::Component';
 
 has 'options' => ( is => 'rw', isa => 'HashRef' );
 has 'dataset_count' => ( is => 'rw', isa => 'Int' );
+has 'additive' => ( is => 'ro', isa => 'Bool', default => 0 );
 
 sub get_option {
     my $self = shift();
@@ -64,6 +65,12 @@ Creates a new Chart::Clicker::Renderer::Base.
 =head2 Class Methods
 
 =over 4
+
+=item additive
+
+Read-only value that informs Clicker that this renderer uses the combined ranges
+of all the series it charts in total.  Used for 'stacked' renderers like
+StackedBar.
 
 =item get_option
 

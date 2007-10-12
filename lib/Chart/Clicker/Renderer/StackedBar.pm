@@ -3,6 +3,8 @@ use Moose;
 
 extends 'Chart::Clicker::Renderer::Base';
 
+has '+additive' => ( default => 1 );
+
 sub prepare {
     my $self = shift();
 
@@ -12,9 +14,7 @@ sub prepare {
     my $idim = shift();
     my $datasets = shift();
 
-    my $range = new Chart::Clicker::Data::Range();
     foreach my $ds (@{ $datasets }) {
-        $range->add($ds->combined_range());
         if(!defined($self->{'KEYCOUNT'})) {
             $self->{'KEYCOUNT'} = $ds->max_key_count();
         } else {
@@ -24,13 +24,7 @@ sub prepare {
         }
     }
 
-
-    # foreach my $ds (@{ $datasets }) {
-    #     $self->{'SCOUNT'} += scalar(@{ $ds->series() });
-    # }
-
-    $self->{'COMBINED_RANGE'} = $range;
-    $self->{'INDEX_HEIGHT'};
+    $self->{'SCOUNT'} = 1;
 
     return 1;
 }
@@ -59,53 +53,37 @@ sub draw {
         $padding = 1;
     }
 
-    my $xper = $self->width() / ($self->{'KEYCOUNT'});
-    print "$xper\n";
-    print $domain->per()."\n";
-
     my $stroke = $self->get_option('stroke');
-
-    # Calculate the bar width we can use to fit all the datasets.
-    # my $bwidth = int(($width / scalar(@vals)) / $self->dataset_count());
-    my $bwidth = int(($width / scalar(@vals)));
-
-    # If there's a stroke we need to trim some space off for it.
+    my $strokewidth;
     if(defined($stroke)) {
-        $bwidth -= $stroke->width();
+        $strokewidth = $stroke->width();
+        $padding += $strokewidth;
     }
 
-    #$range->range($self->{'COMBINED_RANGE'});
-    #$range->per($self->height() / $self->{'COMBINED_RANGE'}->span());
-    # $self->per($self->height() / $self->range->span());
+    #my $xper = $self->width() / ($self->{'KEYCOUNT'});
+
+    # Calculate the bar width we can use to fit all the datasets.
+    if(!$self->{'BWIDTH'}) {
+        $self->{'BWIDTH'} = int(($width / scalar(@vals)) / 2);
+    }
+
+    if(!$self->{'XOFFSET'}) {
+        $self->{'XOFFSET'} = int(($self->{'BWIDTH'} + $padding) / 2);
+    }
 
     my $sksent = $series->key_count() - 1;
     for(0..$sksent) {
         # Add the series_count times the width to so that each bar
         # gets rendered with it's partner in the other series.
-        # my $x = $domain->mark($keys[$_]) + ($self->{'SCOUNT'} * $bwidth);
-        #my $x = $domain->mark($keys[$_]) + $bwidth;
-        print $vals[$_]."\n";
-        my $x = ($xper * ($keys[$_] - $domain->range->lower())) + ($bwidth);
-
-        my $y;
-        #print $vals[$_].", ";
-        # if(defined($self->{'INDEX_HEIGHT'}->{$_})) {
-        #     $y = int($height - $range->mark($vals[$_]) - $self->{'INDEX_HEIGHT'}->{$_});
-        # } else {
-            $y = int($height - $range->mark($vals[$_]));
-#        }
-        # $cr->rectangle(
-        #     $x + $padding / 2, $y,
-        #     - $bwidth, $height,
-        # );
+        my $x = $domain->mark($keys[$_]);# + $self->{'BWIDTH'};
+        my $y = $range->mark($vals[$_]);
 
         $cr->rectangle(
-            $x, $y,
-            - $bwidth, $height,
+            $x + $self->{'XOFFSET'}, $height - $y - ($self->{'KEY_HEIGHT'}->{$_} || 0),
+            -($self->{'BWIDTH'}), $y# + ($self->{'KEY_HEIGHT'}->{$_} || 0)
         );
 
-
-        #$self->{'INDEX_HEIGHT'}->{$_} += $y;
+        $self->{'KEY_HEIGHT'}->{$_} += $y + $strokewidth;
     }
 
     my $opac = $self->get_option('opacity');
@@ -120,7 +98,6 @@ sub draw {
     $cr->set_source_rgba($fillcolor->rgba());
     $cr->fill_preserve();
 
-    # my $stroke = $self->get_option('stroke');
     if(defined($stroke)) {
         $cr->set_line_width($stroke->width());
         $cr->set_line_cap($stroke->line_cap());
@@ -144,8 +121,7 @@ Chart::Clicker::Renderer::StackedBar
 
 =head1 DESCRIPTION
 
-Chart::Clicker::Renderer::StackedBar renders nothing, because it doesn't
-work yet.
+Chart::Clicker::Renderer::StackedBar renders a dataset as stacked bars.
 
 =head1 SYNOPSIS
 

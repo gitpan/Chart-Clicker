@@ -106,8 +106,8 @@ sub prepare {
     foreach my $child (@{ $self->{'COMPONENTS'} }) {
         my $comp = $child->{'component'};
         my $dim = new Chart::Clicker::Drawing::Dimension({
-            width => $self->inside_width() - $left - $right,
-            height => $self->inside_height() - $top - $bottom
+            width => int($self->inside_width() - $left - $right),
+            height => int($self->inside_height() - $top - $bottom)
         });
 
         my $pos = $child->{'position'};

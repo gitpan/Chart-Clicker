@@ -22,6 +22,8 @@ has 'renderer' => (
     default => sub { new Chart::Clicker::Renderer::Line() }
 );
 has 'width' => ( is => 'rw', isa => 'Int', default => 400 );
+has 'hide_axes' => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'hide_grid' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub new {
     my $proto = shift();
@@ -59,8 +61,10 @@ sub new {
         orientation => $CC_HORIZONTAL,
         position    => $CC_BOTTOM,
         format      => '%0.2f',
-        label       => $self->domain_label()
+        label       => $self->domain_label(),
+        visible     => !$self->hide_axes()
     });
+
     $chart->add($daxis, $CC_AXIS_BOTTOM);
 
     # Range Axis
@@ -68,7 +72,8 @@ sub new {
         orientation => $CC_VERTICAL,
         position    => $CC_LEFT,
         format      => '%0.2f',
-        label       => $self->range_label()
+        label       => $self->range_label(),
+        visible     => !$self->hide_axes()
     });
     $chart->add($raxis, $CC_AXIS_LEFT);
 
@@ -76,7 +81,9 @@ sub new {
     $chart->domain_axes([ $daxis ]);
 
     # Grid
-    $chart->add(new Chart::Clicker::Decoration::Grid(), $CC_CENTER, 0);
+    unless($self->hide_grid()) {
+        $chart->add(new Chart::Clicker::Decoration::Grid(), $CC_CENTER, 0);
+    }
 
     # Plot
     my $plot = new Chart::Clicker::Decoration::Plot();
@@ -86,8 +93,9 @@ sub new {
     }
 
     $chart->add($plot, $CC_CENTER);
+    $chart->plot($plot);
 
-    $plot->set_renderer_for_dataset(1, 1);
+    #$plot->set_renderer_for_dataset(0, 0);
 
     $chart->prepare();
 
@@ -166,6 +174,14 @@ Height of the chart.
 =item width
 
 Width of the chart.
+
+=item hide_grid
+
+Set to true to hide the grid.
+
+=item hide_axes
+
+Set to true to hide the hide the axes.
 
 =item renderer
 
