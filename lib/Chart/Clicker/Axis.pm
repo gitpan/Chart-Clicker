@@ -57,6 +57,11 @@ has '+color' => (
     }
 );
 
+has 'base' => (
+    is  => 'rw',
+    isa => 'Num',
+);
+
 has 'orientation' => ( is => 'rw', isa => 'Orientations' );
 
 has 'positions' => ( is => 'rw', isa => 'Positions' );
@@ -128,6 +133,14 @@ sub prepare {
         $self->height($dimension->height());
         $self->per($self->height() / $self->range->span());
     }
+
+    # if(defined($self->base())) {
+    #     if($self->range->lower() > $self->base()) {
+    #         $self->range->lower($self->base());
+    #     }
+    # } else {
+    #     $self->base($self->range->lower());
+    # }
 
     return 1;
 }
@@ -387,7 +400,7 @@ range on this axis by the specified value to establish tick values.
 
 =item mark
 
-Given a value, returns it's position on this axis.
+Given a value, returns it's pixel position on this Axis.
 
 =item format_value
 

@@ -24,6 +24,8 @@ has 'renderer' => (
 has 'width' => ( is => 'rw', isa => 'Int', default => 400 );
 has 'hide_axes' => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'hide_grid' => ( is => 'rw', isa => 'Bool', default => 0 );
+#has 'range_base' => ( is => 'rw', isa => 'Num' );
+has 'format' => ( is => 'ro', isa => 'Str', default => 'png' );
 
 sub new {
     my $proto = shift();
@@ -39,6 +41,7 @@ sub new {
     }
 
     my $chart = new Chart::Clicker({
+        format              => $self->format(),
         width               => $self->width(),
         height              => $self->height(),
         datasets            => [
@@ -73,7 +76,8 @@ sub new {
         position    => $CC_LEFT,
         format      => '%0.2f',
         label       => $self->range_label(),
-        visible     => !$self->hide_axes()
+        visible     => !$self->hide_axes(),
+        #base        => $self->range_base(),
     });
     $chart->add($raxis, $CC_AXIS_LEFT);
 

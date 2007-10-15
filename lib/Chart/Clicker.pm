@@ -1,9 +1,21 @@
 package Chart::Clicker;
 use Moose;
+use Moose::Util::TypeConstraints;
 
 extends 'Chart::Clicker::Drawing::Container';
 
 use Chart::Clicker::Decoration::Plot;
+
+enum 'Formats' => (
+    'png', 'svg'
+);
+
+has 'format' => (
+    is      => 'ro',
+    required=> 0,
+    isa     => 'Formats',
+    default => 'png'
+);
 
 has 'color_allocator' => (
     is => 'rw',
@@ -50,7 +62,7 @@ has 'plot' => (
 
 has 'surface' => (
     is => 'rw',
-    isa => 'Cairo::ImageSurface'
+#    isa => 'Cairo::ImageSurface'
 );
 
 has '+width' => (
@@ -92,7 +104,7 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-our $VERSION = '1.2.3';
+our $VERSION = '1.3.0';
 
 sub new {
     my $proto = shift();
@@ -107,6 +119,14 @@ sub new {
 
     return $self;
 }
+
+sub add_to_datasets {
+    my $self = shift();
+    my $ds = shift();
+
+    push(@{ $self->datasets() }, $ds);
+}
+
 sub inside_width {
     my $self = shift();
 
@@ -178,8 +198,8 @@ sub prepare {
         $count++;
     }
 
-    $self->surface(Cairo::ImageSurface->create(
-        'argb32', $self->width(), $self->height())
+    $self->surface($self->create_new_surface(
+        $self->width(), $self->height())
     );
     $self->context(Cairo::Context->create($self->surface()));
 
@@ -287,34 +307,43 @@ sub get_marker_range_axis {
     }
 }
 
+sub create_new_surface {
+    my $self = shift();
+    my $width = shift();
+    my $height = shift();
+
+    if(defined($self->surface())) {
+        $self->surface->create_similar('color-alpha', $width, $height);
+    } else {
+        if($self->format() eq 'svg') {
+            return Cairo::SvgSurface->create_for_stream(sub { }, undef, $width, $height);
+        } else {
+            return Cairo::ImageSurface->create('argb32', $width, $height);
+        }
+    }
+}
+
 sub write {
     my $self = shift();
     my $file = shift();
-    my $type = shift();
 
-    unless(defined($type)) {
-        $file =~ /.(\w*$)/;
-        $type = $1;
-    }
-
-    if(lc($type) eq 'png') {
-        $self->write_png($file);
-    } elsif(lc($type) eq 'svg') {
-        $self->write_svg($file);
+    if($self->format() eq 'svg') {
+        $self->_write_svg($file);
     } else {
-        $self->write_png($file);
+        $self->_write_png($file);
     }
+
     return 1;
 }
 
-sub write_png {
+sub _write_png {
     my $self = shift();
     my $file = shift();
 
     $self->surface->write_to_png($file);
 }
 
-sub write_svg {
+sub _write_svg {
     my $self = shift();
     my $file = shift();
 
@@ -332,40 +361,59 @@ sub write_svg {
     $surface = undef;
 }
 
-sub png {
+sub data {
     my $self = shift();
 
     my $buff;
-    $self->surface->write_to_png_stream(sub {
-        my ($closure, $data) = @_;
-        $buff .= $data;
-    });
+
+    if($self->format() eq 'svg') {
+
+        return undef unless Cairo::HAS_SVG_SURFACE;
+
+        my $surface = Cairo::SvgSurface->create_for_stream(sub {
+            my ($closure, $data) = @_;
+            $buff .= $data;
+        }, undef, $self->width, $self->height);
+
+        my $cr = Cairo::Context->create($surface);
+        $cr->set_source_surface($self->surface, 0, 0);
+        $cr->paint();
+        $cr->show_page();
+
+        $cr = undef;
+        $surface = undef;
+    } else {
+        $self->surface->write_to_png_stream(sub {
+            my ($closure, $data) = @_;
+            $buff .= $data;
+        });
+    }
 
     return $buff;
 }
 
-sub svg {
-    my $self = shift();
-
-    return undef unless Cairo::HAS_SVG_SURFACE;
-
-    my $buffer;
-    my $surface = Cairo::SvgSurface->create_for_stream(sub {
-        my ($closure, $data) = @_;
-        $buffer .= $data;
-    }, undef, $self->width, $self->height);
-
-    my $cr = Cairo::Context->create($surface);
-    $cr->set_source_surface($self->surface, 0, 0);
-    $cr->paint();
-    $cr->show_page();
-
-    # Unset the context and the surface to force them to do the actual drawing.
-    $cr = undef;
-    $surface = undef;
-
-    return $buffer;
-}
+# sub svg {
+#     my $self = shift();
+# 
+#     return undef unless Cairo::HAS_SVG_SURFACE;
+# 
+#     my $buffer;
+#     my $surface = Cairo::SvgSurface->create_for_stream(sub {
+#         my ($closure, $data) = @_;
+#         $buffer .= $data;
+#     }, undef, $self->width, $self->height);
+# 
+#     my $cr = Cairo::Context->create($surface);
+#     $cr->set_source_surface($self->surface, 0, 0);
+#     $cr->paint();
+#     $cr->show_page();
+# 
+#     # Unset the context and the surface to force them to do the actual drawing.
+#     $cr = undef;
+#     $surface = undef;
+# 
+#     return $buffer;
+# }
 
 1;
 
@@ -417,7 +465,7 @@ Clicker supports PNG and SVG output.
   use Chart::Clicker::Drawing::Insets;
   use Chart::Clicker::Renderer::Area;
 
-  my $chart = new Chart::Clicker({ width => 500, height => 350 });
+  my $chart = new Chart::Clicker({ format => 'png', width => 500, height => 350 });
 
   my $series = new Chart::Clicker::Data::Series({
     keys    => [1, 2, 3, 4, 5, 6],
@@ -480,8 +528,8 @@ Clicker supports PNG and SVG output.
 
 =item new
 
-Creates a new Chart::Clicker object. If no width and height are specified then
-defaults of 500 and 300 are chosen, respectively.
+Creates a new Chart::Clicker object. If no format, width and height are
+specified then defaults of png, 500 and 300 are chosen, respectively.
 
 =back
 
@@ -502,6 +550,10 @@ insets and borders.
 =item draw
 
 Draw this chart
+
+=item add_to_datasets
+
+Add the specified dataset (or array or datasets) to the cart.
 
 =item prepare
 
@@ -535,19 +587,15 @@ Returns the range axis to which the specified dataset is affined.
 
 =item write
 
-Write the chart output to the specified location.  Choose a format based on the
-extension of the filename you provide. You may optionally specify the format
-to override the guessing.  If you confuse it, it will default to a PNG.
+Write the chart output to the specified location. Output is written in the
+format provided to the constructor (which defaults to png).
 
   $c->write('/path/to/the.png');
 
-=item png
+=item data
 
-Returns the PNG data as a scalar.
-
-=item svg
-
-Returns the SVG data as a scalar.
+Returns the data for this chart as a scalar.  Suitable for 'streaming' to a
+client.
 
 =back
 

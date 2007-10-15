@@ -94,7 +94,8 @@ sub draw {
     my $width = $self->width();
     my $height = $self->height();
 
-    my $surface = Cairo::ImageSurface->create('argb32', $width, $height);
+    # my $surface = Cairo::ImageSurface->create('argb32', $width, $height);
+    my $surface = $clicker->create_new_surface($width, $height);
     my $cr = Cairo::Context->create($surface);
 
     $cr->set_source_rgba($self->color->rgba());

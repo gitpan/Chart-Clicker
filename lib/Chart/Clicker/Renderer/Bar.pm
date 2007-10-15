@@ -67,16 +67,38 @@ sub draw {
         $self->{'XOFFSET'} = int((($self->{'BWIDTH'} + $padding) * $self->dataset_count()) / 2);
     }
 
+    my $basey;
+    print 'BASE: '.$range->base()."\n";
+    print 'fOO: '.$range->mark($range->base())."\n";
+    if(defined($range->base())) {
+        $basey = $height - $range->mark($range->base());
+    } else {
+        $basey = $height;
+    }
+
     my $sksent = $series->key_count() - 1;
     for(0..$sksent) {
         # Add the series_count times the width to so that each bar
         # gets rendered with it's partner in the other series.
+
+        print "$basey: ".$vals[$_]."\n";
+
         my $x = $domain->mark($keys[$_]) + ($self->{'SCOUNT'} * $self->{'BWIDTH'});
-        my $y = int($height - $range->mark($vals[$_]));
-        $cr->rectangle(
-            ($x + $padding) - $self->{'XOFFSET'}, $y,
-            - ($self->{'BWIDTH'} - $padding), $height,
-        );
+
+        if($vals[$_] > $range->base()) {
+            my $y = int($range->mark($vals[$_]));
+            # $cr->rectangle(
+            #     ($x + $padding) - $self->{'XOFFSET'}, $y,
+            #     - ($self->{'BWIDTH'} - $padding), $basey,
+            # );
+        } else {
+            my $y = $range->mark($vals[$_]);
+            print "$y\n";
+            $cr->rectangle(
+                ($x + $padding) - $self->{'XOFFSET'}, $basey,
+                - ($self->{'BWIDTH'} - $padding), $y
+            );
+        }
     }
 
     my $opac = $self->get_option('opacity');

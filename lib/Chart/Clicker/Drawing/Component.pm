@@ -44,8 +44,8 @@ sub draw {
     my $width = $self->width();
     my $height = $self->height();
 
-    my $surface = Cairo::ImageSurface->create(
-        'argb32', $width, $height
+    my $surface = $clicker->create_new_surface(
+        $width, $height
     );
     my $context = Cairo::Context->create($surface);
 

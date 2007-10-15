@@ -78,8 +78,8 @@ sub draw {
     my $surface = $self->SUPER::draw($clicker);
     my $cr = Cairo::Context->create($surface);
 
-    my $rendsurface = Cairo::ImageSurface->create(
-        'argb32', $self->inside_width(), $self->inside_height()
+    my $rendsurface = $clicker->create_new_surface(
+        $self->inside_width(), $self->inside_height()
     );
     my $rcr = Cairo::Context->create($rendsurface);
 
