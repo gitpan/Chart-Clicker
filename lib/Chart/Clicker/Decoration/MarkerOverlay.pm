@@ -38,7 +38,7 @@ sub draw {
         $cr->set_source_rgba($marker->color->rgba());
 
         if($key && $value) {
-        } elsif($key) {
+        } elsif(defined($key)) {
             my $domain = $clicker->get_marker_domain_axis($count);
 
             my $x = $domain->mark($key);
@@ -62,7 +62,7 @@ sub draw {
             }
 
             $cr->stroke();
-        } elsif($value) {
+        } elsif(defined($value)) {
             my $range = $clicker->get_marker_range_axis($count);
 
             my $y = $range->mark($value);

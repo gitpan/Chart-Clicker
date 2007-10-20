@@ -1,11 +1,20 @@
 package Chart::Clicker::Drawing::Color;
 use Moose;
+use Moose::Util::TypeConstraints;
 
 has 'red' => ( is => 'rw', isa => 'Num' );
 has 'green' => ( is => 'rw', isa => 'Num' );
 has 'blue' => ( is => 'rw', isa => 'Num' );
 has 'alpha' => ( is => 'rw', isa => 'Num' );
 has 'name' => ( is => 'rw', isa => 'Str' );
+
+subtype 'Color'
+    => as 'Object'
+    => where { $_->isa('Chart::Clicker::Drawing::Color') };
+
+coerce 'Color'
+    => from 'Str'
+        => via { new Chart::Clicker::Drawing::Color(name => $_) };
 
 my %colors = (
     'aqua'      => [   0,   1,   1,  1 ],

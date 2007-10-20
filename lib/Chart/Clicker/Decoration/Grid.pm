@@ -3,18 +3,14 @@ use Moose;
 
 extends 'Chart::Clicker::Decoration';
 
-has 'background_color' => (
-    is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Color',
+has '+background_color' => (
     default => sub {
         new Chart::Clicker::Drawing::Color(
             red => 0.9, green => 0.9, blue => 0.9, alpha => 1
         )
     }
 );
-has 'color' => (
-    is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Color',
+has '+color' => (
     default => sub {
         new Chart::Clicker::Drawing::Color(
             red => 0, green => 0, blue => 0, alpha => .30

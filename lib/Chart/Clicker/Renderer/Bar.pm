@@ -3,6 +3,24 @@ use Moose;
 
 extends 'Chart::Clicker::Renderer::Base';
 
+use Chart::Clicker::Drawing::Stroke;
+
+has 'opacity' => (
+    is => 'rw',
+    isa => 'Num',
+    default => 0
+);
+has 'padding' => (
+    is => 'rw',
+    isa => 'Int',
+    default => 0
+);
+has 'stroke' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Stroke',
+    default => sub { new Chart::Clicker::Drawing::Stroke() }
+);
+
 sub prepare {
     my $self = shift();
 
@@ -38,74 +56,58 @@ sub draw {
     my $height = $self->height();
     my $width = $self->width();
 
-    # my $xper = $domain->per();
-    # my $yper = $range->per();
-
     my @vals = @{ $series->values() };
     my @keys = @{ $series->keys() };
 
     my $color = $clicker->color_allocator->next();
 
-    my $padding = $self->get_option('padding');
-    unless($padding) {
-        $padding = 1;
-    }
+    my $padding = $self->padding();
 
-    my $stroke = $self->get_option('stroke');
-    if(defined($stroke)) {
-        $padding += $stroke->width();
-    }
-
-    #my $xper = $self->width() / ($self->{'KEYCOUNT'});
+    $padding += $self->stroke->width();
 
     # Calculate the bar width we can use to fit all the datasets.
     if(!$self->{'BWIDTH'}) {
-        $self->{'BWIDTH'} = int(($width / scalar(@vals)) / $self->dataset_count() / 2);
+        $self->{'BWIDTH'} = int(($width / scalar(@vals)) / $self->dataset_count())# / 2);
     }
 
     if(!$self->{'XOFFSET'}) {
         $self->{'XOFFSET'} = int((($self->{'BWIDTH'} + $padding) * $self->dataset_count()) / 2);
     }
 
+    my $base;
     my $basey;
-    print 'BASE: '.$range->base()."\n";
-    print 'fOO: '.$range->mark($range->base())."\n";
-    if(defined($range->base())) {
-        $basey = $height - $range->mark($range->base());
+    if(defined($range->baseline())) {
+        $base = $range->baseline();
+        $basey = int($height - $range->mark($base)) + .5;
     } else {
         $basey = $height;
+        $base = $range->range->lower();
     }
 
     my $sksent = $series->key_count() - 1;
     for(0..$sksent) {
         # Add the series_count times the width to so that each bar
         # gets rendered with it's partner in the other series.
-
-        print "$basey: ".$vals[$_]."\n";
-
         my $x = $domain->mark($keys[$_]) + ($self->{'SCOUNT'} * $self->{'BWIDTH'});
+        my $y = $range->mark($vals[$_]);
 
-        if($vals[$_] > $range->base()) {
-            my $y = int($range->mark($vals[$_]));
-            # $cr->rectangle(
-            #     ($x + $padding) - $self->{'XOFFSET'}, $y,
-            #     - ($self->{'BWIDTH'} - $padding), $basey,
-            # );
-        } else {
-            my $y = $range->mark($vals[$_]);
-            print "$y\n";
+        if($vals[$_] >= $base) {
             $cr->rectangle(
                 ($x + $padding) - $self->{'XOFFSET'}, $basey,
-                - ($self->{'BWIDTH'} - $padding), $y
+                - ($self->{'BWIDTH'} - $padding), -int($y - ($height - $basey)),
+            );
+        } else {
+            $cr->rectangle(
+                ($x + $padding) - $self->{'XOFFSET'}, $basey,
+                - ($self->{'BWIDTH'} - $padding), int($height - $basey - $y),
             );
         }
     }
 
-    my $opac = $self->get_option('opacity');
     my $fillcolor;
-    if($opac) {
+    if($self->opacity()) {
         $fillcolor = $color->clone();
-        $fillcolor->alpha($opac);
+        $fillcolor->alpha($self->opacity());
     } else {
         $fillcolor = $color;
     }
@@ -113,14 +115,13 @@ sub draw {
     $cr->set_source_rgba($fillcolor->rgba());
     $cr->fill_preserve();
 
-    if(defined($stroke)) {
-        $cr->set_line_width($stroke->width());
-        $cr->set_line_cap($stroke->line_cap());
-        $cr->set_line_join($stroke->line_join());
 
-        $cr->set_source_rgba($color->rgba());
-        $cr->stroke();
-    }
+    $cr->set_line_width($self->stroke->width());
+    $cr->set_line_cap($self->stroke->line_cap());
+    $cr->set_line_join($self->stroke->line_join());
+
+    $cr->set_source_rgba($color->rgba());
+    $cr->stroke();
 
     $self->{'SCOUNT'}++;
 
@@ -142,13 +143,9 @@ Chart::Clicker::Renderer::Bar renders a dataset as bars.
 
   my $br = new Chart::Clicker::Renderer::Bar({});
 
-=head1 OPTIONS
+=head1 ATTRIBUTES
 
 =over 4
-
-=item stroke
-
-A stroke to use on each bar.
 
 =item opacity
 
@@ -158,6 +155,10 @@ If true this value will be used when setting the opacity of the bar's fill.
 
 How much padding to put around a bar.  A padding of 4 will result in 2 pixels
 on each side.
+
+=item stroke
+
+A stroke to use on each bar.
 
 =back
 

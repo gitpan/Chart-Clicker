@@ -1,4 +1,4 @@
-use Test::More tests => 20;
+use Test::More tests => 21;
 
 BEGIN {
     use_ok('Chart::Clicker');
@@ -116,7 +116,7 @@ $chart->set_dataset_domain_axis(2, 1);
 my $grid = new Chart::Clicker::Decoration::Grid();
 $chart->add($grid, $CC_CENTER, 0);
 
-my $plot = new Chart::Clicker::Decoration::Plot();
+my $plot = $chart->plot();
 $chart->add($plot, $CC_CENTER);
 ok(defined($plot), 'new Plot');
 
@@ -124,24 +124,24 @@ my $dmark = new Chart::Clicker::Data::Marker({
     key => 6,
     key2 => 8,
 });
+$chart->markers([ $dmark ]);
 my $rmark = new Chart::Clicker::Data::Marker({
     value => 225,
     value2 => 320
 });
-$chart->markers([ $dmark, $rmark ]);
+$chart->add_to_markers($rmark);
+cmp_ok(scalar(@{ $chart->markers() }), '==', 2, 'Marker count');
 
-my $area = new Chart::Clicker::Renderer::Area();
-ok(defined($area), 'new Renderer');
-$area->options({
+my $area = new Chart::Clicker::Renderer::Area(
     fade => 1,
     stroke => new Chart::Clicker::Drawing::Stroke({
         width => 2
     })
-});
+);
+ok(defined($area), 'new Renderer');
 my $point = new Chart::Clicker::Renderer::Point();
 my $line = new Chart::Clicker::Renderer::Line();
-my $bar = new Chart::Clicker::Renderer::Bar();
-$bar->options({ opacity => .60 });
+my $bar = new Chart::Clicker::Renderer::Bar(opacity => .60);
 
 $plot->renderers([$area, $point, $line, $bar]);
 $plot->set_renderer_for_dataset(1, 1);

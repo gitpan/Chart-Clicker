@@ -1,4 +1,4 @@
-use Test::More tests => 22;
+use Test::More tests => 21;
 
 BEGIN { use_ok('Chart::Clicker::Data::Series'); }
 
@@ -33,7 +33,6 @@ ok($keys[2] eq $skeys->[2], 'Key 2');
 
 eval {$series->prepare(); };
 ok(!$@, 'Series prepare()');
-ok($series->max_key_length() == length($keys[2]), 'Key Length');
 
 ok($series->key_count() == @keys, 'Key Count');
 ok($series->value_count() == @values, 'Value Count');

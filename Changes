@@ -1,5 +1,17 @@
 Revision history for Perl extension Chart::Clicker.
 
+1.4.0
+    - Add 'baseline' attribute to Axis
+    - Fix incorrect coloring of text on customized axes
+    - Add tick_labels to axis and make use of it in Simple
+    - Make axes and labels cope with dropped letters (e.g 'y' or 'j') properly
+    - Mooseify renderer options (the 'options' method is no longer used)
+    - Allow many objects with a color to be set with just the name ('black'
+      rather than 'new Chart::Clicker::Drawing::Color'...)
+    - Fix warnings in tests
+    - Line render shapes default to filled, shape_stroke provides method for
+      old method of doing strokes.
+    
 1.3.0
     - Fix broken Bar renderer
     - Add hide_axes and hide_grid to Simple

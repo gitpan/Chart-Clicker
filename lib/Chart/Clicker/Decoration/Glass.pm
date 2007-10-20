@@ -11,7 +11,8 @@ has 'glare_color' => (
         new Chart::Clicker::Drawing::Color(
             red => 1, green => 1, blue => 1, alpha => 1
         )
-    }
+    },
+    coerce => 1
 );
 
 use Chart::Clicker::Drawing::Color;

@@ -42,6 +42,11 @@ has 'tick_values' => (
     isa => 'ArrayRef',
     default => sub { [] }
 );
+has 'tick_labels' => (
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] }
+);
 
 has 'range' => (
     is => 'rw',
@@ -54,10 +59,11 @@ has '+color' => (
         new Chart::Clicker::Drawing::Color({
             red => 0, green => 0, blue => 0, alpha => 1
         })
-    }
+    },
+    coerce => 1
 );
 
-has 'base' => (
+has 'baseline' => (
     is  => 'rw',
     isa => 'Num',
 );
@@ -73,6 +79,14 @@ sub prepare {
 
     if($self->range->span() == 0) {
         die('This axis has a span of 0, that\'s fatal!');
+    }
+
+    if(defined($self->baseline())) {
+        if($self->range->lower() > $self->baseline()) {
+            $self->range->lower($self->baseline());
+        }
+    } else {
+        $self->baseline($self->range->lower());
     }
 
     if(!scalar(@{ $self->tick_values() })) {
@@ -93,14 +107,16 @@ sub prepare {
     my $key;
     if($self->visible()) {
         if($self->orientation() == $CC_HORIZONTAL) {
-            $key = 'height';
+            $key = 'total_height';
         } else {
             $key = 'width';
         }
         my @values = @{ $self->tick_values() };
         for(0..scalar(@values) - 1) {
-            my $val = $self->format_value($values[$_]);
+            #my $val = $self->format_value($values[$_]);
+            my $val = $self->format_value($self->tick_labels->[$_] || $values[$_]);
             my $ext = $cairo->text_extents($val);
+            $ext->{total_height} = $ext->{height} - $ext->{y_bearing};
             $self->{'ticks_extents_cache'}->[$_] = $ext;
             if($ext->{$key} > $biggest) {
                 $biggest = $ext->{$key};
@@ -114,12 +130,13 @@ sub prepare {
 
     if ($self->label()) {
         my $ext = $cairo->text_extents($self->label());
+        $ext->{total_height} = $ext->{height} - $ext->{y_bearing};
         $self->{'label_extents_cache'} = $ext;
     }
 
     if($self->orientation() == $CC_HORIZONTAL) {
         my $label_height = $self->label()
-            ? $self->{'label_extents_cache'}->{'height'} + 3
+            ? $self->{'label_extents_cache'}->{'total_height'}
             : 0;
         $self->height($biggest + $label_height + 4);
         $self->width($dimension->width());
@@ -127,20 +144,12 @@ sub prepare {
     } else {
         # The label will be rotated, so use height here too.
         my $label_width = $self->label()
-            ? $self->{'label_extents_cache'}->{'height'} + 3
+            ? $self->{'label_extents_cache'}->{'total_height'}
             : 0;
         $self->width($biggest + $label_width + 4);
         $self->height($dimension->height());
         $self->per($self->height() / $self->range->span());
     }
-
-    # if(defined($self->base())) {
-    #     if($self->range->lower() > $self->base()) {
-    #         $self->range->lower($self->base());
-    #     }
-    # } else {
-    #     $self->base($self->range->lower());
-    # }
 
     return 1;
 }
@@ -155,7 +164,7 @@ sub mark {
         $self->{'LOWER'} = $self->range->lower();
     }
     # This is rounded and .5'ed to get the lines nice and sharp for Cairo.
-    return int($self->per() * ($value - $self->{'LOWER'})) + .5;
+    return int($self->per() * ($value - $self->{'LOWER'} || 0)) + .5;
 }
 
 sub draw {
@@ -202,6 +211,8 @@ sub draw {
 
     my $lower = $self->range->lower();
 
+    $cr->set_source_rgba($self->color->rgba());
+
     $cr->move_to($x, $y);
     if($orient == $CC_HORIZONTAL) {
         # Draw a line for our axis
@@ -222,7 +233,7 @@ sub draw {
                 $cr->line_to($ix, $y + $tick_length);
                 $cr->rel_move_to(-($ext->{'width'} / 2), $ext->{'height'} + 2);
             }
-            $cr->show_text($self->format_value($val));
+            $cr->show_text($self->format_value($self->tick_labels->[$_] || $val));
         }
 
         # Draw the label
@@ -269,7 +280,6 @@ sub draw {
         }
     }
 
-    $cr->set_source_rgba($self->color->rgba());
     $cr->stroke();
 
     return $surf;
@@ -333,6 +343,12 @@ defaults are chosen.
 
 =over 4
 
+=item baseline
+
+Set the 'baseline' value of this axis.  This is used by some renderers to
+change the way a value is marked.  The Bar render, for instance, considers
+values below the base to be 'negative'.
+
 =item color
 
 Set/Get the color of the axis.
@@ -393,10 +409,17 @@ Set/Get the stroke for the tick markers.
 
 Set/Get the arrayref of values show as ticks on this Axis.
 
+=item tick_labels
+
+Set/Get the arrayref of labels to show for ticks on this Axis.  This arrayref
+is consulted for every tick, in order.  So placing a string at the zeroeth
+index will result in it being displayed on the zeroeth tick, etc, etc.
+
 =item ticks
 
 Set/Get the number of 'ticks' to show.  Setting this will divide the
-range on this axis by the specified value to establish tick values.
+range on this axis by the specified value to establish tick values.  This
+will have no effect if you specify tick_values.
 
 =item mark
 

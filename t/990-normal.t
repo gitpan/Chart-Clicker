@@ -94,18 +94,18 @@ $chart->domain_axes([ $daxis ]);
 my $grid = new Chart::Clicker::Decoration::Grid();
 $chart->add($grid, $CC_CENTER, 0);
 
-my $plot = new Chart::Clicker::Decoration::Plot();
+my $plot = $chart->plot();
+#$chart->plot($plot);
 $chart->add($plot, $CC_CENTER);
 ok(defined($plot), 'new Plot');
 
-my $area = new Chart::Clicker::Renderer::Area();
-ok(defined($area), 'new Renderer');
-$area->options({
+my $area = new Chart::Clicker::Renderer::Area(
     fade => 1,
     stroke => new Chart::Clicker::Drawing::Stroke({
         width => 2
     })
-});
+);
+ok(defined($area), 'new Renderer');
 my $point = new Chart::Clicker::Renderer::Point();
 my $line = new Chart::Clicker::Renderer::Line();
 $plot->renderers([$area, $point, $line]);

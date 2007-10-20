@@ -11,8 +11,7 @@ enum 'Formats' => (
 );
 
 has 'format' => (
-    is      => 'ro',
-    required=> 0,
+    is      => 'rw',
     isa     => 'Formats',
     default => 'png'
 );
@@ -104,7 +103,7 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-our $VERSION = '1.3.0';
+our $VERSION = '1.4.0';
 
 sub new {
     my $proto = shift();
@@ -118,6 +117,13 @@ sub new {
     $self->{'RRANGEAXIS'} = {};
 
     return $self;
+}
+
+sub add_to_markers {
+    my $self = shift();
+    my $marker = shift();
+
+    push(@{ $self->markers() }, $marker);
 }
 
 sub add_to_datasets {
@@ -186,12 +192,10 @@ sub prepare {
         my $raxis = $self->get_dataset_range_axis($count);
 
         if(defined($raxis)) {
-            if(defined($rend)) {
-                if($rend->additive()) {
-                    $raxis->range->combine($ds->combined_range());
-                } else {
-                    $raxis->range->combine($ds->range());
-                }
+            if($rend->additive()) {
+                $raxis->range->combine($ds->combined_range());
+            } else {
+                $raxis->range->combine($ds->range());
             }
         }
 
@@ -511,6 +515,7 @@ Clicker supports PNG and SVG output.
 
   my $plot = new Chart::Clicker::Decoration::Plot();
   $plot->renderers([$renderer]);
+  $chart->plot($plot);
 
   $chart->add($plot, $CC_CENTER);
 
@@ -551,9 +556,13 @@ insets and borders.
 
 Draw this chart
 
+=item add_to_markers
+
+Add the specified marker to the chart.
+
 =item add_to_datasets
 
-Add the specified dataset (or array or datasets) to the cart.
+Add the specified dataset (or array or datasets) to the chart.
 
 =item prepare
 

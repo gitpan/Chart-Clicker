@@ -5,16 +5,16 @@ use Moose;
 use Chart::Clicker::Drawing::Color;
 use Chart::Clicker::Drawing::Stroke;
 
-
 has 'color' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Color',
+    isa => 'Color',
     default => sub { new Chart::Clicker::Drawing::Color(
         red     => 0,
         green   => 0,
         blue    => 0,
         alpha   => 1
-    ) }
+    ) },
+    coerce => 1
 );
 
 has 'stroke' => (

@@ -1,9 +1,26 @@
 package Chart::Clicker::Renderer::Area;
 use Moose;
+use Cairo;
 
 extends 'Chart::Clicker::Renderer::Base';
 
-use Cairo;
+use Chart::Clicker::Drawing::Stroke;
+
+has 'fade' => (
+    is => 'rw',
+    isa => 'Bool',
+    default => 0
+);
+has 'opacity' => (
+    is => 'rw',
+    isa => 'Num',
+    default => 0
+);
+has 'stroke' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Stroke',
+    default => sub { new Chart::Clicker::Drawing::Stroke() }
+);
 
 sub draw {
     my $self = shift();
@@ -16,14 +33,9 @@ sub draw {
     my $height = $self->height();
     my $width = $self->width();
 
-    my $linewidth = 1;
-    my $stroke = $self->get_option('stroke');
-    if($stroke) {
-        $linewidth = $stroke->width();
-        $cr->set_line_cap($stroke->line_cap());
-        $cr->set_line_join($stroke->line_join());
-    }
-    $cr->set_line_width($linewidth);
+    $cr->set_line_width($self->stroke->width());
+    $cr->set_line_cap($self->stroke->line_cap());
+    $cr->set_line_join($self->stroke->line_join());
 
     $cr->new_path();
 
@@ -57,13 +69,12 @@ sub draw {
     $cr->line_to($startx, $height);
     $cr->close_path();
 
-    my $opac = $self->get_option('opacity');
-    if($opac) {
+    if($self->opacity()) {
 
         my $clone = $color->clone();
-        $clone->alpha($opac);
+        $clone->alpha($self->opacity());
         $cr->set_source_rgba($clone->rgba());
-    } elsif($self->get_option('fade')) {
+    } elsif($self->fade()) {
 
         my $patt = Cairo::LinearGradient->create(0.0, 0.0, 1.0, $height);
         $patt->add_color_stop_rgba(
@@ -97,16 +108,14 @@ Chart::Clicker::Renderer::Area renders a dataset as lines.
 
 =head1 SYNOPSIS
 
-  my $ar = new Chart::Clicker::Renderer::Area();
-  # Optionally set some options
-  $ar->options({
-    fade => 1,
-    stroke => new Chart::Clicker::Drawing::Stroke({
-        width => 2
-    })
+  my $ar = new Chart::Clicker::Renderer::Area({
+      fade => 1,
+      stroke => new Chart::Clicker::Drawing::Stroke({
+          width => 2
+      })
   });
 
-=head1 OPTIONS
+=head1 ATTRIBUTES
 
 =over 4
 

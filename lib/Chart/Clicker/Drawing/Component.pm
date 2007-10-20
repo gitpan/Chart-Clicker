@@ -4,6 +4,7 @@ use Moose;
 use Moose::Util::TypeConstraints;
 
 use Chart::Clicker::Drawing qw(:positions);
+use Chart::Clicker::Drawing::Color;
 use Chart::Clicker::Drawing::Dimension;
 use Chart::Clicker::Drawing::Insets;
 
@@ -12,9 +13,9 @@ use Cairo;
 enum 'Orientations' => ($CC_HORIZONTAL, $CC_VERTICAL);
 enum 'Positions' => ($CC_TOP, $CC_BOTTOM, $CC_LEFT, $CC_RIGHT );
 
-has 'background_color' => ( is => 'rw', isa => 'Chart::Clicker::Drawing::Color' );
+has 'background_color' => ( is => 'rw', isa => 'Color', coerce => 1 );
 has 'border' => ( is => 'rw', isa => 'Chart::Clicker::Drawing::Border' );
-has 'color' => ( is => 'rw', isa => 'Chart::Clicker::Drawing::Color' );
+has 'color' => ( is => 'rw', isa => 'Color', coerce => 1 );
 has 'height' => ( is => 'rw', isa => 'Num' );
 has 'width' => ( is => 'rw', isa => 'Num' );
 has 'location' => ( is => 'rw', isa => 'Chart::Clicker::Drawing::Point' );

@@ -5,6 +5,18 @@ extends 'Chart::Clicker::Renderer::Base';
 
 use Chart::Clicker::Shape::Arc;
 
+has 'shape' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Shape',
+    default => sub {
+        new Chart::Clicker::Shape::Arc({
+           radius => 3,
+           angle1 => 0,
+           angle2 => 360
+        });
+    }
+);
+
 sub draw {
     my $self = shift();
     my $clicker = shift();
@@ -19,15 +31,6 @@ sub draw {
     my $yper = $range->per();
     my $height = $self->height();
 
-    my $shape = $self->get_option('shape');
-    unless($shape) {
-        $shape = new Chart::Clicker::Shape::Arc({
-           radius => 3,
-           angle1 => 0,
-           angle2 => 360
-        });
-    }
-
     my @vals = @{ $series->values() };
     my @keys = @{ $series->keys() };
     for(0..($series->key_count() - 1)) {
@@ -35,7 +38,7 @@ sub draw {
         my $y = $height - $range->mark($vals[$_]);
 
         $cr->move_to($x, $y);
-        $shape->create_path($cr, $x , $y);
+        $self->shape->create_path($cr, $x , $y);
     }
     my $color = $clicker->color_allocator->next();
     $cr->set_source_rgba($color->rgba());
@@ -57,9 +60,7 @@ Chart::Clicker::Renderer::Point renders a dataset as points.
 
 =head1 SYNOPSIS
 
-  my $pr = new Chart::Clicker::Renderer::Point();
-  # Optionally set a shape.  Defaults to a circle.
-  $pr->options({ 
+  my $pr = new Chart::Clicker::Renderer::Point({
     shape => new Chart::Clicker::Shape::Arc({
         angle1 => 0,
         angle2 => 180,
@@ -67,7 +68,7 @@ Chart::Clicker::Renderer::Point renders a dataset as points.
     })
   });
 
-=head1 OPTIONS
+=head1 ATTRIBUTES
 
 =over 4
 

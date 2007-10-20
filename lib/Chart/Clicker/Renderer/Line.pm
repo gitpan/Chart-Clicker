@@ -3,7 +3,21 @@ use Moose;
 
 extends 'Chart::Clicker::Renderer::Base';
 
-use Cairo;
+use Chart::Clicker::Drawing::Stroke;
+
+has 'shape' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Shape'
+);
+has 'shape_stroke' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Stroke',
+);
+has 'stroke' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Drawing::Stroke',
+    default => sub { new Chart::Clicker::Drawing::Stroke() }
+);
 
 sub draw {
     my $self = shift();
@@ -16,13 +30,9 @@ sub draw {
     my $height = $self->height();
     my $linewidth = 1;
 
-    my $stroke = $self->get_option('stroke');
-    if($stroke) {
-        $linewidth = $stroke->width();
-        $cr->set_line_cap($stroke->line_cap());
-        $cr->set_line_join($stroke->line_join());
-    }
-    $cr->set_line_width($linewidth);
+    $cr->set_line_cap($self->stroke->line_cap());
+    $cr->set_line_join($self->stroke->line_join());
+    $cr->set_line_width($self->stroke->width());
 
     $cr->new_path();
 
@@ -31,8 +41,6 @@ sub draw {
 
     my @vals = @{ $series->values() };
     my @keys = @{ $series->keys() };
-
-    my $shape = $self->get_option('shape');
 
     my $kcount = $series->key_count() - 1;
 
@@ -47,12 +55,20 @@ sub draw {
     }
     $cr->stroke();
 
-    if(defined($shape)) {
+    if(defined($self->shape())) {
         for(0..$kcount) {
             my $x = $domain->mark($keys[$_]);
             my $y = $height - $range->mark($vals[$_]);
-            $shape->create_path($cr, $x, $y);
-            $cr->stroke();
+            $self->shape->create_path($cr, $x, $y);
+
+            if($self->shape_stroke()) {
+                $cr->set_line_cap($self->shape_stroke->line_cap());
+                $cr->set_line_join($self->shape_stroke->line_join());
+                $cr->set_line_width($self->shape_stroke->width());
+                $cr->stroke();
+            } else {
+                $cr->fill();
+            }
         }
     }
 
@@ -72,17 +88,24 @@ Chart::Clicker::Renderer::Line renders a dataset as lines.
 
 =head1 SYNOPSIS
 
-  my $lr = new Chart::Clicker::Renderer::Line();
-  # Optionally set the stroke
-  $lr->options({
+  my $lr = new Chart::Clicker::Renderer::Line(
     stroke => new Chart::Clicker::Drawing::Stroke({
       ...
     })
   });
 
-=head1 OPTIONS
+=head1 ATTRIBUTES
 
 =over 4
+
+=item shape
+
+Set a shape object to draw at each of the data points.
+
+=item shape_stroke
+
+Define the stroke to be used on the shapes at each point.  If no shape_stroke
+is provided, then the shapes will be billed.
 
 =item stroke
 

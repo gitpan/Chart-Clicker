@@ -24,8 +24,12 @@ has 'renderer' => (
 has 'width' => ( is => 'rw', isa => 'Int', default => 400 );
 has 'hide_axes' => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'hide_grid' => ( is => 'rw', isa => 'Bool', default => 0 );
-#has 'range_base' => ( is => 'rw', isa => 'Num' );
+has 'range_baseline' => ( is => 'rw', isa => 'Num' );
 has 'format' => ( is => 'ro', isa => 'Str', default => 'png' );
+has 'domain_tick_format' => ( is => 'ro', isa => 'Str' );
+has 'domain_tick_values' => ( is => 'ro', isa => 'ArrayRef', default => sub { [] } );
+has 'domain_tick_labels' => ( is => 'ro', isa => 'ArrayRef', default => sub { [] } );
+has 'range_tick_format' => ( is => 'ro', isa => 'Str' );
 
 sub new {
     my $proto = shift();
@@ -63,10 +67,14 @@ sub new {
     my $daxis = new Chart::Clicker::Axis({
         orientation => $CC_HORIZONTAL,
         position    => $CC_BOTTOM,
-        format      => '%0.2f',
         label       => $self->domain_label(),
         visible     => !$self->hide_axes()
     });
+    $daxis->format($self->domain_tick_format());
+    if(defined($self->domain_tick_values())) {
+        $daxis->tick_values($self->domain_tick_values());
+        $daxis->tick_labels($self->domain_tick_labels());
+    }
 
     $chart->add($daxis, $CC_AXIS_BOTTOM);
 
@@ -74,11 +82,11 @@ sub new {
     my $raxis = new Chart::Clicker::Axis({
         orientation => $CC_VERTICAL,
         position    => $CC_LEFT,
-        format      => '%0.2f',
         label       => $self->range_label(),
         visible     => !$self->hide_axes(),
-        #base        => $self->range_base(),
+        baseline    => $self->range_baseline(),
     });
+    $raxis->format($self->range_tick_format());
     $chart->add($raxis, $CC_AXIS_LEFT);
 
     $chart->range_axes([ $raxis ]);

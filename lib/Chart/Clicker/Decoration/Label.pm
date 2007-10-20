@@ -4,17 +4,19 @@ use Moose;
 extends 'Chart::Clicker::Decoration';
 
 use Chart::Clicker::Drawing qw(:positions);
+use Chart::Clicker::Drawing::Color;
 use Chart::Clicker::Drawing::Font;
 use Chart::Clicker::Drawing::Insets;
 
 has 'color' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Color',
+    isa => 'Color',
     default => sub {
         new Chart::Clicker::Drawing::Color(
             red => 0, green => 0, blue => 0, alpha => .30
         )
-    }
+    },
+    coerce => 1
 );
 
 has 'font' => (
@@ -69,16 +71,18 @@ sub prepare {
         $cr->save();
         $cr->rotate($VERTICAL);
         $extents = $cr->text_extents($self->text());
+        $extents->{total_height} = $extents->{height} - $extents->{y_bearing};
         $cr->restore();
         $self->width(
-            $extents->{'height'} + $insets->left() + $insets->right()
+            $extents->{'total_height'} + $insets->left() + $insets->right()
         );
         $self->height($dimension->height());
     } else {
         $extents = $cr->text_extents($self->text());
+        $extents->{total_height} = $extents->{height} - $extents->{y_bearing};
         $self->width($dimension->width());
         $self->height(
-            $extents->{'height'} + $insets->top() + $insets->bottom()
+            $extents->{'total_height'} + $insets->top() + $insets->bottom()
         );
     }
 

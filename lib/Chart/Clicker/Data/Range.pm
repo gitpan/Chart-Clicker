@@ -41,7 +41,7 @@ after 'max' => sub {
 sub span {
     my $self = shift();
 
-    return ($self->upper() - $self->lower()) || 1;
+    return ($self->upper() - $self->lower());
 }
 
 sub combine {

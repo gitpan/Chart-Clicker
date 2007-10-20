@@ -7,7 +7,6 @@ has 'error_count' => ( is => 'rw', isa => 'Int' );
 has 'errors' => ( is => 'rw', isa => 'Num' );
 has 'key_count' => ( is => 'rw', isa => 'Int' );
 has 'value_count' => ( is => 'rw', isa => 'Int' );
-has 'max_key_length' => ( is => 'rw', isa => 'Int' );
 has 'name' => ( is => 'rw', isa => 'Str' );
 has 'range' => (
     is => 'rw',
@@ -58,12 +57,6 @@ sub prepare {
 
         my $val = $values->[$count];
 
-        # Length!
-        my $l = length($key);
-        if($l > $long) {
-            $long = $l;
-        }
-
         # Max
         if($val > $max) {
             $max = $val;
@@ -75,7 +68,6 @@ sub prepare {
         }
         $count++;
     }
-    $self->max_key_length($long);
     $self->range(
         new Chart::Clicker::Data::Range({ lower => $min, upper => $max })
     );
@@ -116,21 +108,31 @@ Chart::Clicker::Data::Series is the core class
 
 Creates a new, empty Series
 
-=item name
+=item count
 
-Set/Get the name for this Series
+Return a count of the number of values in this series.  Only available
+after the series has been prepared.
+
+=item errors
+
+Set/Get the errors for this series.
+
+=item key_count
+
+Return a count of the number of keys in this series.  Only available
+after the series has been prepared.
 
 =item keys
 
 Set/Get the keys for this series.
 
-=item values
+=item name
 
-Set/Get the values for this series.
+Set/Get the name for this Series
 
-=item errors
+=item numeric_keys
 
-Set/Get the errors for this series.
+Set/Get the flag that denotes if this series' keys are all numeric.
 
 =item prepare
 
@@ -141,19 +143,9 @@ various things.
 
 Returns the range for this series.
 
-=item length
+=item values
 
-Returns the length of the longest key in this series.
-
-=item key_count
-
-Return a count of the number of keys in this series.  Only available
-after the series has been prepared.
-
-=item count
-
-Return a count of the number of values in this series.  Only available
-after the series has been prepared.
+Set/Get the values for this series.
 
 =back
 

@@ -42,46 +42,18 @@ sub prepare {
     foreach my $series (@{ $self->series() }) {
         $series->prepare();
 
-        # If RANGE is defined, combine it.
-        if(defined($self->range())) {
-            $self->range->combine($series->range());
-            $self->combined_range->add($series->range());
+        $self->range->combine($series->range());
+        $self->combined_range->add($series->range());
 
-            my @keys = @{ $series->keys() };
+        my @keys = @{ $series->keys() };
 
-            $self->domain->combine(
-                new Chart::Clicker::Data::Range({
-                    lower => $keys[0], upper => $keys[ $#keys ]
-                })
-            );
+        $self->domain->combine(
+            new Chart::Clicker::Data::Range({
+                lower => $keys[0], upper => $keys[ $#keys ]
+            })
+        );
 
-            if($series->key_count() > $self->max_key_count()) {
-                $self->max_key_count($series->key_count());
-            }
-        } else {
-            # ...or if it's not defined then set it to the values of
-            # this first series.
-
-            $self->range(
-                new Chart::Clicker::Data::Range({
-                    lower => $series->range->lower(),
-                    upper => $series->range->upper()
-                })
-            );
-
-            $self->combined_range(
-                new Chart::Clicker::Data::Range({
-                    lower => $series->range->lower(),
-                    upper => $series->range->upper()
-                })
-            );
-
-            $self->domain(
-                new Chart::Clicker::Data::Range({
-                    lower => $series->keys->[0],
-                    upper => $series->keys->[ $#{ $series->keys() } ]
-                })
-            );
+        if($series->key_count() > $self->max_key_count()) {
             $self->max_key_count($series->key_count());
         }
     }

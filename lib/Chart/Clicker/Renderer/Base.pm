@@ -3,20 +3,8 @@ use Moose;
 
 extends 'Chart::Clicker::Drawing::Component';
 
-has 'options' => ( is => 'rw', isa => 'HashRef' );
 has 'dataset_count' => ( is => 'rw', isa => 'Int' );
 has 'additive' => ( is => 'ro', isa => 'Bool', default => 0 );
-
-sub get_option {
-    my $self = shift();
-    my $key = shift();
-
-    if(defined($self->options())) {
-        return $self->options->{$key};
-    }
-
-    return;
-}
 
 sub prepare {
     my $self = shift();
