@@ -17,6 +17,7 @@ has 'font' => (
     default => sub { new Chart::Clicker::Drawing::Font(); }
 );
 has 'format' => ( is => 'rw', isa => 'Str' );
+has 'fudge_amount' => ( is => 'rw', isa => 'Num', default => .10 );
 has 'label' => ( is => 'rw', isa => 'Str' );
 has 'per' => ( is => 'rw', isa => 'Num' );
 has 'position' => ( is => 'rw', isa => 'Positions' );
@@ -66,6 +67,7 @@ has '+color' => (
 has 'baseline' => (
     is  => 'rw',
     isa => 'Num',
+	default => 0
 );
 
 has 'orientation' => ( is => 'rw', isa => 'Orientations' );
@@ -87,6 +89,14 @@ sub prepare {
         }
     } else {
         $self->baseline($self->range->lower());
+    }
+
+    if($self->fudge_amount()) {
+        my $span = $self->range->span();
+        my $lower = $self->range->lower();
+        $self->range->lower($lower - abs($span * $self->fudge_amount()));
+        my $upper = $self->range->upper();
+        $self->range->upper($upper + ($span * $self->fudge_amount()));
     }
 
     if(!scalar(@{ $self->tick_values() })) {
@@ -113,7 +123,6 @@ sub prepare {
         }
         my @values = @{ $self->tick_values() };
         for(0..scalar(@values) - 1) {
-            #my $val = $self->format_value($values[$_]);
             my $val = $self->format_value($self->tick_labels->[$_] || $values[$_]);
             my $ext = $cairo->text_extents($val);
             $ext->{total_height} = $ext->{height} - $ext->{y_bearing};

@@ -1,5 +1,12 @@
 Revision history for Perl extension Chart::Clicker.
 
+1.4.1
+    - Add fudge_amount attribute to Axis, defaulting to .1, that tells Clicker
+      how much to fudge the amount upper and lower values of the range.
+    - Fix drawing-insets test index mistype
+    - Fix range baseline throwing Moose errors on undef
+    - Fix broken layout test
+
 1.4.0
     - Add 'baseline' attribute to Axis
     - Fix incorrect coloring of text on customized axes

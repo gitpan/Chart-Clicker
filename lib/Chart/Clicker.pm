@@ -45,18 +45,18 @@ has 'markers' => (
     default => sub { [] }
 );
 
-has 'range_axes' => (
-    is => 'rw',
-    isa => 'ArrayRef',
-    default => sub { [] }
-);
-
 has 'plot' => (
     is => 'rw',
     isa => 'Chart::Clicker::Decoration::Plot',
     default => sub {
         new Chart::Clicker::Decoration::Plot()
     }
+);
+
+has 'range_axes' => (
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] }
 );
 
 has 'surface' => (
@@ -103,7 +103,7 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-our $VERSION = '1.4.0';
+our $VERSION = '1.4.1';
 
 sub new {
     my $proto = shift();
@@ -182,6 +182,9 @@ sub prepare {
         }
 
         my $rend = $plot->renderers->[$plot->get_renderer_for_dataset($count)];
+		if(!defined($rend)) {
+			die("Can't find a renderer, that's fatal!");
+		}
         $ds->prepare();
 
         my $daxis = $self->get_dataset_domain_axis($count);

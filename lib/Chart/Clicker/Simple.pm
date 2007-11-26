@@ -84,8 +84,12 @@ sub new {
         position    => $CC_LEFT,
         label       => $self->range_label(),
         visible     => !$self->hide_axes(),
-        baseline    => $self->range_baseline(),
     });
+
+	if(defined($self->range_baseline())) {
+		$raxis->baseline($self->range_baseline());
+	}
+
     $raxis->format($self->range_tick_format());
     $chart->add($raxis, $CC_AXIS_LEFT);
 
@@ -98,14 +102,13 @@ sub new {
     }
 
     # Plot
-    my $plot = new Chart::Clicker::Decoration::Plot();
+	my $plot = $chart->plot();
     $plot->renderers([ $self->renderer() ]);
     unless(defined($self->renderer())) {
         die('Please provider a renderer!');
     }
 
     $chart->add($plot, $CC_CENTER);
-    $chart->plot($plot);
 
     #$plot->set_renderer_for_dataset(0, 0);
 

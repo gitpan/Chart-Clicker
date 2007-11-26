@@ -39,6 +39,9 @@ $chart->datasets([ $dataset ]);
 my $tlabel = new Chart::Clicker::Decoration::Label({ text => 'Danes', orientation => $CC_HORIZONTAL});
 $chart->add($tlabel, $CC_TOP);
 
+my $plot = $chart->plot();
+$plot->renderers([ new Chart::Clicker::Renderer::Area() ]);
+
 $chart->prepare();
 
 ok($tlabel->location->x() == ($chart->insets->left() + 1), 'Label X position');
