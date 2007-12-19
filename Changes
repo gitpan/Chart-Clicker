@@ -1,5 +1,8 @@
 Revision history for Perl extension Chart::Clicker.
 
+1.4.2
+    - Some packaging fixes.
+
 1.4.1
     - Add fudge_amount attribute to Axis, defaulting to .1, that tells Clicker
       how much to fudge the amount upper and lower values of the range.

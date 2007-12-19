@@ -103,7 +103,7 @@ use Chart::Clicker::Drawing::Point;
 
 use Cairo;
 
-our $VERSION = '1.4.1';
+our $VERSION = '1.4.2';
 
 sub new {
     my $proto = shift();
