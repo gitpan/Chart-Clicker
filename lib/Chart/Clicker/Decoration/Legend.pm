@@ -5,78 +5,55 @@ extends 'Chart::Clicker::Decoration';
 
 use Chart::Clicker::Decoration::LegendItem;
 
-use Chart::Clicker::Drawing qw(:positions);
-use Chart::Clicker::Drawing::Border;
-use Chart::Clicker::Drawing::Font;
-use Chart::Clicker::Drawing::Insets;
+use Graphics::Primitive::Font;
+use Graphics::Primitive::Insets;
 
-has 'tallest' => ( is => 'rw', isa => 'Num' );
-has 'widest' => ( is => 'rw', isa => 'Num' );
-
-has '+border' => (
-    default => sub { new Chart::Clicker::Drawing::Border() }
-);
-
-has '+insets' => (
+has 'font' => (
+    is => 'rw',
+    isa => 'Graphics::Primitive::Font',
     default => sub {
-        new Chart::Clicker::Drawing::Insets(
-            top => 3, left => 3, bottom => 3, right => 3
-        )
+        Graphics::Primitive::Font->new()
     }
 );
-
-has 'item_insets' => (
+has 'item_padding' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Insets',
+    isa => 'Graphics::Primitive::Insets',
     default => sub {
-        new Chart::Clicker::Drawing::Insets({
+        Graphics::Primitive::Insets->new({
             top => 3, left => 3, bottom => 0, right => 0
         })
     }
 );
-
 has 'legend_items' => (
     is => 'rw',
     isa => 'ArrayRef',
     default => sub { [ ] }
 );
+has 'tallest' => ( is => 'rw', isa => 'Num' );
+has 'widest' => ( is => 'rw', isa => 'Num' );
 
-has 'font' => (
-    is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Font',
-    default => sub {
-        new Chart::Clicker::Drawing::Font()
-    }
-);
-
-has 'orientation' => (
-    is => 'rw',
-    isa => 'Orientations',
-    default => $CC_HORIZONTAL
-);
-
-sub prepare {
+override('prepare', sub {
     my $self = shift();
     my $clicker = shift();
     my $dimension = shift();
 
-    my $ca = $clicker->color_allocator();
+    my $ca = $self->clicker->color_allocator();
 
     my $font = $self->font();
 
-    my $cr = $clicker->context();
+    my $cr = $self->clicker->cairo();
     $cr->save();
 
     $cr->select_font_face($font->face(), $font->slant(), $font->weight());
     $cr->set_font_size($font->size());
 
-    my $ii = $self->item_insets();
+    my $ii = $self->item_padding();
 
     my $count = 0;
     my $long = 0;
     my $tall = 0;
     my @items;
-    foreach my $ds (@{ $clicker->datasets() }) {
+    foreach my $ds (@{ $self->clicker->datasets() }) {
         foreach my $s (@{ $ds->series() }) {
 
             my $label = $s->name();
@@ -91,7 +68,7 @@ sub prepare {
             if($tall < $extents->{'height'}) {
                 $tall = $extents->{'height'};
             }
-            push(@items, new Chart::Clicker::Decoration::LegendItem({
+            push(@items, Chart::Clicker::Decoration::LegendItem->new({
                 color   => $ca->next(),
                 font    => $font,
                 insets  => $ii,
@@ -106,71 +83,66 @@ sub prepare {
 
     $self->legend_items(\@items);
 
-    my $per;
-    my $insets;
-    my $biggest;
-    if($self->orientation() == $CC_HORIZONTAL) {
-        $biggest = $self->widest();
-        # Calculate the maximum width needed for a 'cell'
-        $per = ($dimension->width() / $long);
-    } else {
-        $biggest = $self->tallest();
-        # Calculate the maximum height needed for a 'cell'
-        $per = ($dimension->height() / $tall);
-    }
-    if($per < 1) {
-        $per = 1;
-    }
-    my $rows = $count / $per;
-    if($rows != int($rows)) {
-        $rows = int($rows) + 1;
-    }
+    # my $per;
+    # my $insets;
+    # my $biggest;
+    # if($self->orientation() == $CC_HORIZONTAL) {
+    #     $biggest = $self->widest();
+    #     # Calculate the maximum width needed for a 'cell'
+    #     $per = ($dimension->width() / $long);
+    # } else {
+    #     $biggest = $self->tallest();
+    #     # Calculate the maximum height needed for a 'cell'
+    #     $per = ($dimension->height() / $tall);
+    # }
+    # if($per < 1) {
+    #     $per = 1;
+    # }
+    # my $rows = $count / $per;
+    # if($rows != int($rows)) {
+    #     $rows = int($rows) + 1;
+    # }
 
     $cr->restore();
 
-    if($self->orientation() == $CC_HORIZONTAL) {
-        $self->width($dimension->width());
-        $self->height(
-            # The number of rows we need
-            $rows
-            # The 'biggest' row (longest or tallest, depending on orientation)
-            * $self->tallest()
-            # and finally our insets
-            + $self->insets->top() + $self->insets->bottom()
-            + $self->border->stroke->width() * 2
-        );
-    } else {
-        $self->height($dimension->height());
+    if($self->is_vertical) {
+        $self->height($self->tallest);
         $self->width(
             # The number of rows we need
-            $rows
+            # $rows
             # The 'biggest' row (longest or tallest, depending on orientation)
-            * $self->widest()
+            $self->widest + $self->outside_width
             # and finally our insets
-            + $self->insets->right() + $self->insets->left()
-            + $self->border->stroke->width() * 2
+            # + $self->insets->right() + $self->insets->left()
+            # + $self->border->stroke->width() * 2
         );
-    }
-    if($self->margins()) {
-        my $margins = $self->margins();
-        $self->height($self->height() + $margins->top() + $margins->bottom());
-        $self->width($self->width() + $margins->left() + $margins->right());
+    } else {
+        $self->minimum_width($self->widest);
+        $self->minimum_height(
+            # The number of rows we need
+            # $rows
+            # The 'biggest' row (longest or tallest, depending on orientation)
+            $self->tallest + $self->outside_height
+            # and finally our insets
+            # + $self->insets->top() + $self->insets->bottom()
+            # + $self->border->stroke->width() * 2
+        );
     }
 
     $ca->reset();
 
     return 1;
-}
+});
 
-sub draw {
+override('draw', sub {
     my $self = shift();
     my $clicker = shift();
 
     my $width = $self->width();
     my $height = $self->height();
 
-    my $surface = $self->SUPER::draw($clicker);
-    my $cr = Cairo::Context->create($surface);
+    $self->SUPER::draw($clicker);
+    my $cr = $self->clicker->cairo();
 
     $cr->select_font_face($self->font->face(), $self->font->slant(), $self->font->weight());
     $cr->set_font_size($self->font->size());
@@ -182,10 +154,12 @@ sub draw {
         $my = $self->margins->top();
     }
 
-    my $x = 0 + $self->insets->left() + $mx;
+    # TODO honor padding/margin
+    my $x = 0;# + $self->insets->left() + $mx;
     # This will break if there are no items...
     # Start at the top + insets...
-    my $y = 0 + $my + $self->insets->top();
+    # TODO honor padding/margin
+    my $y = 0;# + $my + $self->insets->top();
     foreach my $item (@{ $self->legend_items() }) {
 
         my $extents = $cr->text_extents($item->label());
@@ -193,12 +167,12 @@ sub draw {
         # This item's label might not be as tall as the tallest (or wide as the
         # widest) one we will draw, so we must center this item in the
         # available space.
-        my $vcenter = int(($self->tallest() - $extents->{'height'}) / 2);
-        my $center = int(($self->widest() - $extents->{'width'}) / 2);
+        my $vcenter = ($self->tallest() - $extents->{'height'}) / 2;
+        my $center = ($self->widest() - $extents->{'width'}) / 2;
 
         $cr->move_to($x + $center, $y + $extents->{'height'} + $vcenter);
         $cr->text_path($item->label());
-        $cr->set_source_rgba($item->color->rgba());
+        $cr->set_source_rgba($item->color->as_array_with_alpha());
         $cr->fill();
 
         # Check to see if we need to wrap
@@ -206,14 +180,14 @@ sub draw {
             # No need to wrap.
             $x += $self->widest();
         } else {
-            # Wrap!  Honor insets...
-            $x = $self->insets->left();
+            # Wrap!  TODO Honor insets...
+            $x = 0;#$self->insets->left();
             $y += $self->tallest();
         }
     }
+});
 
-    return $surface;
-}
+no Moose;
 
 1;
 __END__
@@ -234,32 +208,52 @@ Chart::Clicker::Decoration::Legend draws a legend on a Chart.
 
 =over 4
 
-=item new
+=item I<new>
 
 Creates a new Legend object.
 
 =back
 
-=head2 Class Methods
+=head2 Instance Methods
 
 =over 4
 
-=item border
+=item I<border>
 
 Set/Get this Legend's border.
 
-=item insets
+=item I<draw>
+
+Draw this Legend
+
+=item I<font>
+
+Set/Get the font used for this legend's items.
+
+=item I<insets>
 
 Set/Get this Legend's insets.
 
-=item prepare
+=item I<item_padding>
+
+Set/Get the padding for this legend's items.
+
+=item I<legend_items>
+
+Set/Get this legend's items.
+
+=item I<prepare>
 
 Prepare this Legend by creating the LegendItems based on the datasets
 provided and testing the lengths of the series names.
 
-=item draw
+=item I<tallest>
 
-Draw this Legend
+Set/Get the height of the tallest label.
+
+=item I<widest>
+
+Set/Get the width of the widest label.
 
 =back
 

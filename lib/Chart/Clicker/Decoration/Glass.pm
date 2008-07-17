@@ -3,23 +3,21 @@ use Moose;
 
 extends 'Chart::Clicker::Decoration';
 
-has 'background_color' => ( is => 'rw', isa => 'Chart::Clicker::Drawing::Color' );
+use Graphics::Color::RGB;
+
+has 'background_color' => ( is => 'rw', isa => 'Graphics::Color::RGB' );
 has 'glare_color' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Color',
+    isa => 'Graphics::Color::RGB',
     default => sub {
-        new Chart::Clicker::Drawing::Color(
+       Graphics::Color::RGB->new(
             red => 1, green => 1, blue => 1, alpha => 1
         )
     },
     coerce => 1
 );
 
-use Chart::Clicker::Drawing::Color;
-
-use Cairo;
-
-sub prepare {
+override('prepare', sub {
     my $self = shift();
     my $clicker = shift();
     my $dimension = shift();
@@ -28,17 +26,16 @@ sub prepare {
     $self->height($dimension->height());
 
     return 1;
-}
+});
 
-sub draw {
+override('draw', sub {
     my $self = shift();
     my $clicker = shift();
 
-    my $surface = $self->SUPER::draw($clicker);
-    my $cr = Cairo::Context->create($surface);
+    my $cr = $clicker->cairo();
 
     if($self->background_color()) {
-        $cr->set_source_rgba($self->background_color->rgba());
+        $cr->set_source_rgba($self->background_color->as_array_with_alpha());
         $cr->fill();
     }
 
@@ -53,23 +50,22 @@ sub draw {
     $cr->line_to(0, 0);
     $cr->line_to(0, $twentypofheight);
 
-    $cr->set_source_rgba($self->glare_color->rgba());
+    $cr->set_source_rgba($self->glare_color->as_array_with_alpha());
     $cr->fill();
-    $cr->restore();
+});
 
-    return $surface;
-}
+no Moose;
 
 1;
 __END__
 
 =head1 NAME
 
-Chart::Clicker::Decoration::Grid
+Chart::Clicker::Decoration::Glass
 
 =head1 DESCRIPTION
 
-Generates a collection of Markers for use as a background.
+A glass-like decoration.
 
 =head1 SYNOPSIS
 
@@ -79,39 +75,31 @@ Generates a collection of Markers for use as a background.
 
 =over 4
 
-=item new
+=item I<new>
 
-Creates a new Chart::Clicker::Decoration::Grid object.
-
-=item prepare
-
-Prepare this Grid for drawing
+Creates a new Chart::Clicker::Decoration::Glass object.
 
 =back
 
-=head2 Class Methods
+=head2 Instance Methods
 
 =over 4
 
-=item color
+=item I<background_color>
 
-Set/Get the color for this Grid.
+Set/Get the background color for this glass.
 
-=item domain_ticks
-
-Set/Get the domain ticks for this Grid.
-
-=item range_ticks
-
-Set/Get the range ticks for this Grid.
-
-=item stroke
-
-Set/Get the Stroke for this Grid.
-
-=item draw
+=item I<draw>
 
 Draw this Grid.
+
+=item I<glare_color>
+
+Set/Get the glare color for this glass.
+
+=item I<prepare>
+
+Prepare this Glass for drawing
 
 =cut
 

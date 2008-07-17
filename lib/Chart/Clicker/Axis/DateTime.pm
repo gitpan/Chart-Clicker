@@ -2,10 +2,10 @@ package Chart::Clicker::Axis::DateTime;
 use Moose;
 
 use Chart::Clicker::Data::Marker;
-use Chart::Clicker::Drawing::Color;
 
 use DateTime;
 use DateTime::Set;
+use Graphics::Color::RGB;
 
 extends 'Chart::Clicker::Axis';
 
@@ -62,10 +62,10 @@ override 'prepare' => sub {
         start => $dstart, end => $dend
     );
 
-    my $linecolor = new Chart::Clicker::Drawing::Color({
+    my $linecolor = Graphcis::Color::RGB->new({
         red => 0, green => 0, blue => 0, alpha => .35
     });
-    my $fillcolor = new Chart::Clicker::Drawing::Color({
+    my $fillcolor = Graphics::Color::RGB->new({
         red => 0, green => 0, blue => 0, alpha => .10
     });
 
@@ -77,7 +77,7 @@ override 'prepare' => sub {
         if($set->contains($day)) {
             if(defined($dayval)) {
                 push(@dmarkers,
-                    new Chart::Clicker::Data::Marker({
+                    Chart::Clicker::Data::Marker->new({
                         key         => $dayval,
                         key2        => $day->epoch(),
                         color       => $linecolor,
@@ -93,7 +93,7 @@ override 'prepare' => sub {
     }
     if($dayval) {
         push(@dmarkers,
-            new Chart::Clicker::Data::Marker({
+            Chart::Clicker::Data::Marker->new({
                 key         => $dayval,
                 key2        => $day->epoch(),
                 color       => $linecolor,
@@ -123,6 +123,8 @@ sub format_value {
     return $dt->strftime($self->format());
 }
 
+no Moose;
+
 1;
 __END__
 
@@ -132,13 +134,13 @@ Chart::Clicker::Axis::DateTime
 
 =head1 DESCRIPTION
 
-A temporal Axis.  Requires DateTime and DateTime::Set.  Inherits from
+A temporal Axis.  Requires L<DateTime> and L<DateTime::Set>.  Inherits from
 Axis, so check the methods there as well.  Expects that times will be in
 unix format.
 
 =head1 SYNOPSIS
 
-  my $axis = new Chart::Clicker::Axis::DateTime();
+  my $axis = Chart::Clicker::Axis::DateTime->new();
 
 =head1 METHODS
 
@@ -146,22 +148,26 @@ unix format.
 
 =over 4
 
-=item Chart::Clicker::Axis::DateTime->new()
+=item I<new>
 
 Creates a new DateTime Axis.
 
 =back
 
-=head2 Class Methods
+=head2 Instance Methods
 
 =over 4
 
-=item format
+=item I<format>
 
 Set/Get the formatting string used to format the DateTime.  See DateTime's
 strftime.
 
-=item time_zone
+=item I<format_value>
+
+Formats the value using L<DateTime>'s strftime.
+
+=item I<time_zone>
 
 Set/Get the time zone to use when creating DateTime objects!  Accepts an
 object or a string ('America/Chicago').

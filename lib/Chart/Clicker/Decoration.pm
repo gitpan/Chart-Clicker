@@ -1,8 +1,9 @@
 package Chart::Clicker::Decoration;
-
 use Moose;
 
 extends 'Chart::Clicker::Drawing::Component';
+
+no Moose;
 
 1;
 __END__
@@ -13,7 +14,8 @@ Chart::Clicker::Decoration
 
 =head1 DESCRIPTION
 
-Chart::Clicker::Decoration
+Chart::Clicker::Decoration is a straight subclass of
+L<Chart::Clicker::Drawing::Component>.
 
 =head1 SYNOPSIS
 
@@ -23,13 +25,13 @@ Chart::Clicker::Decoration
 
 =over 4
 
-=item new
+=item I<new>
 
 Creates a new Chart::Clicker::Decoration
 
 =back
 
-=head2 Class Methods
+=head2 Instance Methods
 
 =over 4
 

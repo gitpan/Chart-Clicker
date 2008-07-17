@@ -1,67 +1,136 @@
 package Chart::Clicker;
 use Moose;
 use Moose::Util::TypeConstraints;
+use MooseX::AttributeHelpers;
 
 extends 'Chart::Clicker::Drawing::Container';
 
+use Carp;
+
+use Layout::Manager::Compass;
+
+use Graphics::Color::RGB;
+
+use Graphics::Primitive::Insets;
+use Graphics::Primitive::Border;
+
+use Chart::Clicker::Context;
+use Chart::Clicker::Decoration::Grid;
+use Chart::Clicker::Decoration::Legend;
 use Chart::Clicker::Decoration::Plot;
+use Chart::Clicker::Format::Png;
+use Chart::Clicker::Renderer;
+use Chart::Clicker::Util;
+use Chart::Clicker::Drawing::ColorAllocator;
 
-enum 'Formats' => (
-    'png', 'svg'
-);
+use Cairo;
 
-has 'format' => (
-    is      => 'rw',
-    isa     => 'Formats',
-    default => 'png'
-);
+use Scalar::Util qw(refaddr);
+
+our $VERSION = '1.99_01';
+
+# TODO Global coercions?
+coerce 'Chart::Clicker::Format'
+    => from 'Str'
+    => via {
+        return Chart::Clicker::Util::load('Chart::Clicker::Format::'.$_)
+    };
+
+coerce 'Chart::Clicker::Renderer'
+    => from 'Str'
+    => via {
+        return Chart::Clicker::Util::load('Chart::Clicker::Renderer::'.$_)
+    };
+
 
 has 'color_allocator' => (
     is => 'rw',
     isa => 'Chart::Clicker::Drawing::ColorAllocator',
-    default => sub { new Chart::Clicker::Drawing::ColorAllocator()  }
+    default => sub { Chart::Clicker::Drawing::ColorAllocator->new()  }
 );
 
-has 'context' => (
+has 'cairo' => (
     is => 'rw',
-    isa => 'Cairo::Context',
+    isa => 'Chart::Clicker::Cairo',
+    clearer => 'clear_cairo'
+);
+
+has 'contexts' => (
+    metaclass => 'Collection::Hash',
+    is => 'rw',
+    isa => 'HashRef[Chart::Clicker::Context]',
+    default => sub { { default => Chart::Clicker::Context->new(name => 'default') } },
+    provides => {
+        set    => 'set_context',
+        get     => 'get_context',
+        count   => 'context_count',
+        delete  => 'delete_context'
+    }
 );
 
 has 'datasets' => (
+    metaclass => 'Collection::Array',
     is => 'rw',
     isa => 'ArrayRef',
-    default => sub { [] }
+    default => sub { [] },
+    provides => {
+        'count'=> 'dataset_count',
+        'push' => 'add_to_datasets',
+        'get' => 'get_dataset'
+    }
 );
 
-has 'domain_axes' => (
-    is => 'rw',
-    isa => 'ArrayRef',
-    default => sub { [] }
+has 'format' => (
+    is      => 'rw',
+    isa     => 'Chart::Clicker::Format',
+    coerce  => 1,
+    default => sub { Chart::Clicker::Format::Png->new() }
 );
 
-has 'markers' => (
-    is => 'rw',
-    isa => 'ArrayRef',
-    default => sub { [] }
+has '+layout' => (
+    default => sub { Layout::Manager::Compass->new() }
 );
+
+# TODO Add these to context!
+# has 'markers' => (
+#     metaclass => 'Collection::Array',
+#     is => 'rw',
+#     isa => 'ArrayRef[Chart::Clicker::Data::Marker]',
+#     default => sub { [] },
+#     provides => {
+#         'count' => 'marker_count',
+#         'push'  => 'add_to_markers'
+#     }
+# );
+# 
+# has 'marker_domain_axes' => (
+#     metaclass => 'Collection::Hash',
+#     is => 'rw',
+#     isa => 'HashRef',
+#     default => sub { {} },
+#     provides => {
+#         'set' => 'set_marker_domain_axis',
+#         'get' => 'get_marker_domain_axis'
+#     }
+# );
+# 
+# has 'marker_range_axes' => (
+#     metaclass => 'Collection::Hash',
+#     is => 'rw',
+#     isa => 'HashRef',
+#     default => sub { {} },
+#     provides => {
+#         'set' => 'set_marker_range_axis',
+#         'get' => 'get_marker_range_axis'
+#     }
+# );
 
 has 'plot' => (
     is => 'rw',
     isa => 'Chart::Clicker::Decoration::Plot',
     default => sub {
-        new Chart::Clicker::Decoration::Plot()
+        Chart::Clicker::Decoration::Plot->new()
     }
-);
-
-has 'range_axes' => (
-    is => 'rw',
-    isa => 'ArrayRef',
-    default => sub { [] }
-);
-
-has 'surface' => (
-    is => 'rw',
-#    isa => 'Cairo::ImageSurface'
 );
 
 has '+width' => (
@@ -72,107 +141,48 @@ has '+height' => (
     default => 300
 );
 
-has '+insets' => (
-    default => sub {
-        new Chart::Clicker::Drawing::Insets(
-            { top => 5, bottom => 5, left => 5, right => 5 }
-        )
-    }
-);
-
 has '+border' => (
     default => sub {
-        new Chart::Clicker::Drawing::Border()
+        Graphics::Primitive::Border->new(
+            color => Graphics::Color::RGB->new
+        )
     }
 );
 
 has '+background_color' => (
     default => sub {
-        new Chart::Clicker::Drawing::Color(
+        Graphics::Color::RGB->new(
             { red => 1, green => 1, blue => 1, alpha => 1 }
         )
     }
 );
 
-use Chart::Clicker::Drawing qw(:positions);
-use Chart::Clicker::Drawing::Border;
-use Chart::Clicker::Drawing::Color;
-use Chart::Clicker::Drawing::ColorAllocator;
-use Chart::Clicker::Drawing::Insets;
-use Chart::Clicker::Drawing::Point;
+sub add_to_contexts {
+    my ($self, $ctx) = @_;
 
-use Cairo;
-
-our $VERSION = '1.4.2';
-
-sub new {
-    my $proto = shift();
-
-    my $self = $proto->SUPER::new(@_);
-
-    $self->{'DSDOMAINAXIS'} = {};
-    $self->{'DSRANGEAXIS'} = {};
-
-    $self->{'RDOMAINAXIS'} = {};
-    $self->{'RRANGEAXIS'} = {};
-
-    return $self;
-}
-
-sub add_to_markers {
-    my $self = shift();
-    my $marker = shift();
-
-    push(@{ $self->markers() }, $marker);
-}
-
-sub add_to_datasets {
-    my $self = shift();
-    my $ds = shift();
-
-    push(@{ $self->datasets() }, $ds);
-}
-
-sub inside_width {
-    my $self = shift();
-
-    my $w = $self->width();
-
-    if(defined($self->insets())) {
-        $w -= $self->insets->left() + $self->insets->right()
+    if(defined($self->get_context($ctx->name))) {
+        croak("Context named '".$ctx->name."' already exists.");
     }
-    if(defined($self->border())) {
-        $w -= $self->border->stroke->width() * 2;
-    }
-
-    return $w;
+    $self->set_context($ctx->name, $ctx);
 }
 
-sub inside_height {
+override('prepare', sub {
     my $self = shift();
 
-    my $h = $self->height();
-    if(defined($self->insets())) {
-        $h -= $self->insets->bottom() + $self->insets->top();
-    }
-    if(defined($self->border())) {
-        $h -= $self->border->stroke->width() * 2;
-    }
-
-    return $h;
-}
-
-sub draw {
-    my $self = shift();
-
-    $self->surface($self->SUPER::draw($self));
-    return $self->surface();
-}
-
-sub prepare {
-    my $self = shift();
+    # TODO Move this
+    my $legend = Chart::Clicker::Decoration::Legend->new(orientation => 'horizontal');
+    $self->add_component($legend, 's');
 
     my $plot = $self->plot();
+    $plot->add_component(Chart::Clicker::Decoration::Grid->new( name => 'grid' ));
+
+    # Sentinels to control the side that the axes will be drawn on.
+    my $dcount = 0;
+    my $rcount = 0;
+    # Hashes of axis we've already seen, as we don't want to add them
+    # again...
+    my %daxes;
+    my %raxes;
 
     # Prepare the datasets and establish ranges for the axes.
     my $count = 0;
@@ -181,20 +191,43 @@ sub prepare {
             die("Dataset $count is empty.");
         }
 
-        my $rend = $plot->renderers->[$plot->get_renderer_for_dataset($count)];
-		if(!defined($rend)) {
-			die("Can't find a renderer, that's fatal!");
-		}
         $ds->prepare();
 
-        my $daxis = $self->get_dataset_domain_axis($count);
-        if(defined($daxis)) {
-            $daxis->range->combine($ds->domain());
+        my $ctx = $self->get_context($ds->context);
+
+        unless(defined($ctx)) {
+            $ctx = $self->get_context('default');
         }
 
-        my $raxis = $self->get_dataset_range_axis($count);
+        unless(defined($ctx)) {
+            # TODO Could give more data?
+            die("Can't find a context for dataset.");
+        }
 
+        my $daxis = $ctx->domain_axis;
+        unless(exists($daxes{refaddr($daxis)})) {
+            if(defined($daxis)) {
+                $daxis->range->combine($ds->domain());
+            }
+
+            $daxis->position('bottom');
+            if($dcount % 2) {
+                $daxis->position('top')
+            }
+            $self->add_component($daxis, $daxis->is_top ? 'n' : 's');
+            $daxes{refaddr($daxis)} = 1;
+            $dcount++;
+        }
+
+        my $rend = $ctx->renderer();
+        $rend->context($ctx->name);
+        $plot->add_component($rend);
+
+        my $raxis = $ctx->range_axis;
         if(defined($raxis)) {
+            # TODO Now a renderer gets it's entire list in a single draw or
+            # prepare pass.  This could be delegated down to the renderer's
+            # prepare.  No more additive renderers.
             if($rend->additive()) {
                 $raxis->range->combine($ds->combined_range());
             } else {
@@ -202,225 +235,125 @@ sub prepare {
             }
         }
 
+        unless(exists($raxes{refaddr($raxis)})) {
+            $raxis->position('left');
+            if($rcount % 2) {
+                $raxis->position('right');
+            }
+            $self->add_component($raxis, $raxis->is_left ? 'w' : 'e');
+            $rcount++;
+            $raxes{refaddr($raxis)} = 1;
+        }
+
         $count++;
     }
 
-    $self->surface($self->create_new_surface(
-        $self->width(), $self->height())
+    $self->format->surface(
+        $self->format->create_surface($self->width, $self->height)
     );
-    $self->context(Cairo::Context->create($self->surface()));
+    $self->cairo(Chart::Clicker::Cairo->create($self->format->surface()));
 
-    $self->SUPER::prepare($self, $self->dimensions());
+    $self->add_component($self->plot, 'c');
+
+    foreach my $c (@{ $self->components }) {
+        $c->{component}->clicker($self);
+    }
+
+    super;
+
     return 1;
-}
+});
 
-sub set_dataset_domain_axis {
-    my $self = shift();
-    my $dsidx = shift();
-    my $axis = shift();
+override('draw', sub {
+    my ($self) = @_;
 
-    $self->{'DSDOMAINAXIS'}->{$dsidx} = $axis;
-    return 1;
-}
+    # super;
 
-sub get_dataset_domain_axis {
-    my $self = shift();
-    my $idx = shift();
+    # TODO This should be elsewhere...
+    my $width = $self->width();
+    my $height = $self->height();
 
-    unless(defined($self->domain_axes())) {
-        return;
+    my $context = $self->cairo();
+
+    if(defined($self->background_color())) {
+        $context->set_source_rgba($self->background_color->as_array_with_alpha());
+        $context->rectangle(0, 0, $width, $height);
+        $context->paint();
     }
 
-    my $aidx = $self->{'DSDOMAINAXIS'}->{$idx};
-    if(defined($aidx)) {
-        return $self->domain_axes->[$aidx];
-    } else {
-        return $self->domain_axes->[0];
-    }
-}
+    my $x = 0;
+    my $y = 0;
+    my $bwidth = $width;
+    my $bheight = $height;
 
-sub set_dataset_range_axis {
-    my $self = shift();
-    my $dsidx = shift();
-    my $axisidx = shift();
-
-    $self->{'DSRANGEAXIS'}->{$dsidx} = $axisidx;
-    return 1;
-}
-
-sub get_dataset_range_axis {
-    my $self = shift();
-    my $idx = shift();
-
-    unless(defined($self->range_axes())) {
-        return;
+    my $margins = $self->margins();
+    my ($mx, $my, $mw, $mh) = (0, 0, 0, 0);
+    if($margins) {
+        $mx = $margins->left();
+        $my = $margins->top();
+        $mw = $margins->right();
+        $mh = $margins->bottom();
     }
 
-    my $aidx = $self->{'DSRANGEAXIS'}->{$idx};
-    if(defined($aidx)) {
-        return $self->range_axes->[$aidx];
-    } else {
-        return $self->range_axes->[0];
+    if(defined($self->border())) {
+        my $stroke = $self->border();
+        my $bswidth = $stroke->width();
+        $context->set_source_rgba($self->border->color->as_array_with_alpha());
+        $context->set_line_width($bswidth);
+        $context->set_line_cap($stroke->line_cap());
+        $context->set_line_join($stroke->line_join());
+        $context->new_path();
+        my $swhalf = $bswidth / 2;
+        $context->rectangle(
+            $mx + $swhalf, $my + $swhalf,
+            $width - $bswidth - $mw - $mx, $height - $bswidth - $mh - $my
+        );
+        $context->stroke();
     }
-}
+    # TODO END This should be elsewhere...
 
-sub set_marker_domain_axis {
-    my $self = shift();
-    my $midx = shift();
-    my $axis = shift();
+    foreach my $c (@{ $self->components }) {
+        next unless defined($c);
 
-    $self->{'RDOMAINAXIS'}->{$midx} = $axis;
-    return 1;
-}
+        my $comp = $c->{component};
 
-sub get_marker_domain_axis {
-    my $self = shift();
-    my $idx = shift();
+        $context->save;
+        $context->translate($comp->origin->x, $comp->origin->y);
+        $context->rectangle(0, 0, $comp->width, $comp->height);
+        $context->clip;
 
-    unless(defined($self->markers())) {
-        return;
+        $comp->draw();
+
+        $context->restore();
     }
+});
 
-    my $aidx = $self->{'RDOMAINAXIS'}->{$idx};
-    if(defined($aidx)) {
-        return $self->domain_axes->[$aidx];
-    } else {
-        return $self->domain_axes->[0];
-    }
-}
+sub get_datasets_for_context {
+    my ($self, $name) = @_;
 
-sub set_marker_range_axis {
-    my $self = shift();
-    my $midx = shift();
-    my $axisidx = shift();
-
-    $self->{'RRANGEAXIS'}->{$midx} = $axisidx;
-    return 1;
-}
-
-sub get_marker_range_axis {
-    my $self = shift();
-    my $idx = shift();
-
-    unless(defined($self->markers())) {
-        return;
-    }
-
-    my $aidx = $self->{'RRANGEAXIS'}->{$idx};
-    if(defined($aidx)) {
-        return $self->range_axes->[$aidx];
-    } else {
-        return $self->range_axes->[0];
-    }
-}
-
-sub create_new_surface {
-    my $self = shift();
-    my $width = shift();
-    my $height = shift();
-
-    if(defined($self->surface())) {
-        $self->surface->create_similar('color-alpha', $width, $height);
-    } else {
-        if($self->format() eq 'svg') {
-            return Cairo::SvgSurface->create_for_stream(sub { }, undef, $width, $height);
-        } else {
-            return Cairo::ImageSurface->create('argb32', $width, $height);
+    my @dses;
+    foreach my $ds (@{ $self->datasets }) {
+        if($ds->context eq $name) {
+            push(@dses, $ds);
         }
     }
+
+    return \@dses;
 }
 
 sub write {
-    my $self = shift();
-    my $file = shift();
+    my ($self, $file) = @_;
 
-    if($self->format() eq 'svg') {
-        $self->_write_svg($file);
-    } else {
-        $self->_write_png($file);
-    }
-
-    return 1;
-}
-
-sub _write_png {
-    my $self = shift();
-    my $file = shift();
-
-    $self->surface->write_to_png($file);
-}
-
-sub _write_svg {
-    my $self = shift();
-    my $file = shift();
-
-    return undef unless Cairo::HAS_SVG_SURFACE;
-
-    my $surface = Cairo::SvgSurface->create($file, $self->width, $self->height);
-
-    my $cr = Cairo::Context->create($surface);
-    $cr->set_source_surface($self->surface, 0, 0);
-    $cr->paint();
-    $cr->show_page();
-
-    # Unset the context and the surface to force them to do the actual drawing.
-    $cr = undef;
-    $surface = undef;
+    return $self->format->write($self, $file);
 }
 
 sub data {
-    my $self = shift();
+    my ($self) = @_;
 
-    my $buff;
-
-    if($self->format() eq 'svg') {
-
-        return undef unless Cairo::HAS_SVG_SURFACE;
-
-        my $surface = Cairo::SvgSurface->create_for_stream(sub {
-            my ($closure, $data) = @_;
-            $buff .= $data;
-        }, undef, $self->width, $self->height);
-
-        my $cr = Cairo::Context->create($surface);
-        $cr->set_source_surface($self->surface, 0, 0);
-        $cr->paint();
-        $cr->show_page();
-
-        $cr = undef;
-        $surface = undef;
-    } else {
-        $self->surface->write_to_png_stream(sub {
-            my ($closure, $data) = @_;
-            $buff .= $data;
-        });
-    }
-
-    return $buff;
+    return $self->format->surface_data();
 }
 
-# sub svg {
-#     my $self = shift();
-# 
-#     return undef unless Cairo::HAS_SVG_SURFACE;
-# 
-#     my $buffer;
-#     my $surface = Cairo::SvgSurface->create_for_stream(sub {
-#         my ($closure, $data) = @_;
-#         $buffer .= $data;
-#     }, undef, $self->width, $self->height);
-# 
-#     my $cr = Cairo::Context->create($surface);
-#     $cr->set_source_surface($self->surface, 0, 0);
-#     $cr->paint();
-#     $cr->show_page();
-# 
-#     # Unset the context and the surface to force them to do the actual drawing.
-#     $cr = undef;
-#     $surface = undef;
-# 
-#     return $buffer;
-# }
+no Moose;
 
 1;
 
@@ -433,7 +366,8 @@ Chart::Clicker - Powerful, extensible charting.
 =head1 DESCRIPTION
 
 Chart::Clicker aims to be a powerful, extensible charting package that creates
-really pretty output.
+really pretty output.  Charts can be saved in png, svg, pdf and postscript
+format.
 
 Clicker leverages the power of Cairo to create snazzy 2D graphics easily and
 quickly.
@@ -455,76 +389,62 @@ possible that new features will be added that may change behavior. You can
 find more information at L<http://www.onemogin.com/clicker>.  Feel free to
 send your criticisms, advice, patches or money to me as a way of helping.
 
+=head1 CONTEXTS
+
+The normal use case for a chart is a couple of datasets on the same axes.
+Sometimes you want to chart one or more datasets on different axes.  A common
+need for this is when you are comparing two datasets of vastly different scale
+such as the number of employees in an office (1-10) to monthly revenues (10s
+of thousands).  On a normal chart the number of employees would show up as a
+flat line at the bottom of the chart.
+
+To correct this, Clicker has contexts.  A context is a pair of axes, a
+renderer and a name.  The name is the 'key' by which you will refer to the
+context.
+
+  my $context = Chart::Clicker::Context->new( name => 'sales' );
+  $clicker->add_to_contexts($context);
+  
+  $dataset->context('sales');
+  
+  $clicker->add_to_datasets($dataset);
+  
+New contexts provide a fresh domain and range axis and default to a Line
+renderer. 
+
 =head1 FORMATS
 
-Clicker supports PNG and SVG output.
+Clicker supports PNG, SVG, PDF and PostScript output.
 
 =head1 SYNOPSIS
 
-  use Chart::Clicker;
-  use Chart::Clicker::Axis;
-  use Chart::Clicker::Data::DataSet;
-  use Chart::Clicker::Data::Series;
-  use Chart::Clicker::Decoration::Grid;
-  use Chart::Clicker::Decoration::Legend;
-  use Chart::Clicker::Decoration::Plot;
-  use Chart::Clicker::Drawing qw(:positions);
-  use Chart::Clicker::Drawing::Insets;
-  use Chart::Clicker::Renderer::Area;
+use Test::More tests => 3;
 
-  my $chart = new Chart::Clicker({ format => 'png', width => 500, height => 350 });
+use Chart::Clicker::Data::Series;
+use Chart::Clicker::Data::Series::Size;
+use Chart::Clicker::Data::DataSet;
+use Chart::Clicker::Renderer::Point;
 
-  my $series = new Chart::Clicker::Data::Series({
-    keys    => [1, 2, 3, 4, 5, 6],
-    values  => [12, 9, 8, 3, 5, 1]
-  });
+my $cc = Chart::Clicker->new;
 
-  my $dataset = new Chart::Clicker::Data::DataSet({
-    series => [ $series ]
-  });
-  $chart->datasets([ $dataset ]);
+my $series = Chart::Clicker::Data::Series->new(
+    keys    => [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
+    values  => [ 42, 25, 86, 23, 2, 19, 103, 12, 54, 9 ],
+);
 
-  my $legend = new Chart::Clicker::Decoration::Legend({
-    margins => new Chart::Clicker::Drawing::Insets({
-        top => 3
-    })
-  });
-  $chart->add($legend, $CC_BOTTOM);
+my $series2 = Chart::Clicker::Data::Series->new(
+    keys    => [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
+    values  => [ 67, 15, 6, 90, 11, 45, 83, 11, 9, 101 ],
+);
 
-  my $daxis = new Chart::Clicker::Axis({
-    orientation => $CC_HORIZONTAL,
-    position    => $CC_BOTTOM,
-    format      => '%0.2f'
-  });
-  $chart->add($daxis, $CC_AXIS_BOTTOM);
+my $ds = Chart::Clicker::Data::DataSet->new(series => [ $series, $series2 ]);
 
-  my $raxis = new Chart::Clicker::Axis({
-    orientation => $CC_VERTICAL,
-    position    => $CC_LEFT,
-    format      => '%0.2f'
-  });
-  $chart->add($raxis, $CC_AXIS_LEFT);
+$cc->add_to_datasets($ds);
 
-  $chart->range_axes([ $raxis ]);
-  $chart->domain_axes([ $daxis ]);
-
-  my $grid = new Chart::Clicker::Decoration::Grid();
-  $chart->add($grid, $CC_CENTER, 0);
-
-  my $renderer = new Chart::Clicker::Renderer::Area();
-  $renderer->options({
-    fade => 1
-  });
-
-  my $plot = new Chart::Clicker::Decoration::Plot();
-  $plot->renderers([$renderer]);
-  $chart->plot($plot);
-
-  $chart->add($plot, $CC_CENTER);
-
-  $chart->prepare();
-  $chart->draw();
-  $chart->write('/path/to/chart.png');
+$cc->prepare();
+$cc->do_layout($cc);
+$cc->draw();
+$cc->write('foo.png')
 
 =cut
 
@@ -534,80 +454,80 @@ Clicker supports PNG and SVG output.
 
 =over 4
 
-=item new
+=item I<new>
 
 Creates a new Chart::Clicker object. If no format, width and height are
-specified then defaults of png, 500 and 300 are chosen, respectively.
+specified then defaults of Png, 500 and 300 are chosen, respectively.
 
 =back
 
-=head2 Class Methods
+=head2 Instance Methods
 
 =over 4
 
-=item inside_width
+=item I<add_to_contexts>
+
+Add the specified context to the chart.
+
+=item I<add_to_datasets>
+
+Add the specified dataset (or arrayref of datasets) to the chart.
+
+=item I<add_to_markers>
+
+Add the specified marker to the chart.
+
+=item I<color_allocator>
+
+Set/Get the color_allocator for this chart.
+
+=item I<context>
+
+Set/Get the context for this chart.
+
+=item I<data>
+
+Returns the data for this chart as a scalar.  Suitable for 'streaming' to a
+client.
+
+=item I<datasets>
+
+Get/Set the datasets for this chart.
+
+=item I<draw>
+
+Draw this chart
+
+=item I<format>
+
+Get the format for this Chart.  Required in the constructor.  Must be on of
+Png, Pdf, Ps or Svg.
+
+=item I<get_datasets_for_context>
+
+Returns an arrayref containing all datasets for the given context.  Used by
+renderers to get a list of datasets to chart.
+
+=item I<inside_width>
 
 Get the width available in this container after taking away space for
 insets and borders.
 
-=item inside_height
+=item I<inside_height>
 
 Get the height available in this container after taking away space for
 insets and borders.
 
-=item draw
-
-Draw this chart
-
-=item add_to_markers
-
-Add the specified marker to the chart.
-
-=item add_to_datasets
-
-Add the specified dataset (or array or datasets) to the chart.
-
-=item prepare
+=item I<prepare>
 
 Prepare this chart for rendering.
 
-=item set_dataset_domain_axis
-
-  $chart->set_dataset_domain_axis($dataset_index, $axis_index)
-
-Affines the dataset at the specified index to the domain axis at the second
-index.
-
-=item get_dataset_domain_axis
-
-  my $axis = $chart->get_dataset_domain_axis($index)
-
-Returns the domain axis to which the specified dataset is affined.
-
-=item set_dataset_range_axis
-
-  $chart->set_dataset_range_axis($dataset_index, $axis_index)
-
-Affines the dataset at the specified index to the range axis at the second
-index.
-
-=item get_dataset_range_axis
-
-  my $axis = $chart->get_dataset_range_axis($index)
-
-Returns the range axis to which the specified dataset is affined.
-
-=item write
+=item I<write>
 
 Write the chart output to the specified location. Output is written in the
-format provided to the constructor (which defaults to png).
+format provided to the constructor (which defaults to Png).
 
   $c->write('/path/to/the.png');
-
-=item data
-
-Returns the data for this chart as a scalar.  Suitable for 'streaming' to a
-client.
 
 =back
 
@@ -618,6 +538,7 @@ Cory 'G' Watson <gphat@cpan.org>
 =head1 CONTRIBUTORS
 
 Torsten Schoenfeld
+Ash Berlin
 
 =head1 SEE ALSO
 

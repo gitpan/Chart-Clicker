@@ -1,9 +1,9 @@
 package Chart::Clicker::Renderer::Line;
 use Moose;
 
-extends 'Chart::Clicker::Renderer::Base';
+extends 'Chart::Clicker::Renderer';
 
-use Chart::Clicker::Drawing::Stroke;
+use Graphics::Primitive::Stroke;
 
 has 'shape' => (
     is => 'rw',
@@ -11,69 +11,80 @@ has 'shape' => (
 );
 has 'shape_stroke' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Stroke',
+    isa => 'Graphics::Primitive::Stroke',
 );
 has 'stroke' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Stroke',
-    default => sub { new Chart::Clicker::Drawing::Stroke() }
+    isa => 'Graphics::Primitive::Stroke',
+    default => sub { Graphics::Primitive::Stroke->new() }
 );
 
-sub draw {
+override('draw', sub {
     my $self = shift();
-    my $clicker = shift();
-    my $cr = shift();
-    my $series = shift();
-    my $domain = shift();
-    my $range = shift();
+
+    my $clicker = $self->clicker;
+    my $cr = $clicker->cairo;
 
     my $height = $self->height();
-    my $linewidth = 1;
 
-    $cr->set_line_cap($self->stroke->line_cap());
-    $cr->set_line_join($self->stroke->line_join());
-    $cr->set_line_width($self->stroke->width());
+    my $dses = $clicker->get_datasets_for_context($self->context);
+    foreach my $ds (@{ $dses }) {
+        foreach my $series (@{ $ds->series }) {
 
-    $cr->new_path();
+            # TODO if undef...
+            my $ctx = $clicker->get_context($ds->context);
+            my $domain = $ctx->domain_axis;
+            my $range = $ctx->range_axis;
 
-    my $color = $clicker->color_allocator->next();
-    $cr->set_source_rgba($color->rgba());
+            $cr->set_line_cap($self->stroke->line_cap());
+            $cr->set_line_join($self->stroke->line_join());
+            $cr->set_line_width($self->stroke->width());
 
-    my @vals = @{ $series->values() };
-    my @keys = @{ $series->keys() };
+            $cr->new_path();
 
-    my $kcount = $series->key_count() - 1;
+            my $color = $clicker->color_allocator->next();
+            $cr->set_source_rgba($color->as_array_with_alpha());
 
-    for(0..$kcount) {
-        my $x = $domain->mark($keys[$_]);
-        my $y = $height - $range->mark($vals[$_]);
-        if($_ == 0) {
-            $cr->move_to($x, $y);
-        } else {
-            $cr->line_to($x, $y);
-        }
-    }
-    $cr->stroke();
+            my @vals = @{ $series->values() };
+            my @keys = @{ $series->keys() };
 
-    if(defined($self->shape())) {
-        for(0..$kcount) {
-            my $x = $domain->mark($keys[$_]);
-            my $y = $height - $range->mark($vals[$_]);
-            $self->shape->create_path($cr, $x, $y);
+            my $kcount = $series->key_count() - 1;
 
-            if($self->shape_stroke()) {
-                $cr->set_line_cap($self->shape_stroke->line_cap());
-                $cr->set_line_join($self->shape_stroke->line_join());
-                $cr->set_line_width($self->shape_stroke->width());
-                $cr->stroke();
-            } else {
-                $cr->fill();
+            for(0..$kcount) {
+                my $x = $domain->mark($keys[$_]);
+                my $y = $height - $range->mark($vals[$_]);
+                if($_ == 0) {
+                    $cr->move_to($x, $y);
+                } else {
+                    $cr->line_to($x, $y);
+                }
+            }
+            $cr->stroke();
+
+            if(defined($self->shape())) {
+                for(0..$kcount) {
+
+                    my $x = $domain->mark($keys[$_]);
+                    my $y = $height - $range->mark($vals[$_]);
+                    $self->shape->create_path($cr, $x, $y);
+
+                    if($self->shape_stroke()) {
+                        $cr->set_line_cap($self->shape_stroke->line_cap());
+                        $cr->set_line_join($self->shape_stroke->line_join());
+                        $cr->set_line_width($self->shape_stroke->width());
+                        $cr->stroke();
+                    } else {
+                        $cr->fill();
+                    }
+                }
             }
         }
     }
 
     return 1;
-}
+});
+
+no Moose;
 
 1;
 __END__
@@ -88,8 +99,8 @@ Chart::Clicker::Renderer::Line renders a dataset as lines.
 
 =head1 SYNOPSIS
 
-  my $lr = new Chart::Clicker::Renderer::Line(
-    stroke => new Chart::Clicker::Drawing::Stroke({
+  my $lr = Chart::Clicker::Renderer::Line->new(
+    stroke => Graphics::Primitive::Stroke->new({
       ...
     })
   });
@@ -98,16 +109,16 @@ Chart::Clicker::Renderer::Line renders a dataset as lines.
 
 =over 4
 
-=item shape
+=item I<shape>
 
 Set a shape object to draw at each of the data points.
 
-=item shape_stroke
+=item I<shape_stroke>
 
 Define the stroke to be used on the shapes at each point.  If no shape_stroke
 is provided, then the shapes will be billed.
 
-=item stroke
+=item I<stroke>
 
 Set a Stroke object to be used for the lines.
 
@@ -115,13 +126,13 @@ Set a Stroke object to be used for the lines.
 
 =head1 METHODS
 
-=head2 Class Methods
+=head2 Misc Methods
 
 =over 4
 
-=item render
+=item I<draw>
 
-Render the series.
+Draw it!
 
 =back
 

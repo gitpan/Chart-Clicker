@@ -1,15 +1,15 @@
 package Chart::Clicker::Renderer::Point;
 use Moose;
 
-extends 'Chart::Clicker::Renderer::Base';
+extends 'Chart::Clicker::Renderer';
 
 use Chart::Clicker::Shape::Arc;
 
 has 'shape' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Shape',
+    does => 'Chart::Clicker::Shape',
     default => sub {
-        new Chart::Clicker::Shape::Arc({
+        Chart::Clicker::Shape::Arc->new({
            radius => 3,
            angle1 => 0,
            angle2 => 360
@@ -17,35 +17,52 @@ has 'shape' => (
     }
 );
 
-sub draw {
+override('draw', sub {
     my $self = shift();
-    my $clicker = shift();
-    my $cr = shift();
-    my $series = shift();
-    my $domain = shift();
-    my $range = shift();
 
-    my $min = $range->range->lower();
+    my $clicker = $self->clicker;
+    my $cr = $clicker->cairo;
 
-    my $xper = $domain->per();
-    my $yper = $range->per();
-    my $height = $self->height();
+    my $dses = $clicker->get_datasets_for_context($self->context);
+    foreach my $ds (@{ $dses }) {
+        foreach my $series (@{ $ds->series }) {
 
-    my @vals = @{ $series->values() };
-    my @keys = @{ $series->keys() };
-    for(0..($series->key_count() - 1)) {
-        my $x = $domain->mark($keys[$_]);
-        my $y = $height - $range->mark($vals[$_]);
+            # TODO if undef...
+            my $ctx = $clicker->get_context($ds->context);
+            my $domain = $ctx->domain_axis;
+            my $range = $ctx->range_axis;
 
-        $cr->move_to($x, $y);
-        $self->shape->create_path($cr, $x , $y);
+            my $min = $range->range->lower();
+
+            my $xper = $domain->per();
+            my $yper = $range->per();
+            my $height = $self->height();
+
+            my @vals = @{ $series->values() };
+            my @keys = @{ $series->keys() };
+            for(0..($series->key_count() - 1)) {
+                my $x = $domain->mark($keys[$_]);
+                my $y = $height - $range->mark($vals[$_]);
+
+                $cr->move_to($x, $y);
+                $self->draw_point($cr, $x, $y, $series, $_);
+            }
+            my $color = $clicker->color_allocator->next();
+            $cr->set_source_rgba($color->as_array_with_alpha());
+            $cr->fill();
+        }
     }
-    my $color = $clicker->color_allocator->next();
-    $cr->set_source_rgba($color->rgba());
-    $cr->fill();
 
     return 1;
+});
+
+sub draw_point {
+    my ($self, $cr, $x, $y, $series, $count) = @_;
+
+    $self->shape->create_path($cr, $x , $y);
 }
+
+no Moose;
 
 1;
 __END__
@@ -60,8 +77,8 @@ Chart::Clicker::Renderer::Point renders a dataset as points.
 
 =head1 SYNOPSIS
 
-  my $pr = new Chart::Clicker::Renderer::Point({
-    shape => new Chart::Clicker::Shape::Arc({
+  my $pr = Chart::Clicker::Renderer::Point->new({
+    shape => Chart::Clicker::Shape::Arc->new({
         angle1 => 0,
         angle2 => 180,
         radius  => 5
@@ -72,7 +89,7 @@ Chart::Clicker::Renderer::Point renders a dataset as points.
 
 =over 4
 
-=item shape
+=item I<shape>
 
 Specify the shape to be used at each point.  Defaults to 360 degree arc with
 a radius of 3.
@@ -85,19 +102,24 @@ a radius of 3.
 
 =over 4
 
-=item new
+=item I<new>
 
 Create a new Point renderer
 
 =back
 
-=head2 Class Methods
+=head2 Instance Methods
 
 =over 4
 
-=item render
+=item I<render>
 
 Render the series.
+
+=item I<draw_point>
+
+Called for each point.  Implemented as a separate method so that subclasses
+such as Bubble may override the drawing.
 
 =back
 

@@ -1,7 +1,7 @@
 package Chart::Clicker::Renderer::Measurement;
 use Moose;
 
-extends 'Chart::Clicker::Renderer::Base';
+extends 'Chart::Clicker::Renderer';
 
 use Chart::Clicker::Shape::Arc;
 
@@ -42,7 +42,7 @@ sub draw {
     $cr->stroke();
 
     # Draw the points
-    my $shape = new Chart::Clicker::Shape::Arc({
+    my $shape = Chart::Clicker::Shape::Arc->new({
         radius => 3,
         angle1 => 0,
         angle2 => 360,
@@ -82,6 +82,8 @@ sub draw {
     return 1;
 }
 
+no Moose;
+
 1;
 __END__
 
@@ -100,11 +102,11 @@ and error bars.
 
 =head1 METHODS
 
-=head2 Class Methods
+=head2 Instance Methods
 
 =over 4
 
-=item render
+=item I<draw>
 
 Render the series.
 

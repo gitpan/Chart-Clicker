@@ -2,82 +2,85 @@ package Chart::Clicker::Axis;
 use Moose;
 
 extends 'Chart::Clicker::Drawing::Component';
+with 'Chart::Clicker::Positioned';
+
+use MooseX::AttributeHelpers;
+use Moose::Util::TypeConstraints;
 
 use constant PI => 4 * atan2 1, 1;
 
+use Chart::Clicker::Cairo;
 use Chart::Clicker::Data::Range;
-use Chart::Clicker::Drawing qw(:positions);
-use Chart::Clicker::Drawing::Color;
-use Chart::Clicker::Drawing::Font;
-use Chart::Clicker::Drawing::Stroke;
 
-has 'font' => (
-    is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Font',
-    default => sub { new Chart::Clicker::Drawing::Font(); }
-);
-has 'format' => ( is => 'rw', isa => 'Str' );
-has 'fudge_amount' => ( is => 'rw', isa => 'Num', default => .10 );
-has 'label' => ( is => 'rw', isa => 'Str' );
-has 'per' => ( is => 'rw', isa => 'Num' );
-has 'position' => ( is => 'rw', isa => 'Positions' );
-has 'show_ticks' => ( is => 'rw', isa => 'Bool', default => 1 );
-has 'tick_length' => ( is => 'rw', isa => 'Num', default => 3 );
-has 'ticks' => ( is => 'rw', isa => 'Int', default => 5 );
-has 'visible' => ( is => 'rw', isa => 'Bool', default => 1 );
+use Graphics::Color::RGB;
 
-has 'stroke' => (
-    is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Stroke',
-    default => sub { new Chart::Clicker::Drawing::Stroke(); }
-);
+use Graphics::Primitive::Font;
+use Graphics::Primitive::Stroke;
 
-has 'tick_stroke' => (
-    is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Stroke',
-    default => sub { new Chart::Clicker::Drawing::Stroke(); }
+has 'baseline' => (
+    is  => 'rw',
+    isa => 'Num',
 );
-
-has 'tick_values' => (
-    is => 'rw',
-    isa => 'ArrayRef',
-    default => sub { [] }
-);
-has 'tick_labels' => (
-    is => 'rw',
-    isa => 'ArrayRef',
-    default => sub { [] }
-);
-
-has 'range' => (
-    is => 'rw',
-    isa => 'Chart::Clicker::Data::Range',
-    default => sub { new Chart::Clicker::Data::Range() }
-);
-
 has '+color' => (
     default => sub {
-        new Chart::Clicker::Drawing::Color({
+        Graphics::Color::RGB->new({
             red => 0, green => 0, blue => 0, alpha => 1
         })
     },
     coerce => 1
 );
-
-has 'baseline' => (
-    is  => 'rw',
-    isa => 'Num',
-	default => 0
+has 'font' => (
+    is => 'rw',
+    isa => 'Graphics::Primitive::Font',
+    default => sub { Graphics::Primitive::Font->new(); }
 );
-
-has 'orientation' => ( is => 'rw', isa => 'Orientations' );
-
-has 'positions' => ( is => 'rw', isa => 'Positions' );
+has 'format' => ( is => 'rw', isa => 'Str' );
+has 'fudge_amount' => ( is => 'rw', isa => 'Num', default => 0 );
+has 'label' => ( is => 'rw', isa => 'Str' );
+has '+orientation' => (
+    required => 1
+);
+has 'per' => ( is => 'rw', isa => 'Num' );
+has '+position' => (
+    required => 1
+);
+has 'range' => (
+    is => 'rw',
+    isa => 'Chart::Clicker::Data::Range',
+    default => sub { Chart::Clicker::Data::Range->new() }
+);
+has 'show_ticks' => ( is => 'rw', isa => 'Bool', default => 1 );
+has 'stroke' => (
+    is => 'rw',
+    isa => 'Graphics::Primitive::Stroke',
+    default => sub { Graphics::Primitive::Stroke->new(); }
+);
+has 'ticks' => ( is => 'rw', isa => 'Int', default => 5 );
+has 'tick_labels' => (
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] }
+);
+has 'tick_length' => ( is => 'rw', isa => 'Num', default => 3 );
+has 'tick_stroke' => (
+    is => 'rw',
+    isa => 'Graphics::Primitive::Stroke',
+    default => sub { Graphics::Primitive::Stroke->new(); }
+);
+has 'tick_values' => (
+    metaclass => 'Collection::Array',
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] },
+    provides => {
+        'push' => 'add_to_tick_values',
+        'clear' => 'clear_tick_values',
+        'count' => 'tick_value_count'
+    }
+);
 
 sub prepare {
     my $self = shift();
-    my $clicker = shift();
-    my $dimension = shift();
 
     if($self->range->span() == 0) {
         die('This axis has a span of 0, that\'s fatal!');
@@ -103,7 +106,9 @@ sub prepare {
         $self->tick_values($self->range->divvy($self->ticks()));
     }
 
-    my $cairo = $clicker->context();
+    return unless $self->visible;
+
+    my $cairo = $self->clicker->cairo();
 
     my $font = $self->font();
 
@@ -116,10 +121,10 @@ sub prepare {
     my $biggest = 0;
     my $key;
     if($self->visible()) {
-        if($self->orientation() == $CC_HORIZONTAL) {
-            $key = 'total_height';
-        } else {
+        if($self->is_vertical) {
             $key = 'width';
+        } else {
+            $key = 'total_height';
         }
         my @values = @{ $self->tick_values() };
         for(0..scalar(@values) - 1) {
@@ -143,21 +148,21 @@ sub prepare {
         $self->{'label_extents_cache'} = $ext;
     }
 
-    if($self->orientation() == $CC_HORIZONTAL) {
-        my $label_height = $self->label()
-            ? $self->{'label_extents_cache'}->{'total_height'}
-            : 0;
-        $self->height($biggest + $label_height + 4);
-        $self->width($dimension->width());
-        $self->per($self->width() / $self->range->span());
-    } else {
+    if($self->is_vertical) {
         # The label will be rotated, so use height here too.
         my $label_width = $self->label()
             ? $self->{'label_extents_cache'}->{'total_height'}
             : 0;
-        $self->width($biggest + $label_width + 4);
-        $self->height($dimension->height());
-        $self->per($self->height() / $self->range->span());
+        $self->minimum_width($biggest + $label_width + 4);
+        # TODO Wrong, need tallest label + tick length + outside
+        $self->minimum_height($self->outside_height + $biggest);
+    } else {
+        my $label_height = $self->label()
+            ? $self->{'label_extents_cache'}->{'total_height'}
+            : 0;
+        $self->minimum_height($biggest + $label_height + 4);
+        # TODO Wrong, need widest label + tick length + outside
+        $self->minimum_width($biggest + $self->outside_width);
     }
 
     return 1;
@@ -167,42 +172,44 @@ sub mark {
     my $self = shift();
     my $value = shift();
 
+    # TODO Maybe cache repeat values?
+
     # 'caching' this here speeds things up.  Calling after changing the
     # range would result in a messed up chart anyway...
     if(!defined($self->{'LOWER'})) {
         $self->{'LOWER'} = $self->range->lower();
     }
-    # This is rounded and .5'ed to get the lines nice and sharp for Cairo.
-    return int($self->per() * ($value - $self->{'LOWER'} || 0)) + .5;
+    return $self->per() * ($value - $self->{'LOWER'} || 0);
 }
 
 sub draw {
     my $self = shift();
-    my $clicker = shift();
 
-    unless($self->visible()) {
-        return;
+    if($self->is_vertical) {
+        $self->per($self->height / ($self->range->span - 1));
+    } else {
+        $self->per($self->width / ($self->range->span - 1));
     }
+
+    return unless $self->visible;
+
     my $x = 0;
     my $y = 0;
 
-    my $orient = $self->orientation();
-    my $pos = $self->position();
     my $width = $self->width();
     my $height = $self->height();
 
-    if($pos == $CC_LEFT) {
-        $x += $width - .5;
-    } elsif($pos == $CC_RIGHT) {
-        $x += .5;
-    } elsif($pos == $CC_TOP) {
-        $y += $height - .5;
+    if($self->is_left) {
+        $x += $width;
+    } elsif($self->is_right) {
+        # nuffin
+    } elsif($self->is_top) {
+        $y += $height;
     } else {
-        $y += .5;
+        # nuffin
     }
 
-    my $surf = $self->SUPER::draw($clicker);
-    my $cr = Cairo::Context->create($surf);
+    my $cr = $self->clicker->cairo();
 
     my $stroke = $self->stroke();
     $cr->set_line_width($stroke->width());
@@ -220,52 +227,19 @@ sub draw {
 
     my $lower = $self->range->lower();
 
-    $cr->set_source_rgba($self->color->rgba());
+    $cr->set_source_rgba($self->color->as_array_with_alpha());
 
     $cr->move_to($x, $y);
-    if($orient == $CC_HORIZONTAL) {
-        # Draw a line for our axis
-        $cr->line_to($x + $width, $y);
-
-        my @values = @{ $self->tick_values() };
-        # Draw a tick for each value.
-        for(0..scalar(@values) - 1) {
-            my $val = $values[$_];
-            # Grab the extent from the cache.
-            my $ext = $self->{'ticks_extents_cache'}->[$_];
-            my $ix = int($x + ($val - $lower) * $per) + .5;
-            $cr->move_to($ix, $y);
-            if($pos == $CC_TOP) {
-                $cr->line_to($ix, $y - $tick_length);
-                $cr->rel_move_to(-($ext->{'width'} / 1.8), -2);
-            } else {
-                $cr->line_to($ix, $y + $tick_length);
-                $cr->rel_move_to(-($ext->{'width'} / 2), $ext->{'height'} + 2);
-            }
-            $cr->show_text($self->format_value($self->tick_labels->[$_] || $val));
-        }
-
-        # Draw the label
-        if($self->label()) {
-            my $ext = $self->{'label_extents_cache'};
-            if ($pos == $CC_BOTTOM) {
-                $cr->move_to(($width - $ext->{'width'}) / 2, $height);
-            } else {
-                $cr->move_to(($width - $ext->{'width'}) / 2, $ext->{'height'} + 2);
-            }
-            $cr->show_text($self->label());
-        }
-
-    } else {
+    if($self->is_vertical) {
         $cr->line_to($x, $y + $height);
 
         my @values = @{ $self->tick_values() };
         for(0..scalar(@values) - 1) {
             my $val = $values[$_];
-            my $iy = int($y + $height - (($val - $lower) * $per)) + .5;
+            my $iy = $y + $height - (($val - $lower) * $per);
             my $ext = $self->{'ticks_extents_cache'}->[$_];
             $cr->move_to($x, $iy);
-            if($self->position() == $CC_LEFT) {
+            if($self->is_left) {
                 $cr->line_to($x - $tick_length, $iy);
                 $cr->rel_move_to(-$ext->{'width'} - 2, $ext->{'height'} / 2);
             } else {
@@ -278,7 +252,7 @@ sub draw {
         # Draw the label
         if($self->label()) {
             my $ext = $self->{'label_extents_cache'};
-            if ($pos == $CC_LEFT) {
+            if ($self->is_left) {
                 $cr->move_to($ext->{'height'}, ($height + $ext->{'width'}) / 2);
                 $cr->rotate(3*PI/2);
             } else {
@@ -287,11 +261,41 @@ sub draw {
             }
             $cr->show_text($self->label());
         }
+    } else {
+        # Draw a line for our axis
+        $cr->line_to($x + $width, $y);
+
+        my @values = @{ $self->tick_values() };
+        # Draw a tick for each value.
+        for(0..scalar(@values) - 1) {
+            my $val = $values[$_];
+            # Grab the extent from the cache.
+            my $ext = $self->{'ticks_extents_cache'}->[$_];
+            my $ix = $x + ($val - $lower) * $per;
+            $cr->move_to($ix, $y);
+            if($self->is_top) {
+                $cr->line_to($ix, $y - $tick_length);
+                $cr->rel_move_to(-($ext->{'width'} / 1.8), -2);
+            } else {
+                $cr->line_to($ix, $y + $tick_length);
+                $cr->rel_move_to(-($ext->{'width'} / 2), $ext->{'height'} + 2);
+            }
+            $cr->show_text($self->format_value($self->tick_labels->[$_] || $val));
+        }
+
+        # Draw the label
+        if($self->label()) {
+            my $ext = $self->{'label_extents_cache'};
+            if ($self->is_bottom) {
+                $cr->move_to(($width - $ext->{'width'}) / 2, $height);
+            } else {
+                $cr->move_to(($width - $ext->{'width'}) / 2, $ext->{'height'} + 2);
+            }
+            $cr->show_text($self->label());
+        }
     }
 
     $cr->stroke();
-
-    return $surf;
 }
 
 sub format_value {
@@ -303,6 +307,8 @@ sub format_value {
     }
     return $value;
 }
+
+no Moose;
 
 1;
 __END__
@@ -318,20 +324,17 @@ Chart::Clicker::Axis represents the plot of the chart.
 =head1 SYNOPSIS
 
   use Chart::Clicker::Axis;
-  use Chart::Clicker::Drawing qw(:positions);
-  use Chart::Clicker::Drawing::Color;
-  use Chart::Clicker::Drawing::Font;
-  use Chart::Clicker::Drawing::Stroke;
+  use Graphics::Primitive::Font;
+  use Graphics::Primitive::Stroke;
 
-  my $axis = new Chart::Clicker::Axis({
-    color => new Chart::Clicker::Drawing::Color({ name => 'black' }),
-    font  => new Chart::Clicker::Drawing::Font(),
-    orientation => $CC_VERTICAL,
-    position => $CC_LEFT,
+  my $axis = Chart::Clicker::Axis->new({
+    font  => Graphics::Primitive::Font->new(),
+    orientation => 'vertical',
+    position => 'left',
     show_ticks => 1,
-    stroke = new Chart::Clicker::Drawing::Stroke(),
+    stroke = Graphics::Primitive::Stroke->new(),
     tick_length => 2,
-    tick_stroke => new Chart::Clicker::Drawing::Stroke(),
+    tick_stroke => Graphics::Primitive::Stroke->new(),
     visible => 1,
   });
 
@@ -341,121 +344,140 @@ Chart::Clicker::Axis represents the plot of the chart.
 
 =over 4
 
-=item Chart::Clicker::Axis->new()
+=item I<new>
 
 Creates a new Chart::Clicker::Axis.  If no arguments are given then sane
 defaults are chosen.
 
 =back
 
-=head2 Class Methods
+=head2 Instance Methods
 
 =over 4
 
-=item baseline
+=item I<baseline>
 
 Set the 'baseline' value of this axis.  This is used by some renderers to
 change the way a value is marked.  The Bar render, for instance, considers
 values below the base to be 'negative'.
 
-=item color
+=item I<color>
 
 Set/Get the color of the axis.
 
-=item font
+=item I<font>
 
 Set/Get the font used for the axis' labels.
 
-=item format
+=item I<format>
 
 Set/Get the format to use for the axis values.  The format is applied to each
 value 'tick' via sprintf().  See sprintf()s perldoc for details!  This is
 useful for situations where the values end up with repeating decimals.
 
-=item height
+=item I<fudge_amount>
+
+Set/Get the amount to 'fudge' the span of this axis.  You should supply a
+percentage (in decimal form) and the axis will grow at both ends by the
+supplied amount.  This is useful when you want a bit of padding above and
+below the dataset.
+
+As an example, a fugdge_amount of .10 on an axis with a span of 10 to 50
+would add 5 to the top and bottom of the axis.
+
+=item I<height>
 
 Set/Get the height of the axis.
 
-=item label
+=item I<label>
 
 Set/Get the label of the axis.
 
-=item orientation
+=item I<orientation>
 
-Set/Get the orientation of this axis.
+Set/Get the orientation of this axis.  See L<Chart::Clicker::Drawing>.
 
-=item per
+=item I<per>
 
 Set/Get the 'per' value for the axis.  This is how many physical pixels a unit
 on the axis represents.  If the axis represents a range of 0-100 and the axis
 is 200 pixels high then the per value will be 2.
 
-=item position
+=item I<position>
 
 Set/Get the position of the axis on the chart.
 
-=item range
+=item I<range>
 
 Set/Get the Range for this axis.
 
-=item show_ticks
+=item I<show_ticks>
 
-Set/Get the show ticks flag.
+Set/Get the show ticks flag.  If this is value then the small tick marks at
+each mark on the axis will not be drawn.
 
-=item stroke
+=item I<stroke>
 
 Set/Get the stroke for this axis.
 
-=item tick_length
+=item I<tick_length>
 
-Set/Get the tick length
+Set/Get the tick length.
 
-=item tick_stroke
+=item I<tick_stroke>
 
 Set/Get the stroke for the tick markers.
 
-=item tick_values
+=item I<tick_values>
 
 Set/Get the arrayref of values show as ticks on this Axis.
 
-=item tick_labels
+=item I<add_to_tick_values>
+
+Add a value to the list of tick values.
+
+=item I<clear_tick_values>
+
+Clear all tick values.
+
+=item I<tick_value_count>
+
+Get a count of tick values.
+
+=item I<tick_labels>
 
 Set/Get the arrayref of labels to show for ticks on this Axis.  This arrayref
 is consulted for every tick, in order.  So placing a string at the zeroeth
 index will result in it being displayed on the zeroeth tick, etc, etc.
 
-=item ticks
+=item I<ticks>
 
 Set/Get the number of 'ticks' to show.  Setting this will divide the
 range on this axis by the specified value to establish tick values.  This
 will have no effect if you specify tick_values.
 
-=item mark
+=item I<mark>
 
 Given a value, returns it's pixel position on this Axis.
 
-=item format_value
+=item I<format_value>
 
 Given a value, returns it formatted using this Axis' formatter.
 
-=item examine_values
-
-Gives the axis an opportunity to examine values.
-
-=item prepare
+=item I<prepare>
 
 Prepare this Axis by determining the size required.  If the orientation is
 CC_HORIZONTAL this method sets the height.  Otherwise sets the width.
 
-=item draw
+=item I<draw>
 
 Draw this axis.
 
-=item visible
+=item I<visible>
 
 Set/Get this axis visibility flag.
 
-=item width
+=item I<width>
 
 Set/Get this axis' width.
 

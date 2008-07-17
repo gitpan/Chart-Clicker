@@ -1,11 +1,24 @@
 package Chart::Clicker::Drawing::ColorAllocator;
 use Moose;
 
-use Chart::Clicker::Drawing::Color;
+use MooseX::AttributeHelpers;
 
-my @defaults = (qw(red green blue lime yellow maroon teal fuchsia));;
+use Graphics::Color;
 
-has 'colors' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
+my @defaults = (qw());;
+
+has 'colors' => (
+    metaclass => 'Collection::Array',
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] },
+    provides => {
+        'push' => 'add_to_colors',
+        'clear' => 'clear_colors',
+        'count' => 'color_count',
+        'get'   => 'get_color'
+    }
+);
 has 'position' => ( is => 'rw', isa => 'Int', default => -1 );
 
 sub next {
@@ -24,19 +37,21 @@ before 'next' => sub {
     my $pos = $self->position();
     if(!defined($self->colors->[$pos + 1])) {
 
-        if($self->position() <= scalar(@defaults)) {
-            $self->colors->[$pos + 1] =
-                new Chart::Clicker::Drawing::Color({
-                    name => $defaults[$pos + 1]
-                });
-        } else {
-            $self->colors->[$pos + 1] = new Chart::Clicker::Drawing::Color(
-                red     => rand(1),
-                green   => rand(1),
-                blue    => rand(1),
-                alpha   => 1
+        # if($self->position() <= scalar(@defaults)) {
+        #     # $self->colors->[$pos + 1] =
+        #         # Chart::Clicker::Drawing::Color->new({
+        #         #     name => $defaults[$pos + 1]
+        #         # });
+        # } else {
+            $self->add_to_colors(
+                Graphics::Color::RGB->new(
+                    red     => rand(1),
+                    green   => rand(1),
+                    blue    => rand(1),
+                    alpha   => 1
+                )
             );
-        }
+        # }
     }
 };
 
@@ -47,12 +62,7 @@ sub reset {
     return 1;
 }
 
-sub get {
-    my $self = shift();
-    my $index = shift();
-
-    return $self->colors->[$index];
-}
+no Moose;
 
 1;
 __END__
@@ -68,11 +78,14 @@ corresponds to the series that will be colored.
 
 =head1 SYNOPSIS
 
+    use Graphics::Color::RGB;
     use Chart::Clicker::Drawing::ColorAllocator;
 
-    my $ca = new Chart::Clicker::Drawing::ColorAllocator({
+    my $ca = Chart::Clicker::Drawing::ColorAllocator->new({
         colors => (
-            new Chart::Clicker::Drawing::Color(1.0, 0, 0, 1.0),
+            Graphics::Color::RGB->new(
+                red => 1.0, green => 0, blue => 0, alpha => 1.0
+            ),
             ...
         )
     });
@@ -85,34 +98,46 @@ corresponds to the series that will be colored.
 
 =over 4
 
-=item new
+=item I<new>
 
 Create a new ColorAllocator.  You can optionally pass an arrayref of colors
 to 'seed' the allocator.
 
 =back
 
-=head2 Class Methods
+=head2 Methods
 
 =over 4
 
-=item position
+=item I<add_to_colors>
+
+Add a color to this allocator.
+
+=item I<clear_colors>
+
+Clear this allocator's colors
+
+=item I<color_count>
+
+Get the number of colors in this allocator.
+
+=item <get_color>
+
+Gets the color at the specified index.  Returns undef if that position has no
+color.
+
+=item I<position>
 
 Gets the current position.
 
-=item next
+=item I<next>
 
 Returns the next color.  Each call to next increments the position, so
 subsequent calls will return different colors.
 
-=item reset
+=item I<reset>
 
 Resets this allocator back to the beginning.
-
-=item get
-
-Gets the color at the specified index.  Returns undef if that position has no
-color.
 
 =back
 

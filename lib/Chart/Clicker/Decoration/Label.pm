@@ -3,46 +3,31 @@ use Moose;
 
 extends 'Chart::Clicker::Decoration';
 
-use Chart::Clicker::Drawing qw(:positions);
-use Chart::Clicker::Drawing::Color;
-use Chart::Clicker::Drawing::Font;
-use Chart::Clicker::Drawing::Insets;
+use Graphics::Color::RGB;
+
+use Graphics::Primitive::Font;
+use Graphics::Primitive::Insets;
 
 has 'color' => (
     is => 'rw',
-    isa => 'Color',
+    isa => 'Graphics::Color',
     default => sub {
-        new Chart::Clicker::Drawing::Color(
+        Graphics::Color::RGB->new(
             red => 0, green => 0, blue => 0, alpha => .30
         )
     },
     coerce => 1
 );
-
 has 'font' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Font',
+    isa => 'Graphics::Primitive::Font',
     default => sub {
-        new Chart::Clicker::Drawing::Font()
+        Graphics::Primitive::Font->new()
     }
 );
-
-has 'insets' => (
-    is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Insets',
-    default => sub {
-        new Chart::Clicker::Drawing::Insets(
-            top => 0, left => 0, bottom => 3, right => 3
-        )
-    }
+has '+orientation' => (
+    required => 1
 );
-
-has 'orientation' => (
-    is => 'rw',
-    isa => 'Orientations',
-    default => $CC_HORIZONTAL
-);
-
 has 'text' => (
     is => 'rw',
     isa => 'Str'
@@ -50,88 +35,82 @@ has 'text' => (
 
 my $VERTICAL = 4.71238898;
 
-sub prepare {
+override('prepare', sub {
     my $self = shift();
-    my $clicker = shift();
-    my $dimension = shift();
 
     my $font = $self->font();
 
-    my $cr = $clicker->context();
+    my $cr = $self->clicker->cairo();
 
     $cr->select_font_face($font->face(), $font->slant(), $font->weight());
     $cr->set_font_size($font->size());
 
-    my $insets = $self->insets();
-
     my $orientation = $self->orientation();
 
     my $extents;
-    if($orientation == $CC_VERTICAL) {
+    if($self->is_vertical) {
         $cr->save();
         $cr->rotate($VERTICAL);
         $extents = $cr->text_extents($self->text());
         $extents->{total_height} = $extents->{height} - $extents->{y_bearing};
         $cr->restore();
-        $self->width(
-            $extents->{'total_height'} + $insets->left() + $insets->right()
+        $self->minimum_width(
+            $extents->{total_height} + $self->outside_width
         );
-        $self->height($dimension->height());
+        $self->minimum_height($extents->{width});
     } else {
         $extents = $cr->text_extents($self->text());
         $extents->{total_height} = $extents->{height} - $extents->{y_bearing};
-        $self->width($dimension->width());
-        $self->height(
-            $extents->{'total_height'} + $insets->top() + $insets->bottom()
+        $self->minimum_width($extents->{width});
+        $self->minimum_height(
+            $extents->{'total_height'} + $self->outside_height
         );
     }
 
     $self->{'EXTENTS'} = $extents;
 
     return 1;
-}
+});
 
-sub draw {
+override('draw', sub {
     my $self = shift();
-    my $clicker = shift();
+
+    super;
 
     my $width = $self->width();
     my $height = $self->height();
 
-    # my $surface = Cairo::ImageSurface->create('argb32', $width, $height);
-    my $surface = $clicker->create_new_surface($width, $height);
-    my $cr = Cairo::Context->create($surface);
+    my $cr = $self->clicker->cairo();
 
-    $cr->set_source_rgba($self->color->rgba());
+    $cr->set_source_rgba($self->color->as_array_with_alpha());
     $cr->select_font_face(
         $self->font->face(), $self->font->slant(), $self->font->weight()
     );
     $cr->set_font_size($self->font->size());
 
     my $extents = $self->{'EXTENTS'};
-    my $insets = $self->insets();
     my ($x, $y);
-    if($self->orientation() == $CC_HORIZONTAL) {
-        $x = ($width / 2) - ($extents->{'width'} / 2);
-        $y = ($height / 2) + ($extents->{'height'} / 2);
-    } else {
+    if($self->is_vertical) {
         $x = ($width / 2) + ($extents->{'height'} / 2);
         $y = ($height / 2) + ($extents->{'width'} / 2);
+    } else {
+        $x = ($width / 2) - ($extents->{'width'} / 2);
+        $y = ($height / 2) + ($extents->{'height'} / 2);
     }
 
     $cr->move_to($x, $y);
 
-    if($self->orientation() == $CC_VERTICAL) {
+    if($self->is_horizontal) {
+        $cr->show_text($self->text());
+    } else {
         $cr->save();
         $cr->rotate($VERTICAL);
         $cr->show_text($self->text());
         $cr->restore();
-    } else {
-        $cr->show_text($self->text());
     }
+});
 
-    return $surface;
-}
+no Moose;
 
 1;
 __END__
@@ -152,31 +131,47 @@ Chart::Clicker::Decoration::Label draws text on the chart.
 
 =over 4
 
-=item new
+=item I<new>
 
 Creates a new Label object.
 
 =back
 
-=head2 Class Methods
+=head2 Instance Methods
 
 =over 4
 
-=item border
+=item I<border>
 
 Set/Get this Label's border.
 
-=item insets
+=item I<color>
 
-Set/Get this Label's insets.
+Set/Get the color of this label.
 
-=item draw
+=item I<draw>
 
 Draw this Label
 
-=item prepare
+=item I<font>
+
+Set/Get the font for this label.
+
+=item I<insets>
+
+Set/Get this label's insets.
+
+=item I<orientation>
+
+Set/Get this label's orientation.
+
+=item I<prepare>
 
 Prepare this Label by determining how much space it needs.
+
+=item I<text>
+
+Set/Get this label's text.
 
 =back
 

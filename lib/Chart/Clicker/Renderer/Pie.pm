@@ -1,94 +1,105 @@
 package Chart::Clicker::Renderer::Pie;
 use Moose;
 
-extends 'Chart::Clicker::Renderer::Base';
+extends 'Chart::Clicker::Renderer';
 
-use Chart::Clicker::Drawing::Color;
-use Chart::Clicker::Drawing::Stroke;
-use Chart::Clicker::Shape::Arc;
+use Graphics::Color::RGB;
+use Geometry::Primitive::Arc;
+use Graphics::Primitive::Stroke;
 
 has 'border_color' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Color',
-    default => sub { new Chart::Clicker::Drawing::Color({ name => 'black' }) }
+    isa => 'Graphics::Color::RGB',
+    default => sub { Graphics::Color::RGB->new },
+    coerce => 1
 );
 has 'stroke' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Stroke',
-    default => sub { new Chart::Clicker::Drawing::Stroke() }
+    isa => 'Graphics::Primitive::Stroke',
+    default => sub { Graphics::Primitive::Stroke->new() }
 );
 
 my $TO_RAD = (4 * atan2(1, 1)) / 180;
 
-sub prepare {
+override('prepare', sub {
     my $self = shift();
-    my $clicker = shift();
 
-    $self->SUPER::prepare($clicker, @_);
+    super;
 
-    foreach my $ds (@{ $clicker->datasets() }) {
+    my $clicker = $self->clicker;
+
+    my $dses = $clicker->get_datasets_for_context($self->context);
+    foreach my $ds (@{ $dses }) {
         foreach my $series (@{ $ds->series() }) {
             foreach my $val (@{ $series->values() }) {
-                $self->{'ACCUM'}->{$series->name()} += $val;
-                $self->{'TOTAL'} += $val;
+                $self->{ACCUM}->{$series->name()} += $val;
+                $self->{TOTAL} += $val;
             }
         }
     }
 
-    $self->{'RADIUS'} = $self->height();
+});
+
+override('draw', sub {
+    my $self = shift();
+
+    my $clicker = $self->clicker;
+    my $cr = $clicker->cairo;
+
+    $self->{RADIUS} = $self->height();
     if($self->width() < $self->height()) {
-        $self->{'RADIUS'} = $self->width();
+        $self->{RADIUS} = $self->width();
     }
 
-    $self->{'RADIUS'} = $self->{'RADIUS'} / 2;
+    $self->{RADIUS} = $self->{RADIUS} / 2;
 
     # Take into acount the line around the edge when working out the radius
     $self->{RADIUS} -= $self->stroke->width();
 
-    $self->{'MIDX'} = $self->width() / 2;
-    $self->{'MIDY'} = $self->height() / 2;
-    $self->{'POS'} = -90;
-}
-
-sub draw {
-    my $self = shift();
-    my $clicker = shift();
-    my $cr = shift();
-    my $series = shift();
-    my $domain = shift();
-    my $range = shift();
-
     my $height = $self->height();
     my $linewidth = 1;
+    my $midx = $self->width() / 2;
+    my $midy = $height / 2;
+    $self->{POS} = -90;
 
-    $cr->set_line_cap($self->stroke->line_cap());
-    $cr->set_line_join($self->stroke->line_join());
-    $cr->set_line_width($self->stroke->width());
+    my $dses = $clicker->get_datasets_for_context($self->context);
+    foreach my $ds (@{ $dses }) {
+        foreach my $series (@{ $ds->series }) {
 
-    my $midx = $self->{'MIDX'};
-    my $midy = $self->{'MIDY'};
+            # TODO if undef...
+            my $ctx = $clicker->get_context($ds->context);
+            my $domain = $ctx->domain_axis;
+            my $range = $ctx->range_axis;
 
-    my $avg = $self->{'ACCUM'}->{$series->name()} / $self->{'TOTAL'};
-    my $degs = ($avg * 360) + $self->{'POS'};
+            $cr->set_line_cap($self->stroke->line_cap());
+            $cr->set_line_join($self->stroke->line_join());
+            $cr->set_line_width($self->stroke->width());
 
-    $cr->line_to($midx, $midy);
+            my $avg = $self->{ACCUM}->{$series->name()} / $self->{TOTAL};
+            my $degs = ($avg * 360) + $self->{POS};
 
-    $cr->arc_negative($midx, $midy, $self->{'RADIUS'}, $degs * $TO_RAD, $self->{'POS'} * $TO_RAD);
-    $cr->line_to($midx, $midy);
-    $cr->close_path();
+            $cr->line_to($midx, $midy);
 
-    my $color = $clicker->color_allocator->next();
+            $cr->arc_negative($midx, $midy, $self->{RADIUS}, $degs * $TO_RAD, $self->{POS} * $TO_RAD);
+            $cr->line_to($midx, $midy);
+            $cr->close_path();
 
-    $cr->set_source_rgba($color->rgba());
-    $cr->fill_preserve();
+            my $color = $clicker->color_allocator->next();
 
-    $cr->set_source_rgba($self->border_color->rgba());
-    $cr->stroke();
+            $cr->set_source_rgba($color->as_array_with_alpha());
+            $cr->fill_preserve();
 
-    $self->{'POS'} = $degs;
+            $cr->set_source_rgba($self->border_color->as_array_with_alpha());
+            $cr->stroke();
+
+            $self->{POS} = $degs;
+        }
+    }
 
     return 1;
-}
+});
+
+no Moose;
 
 1;
 __END__
@@ -104,10 +115,10 @@ of like-named Series are totaled and keys are ignored.
 
 =head1 SYNOPSIS
 
-  my $lr = new Chart::Clicker::Renderer::Pie();
+  my $lr = Chart::Clicker::Renderer::Pie->new();
   # Optionally set the stroke
   $lr->options({
-    stroke => new Chart::Clicker::Drawing::Stroke({
+    stroke => Graphics::Primitive::Stroke->new({
       ...
     })
   });
@@ -116,7 +127,7 @@ of like-named Series are totaled and keys are ignored.
 
 =over 4
 
-=item stroke
+=item I<stroke>
 
 Set a Stroke object to be used for the lines.
 
@@ -124,11 +135,11 @@ Set a Stroke object to be used for the lines.
 
 =head1 METHODS
 
-=head2 Class Methods
+=head2 Instance Methods
 
 =over 4
 
-=item render
+=item I<render>
 
 Render the series.
 

@@ -5,7 +5,9 @@ BEGIN {
 }
 my $label = 'Foo';
 
-my $axis = new Chart::Clicker::Axis({ label => $label });
+my $axis = Chart::Clicker::Axis->new(
+    label => $label, orientation => 'vertical', position => 'left'
+);
 
 ok($axis->label() eq $label, 'label()');
 

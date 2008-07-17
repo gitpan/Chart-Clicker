@@ -1,35 +1,54 @@
 package Chart::Clicker::Data::DataSet;
 use Moose;
 
+use MooseX::AttributeHelpers;
+
 use Chart::Clicker::Data::Range;
 
-has 'count' => (
+has 'combined_range' => (
     is => 'rw',
-    isa => 'Int',
-    default => 0,
+    isa => 'Chart::Clicker::Data::Range',
+    default => sub { Chart::Clicker::Data::Range->new() }
 );
-has 'series' => (
+has 'context' => (
     is => 'rw',
-    isa => 'ArrayRef',
-    default => sub { [] },
-    trigger => sub { my ($self, $series) = @_; $self->count(scalar(@{ $series })) }
+    isa => 'Str',
+    default => sub { 'default'}
 );
 has 'domain' => (
     is => 'rw',
     isa => 'Chart::Clicker::Data::Range',
-    default => sub { new Chart::Clicker::Data::Range() }
+    default => sub { Chart::Clicker::Data::Range->new() }
 );
 has 'max_key_count' => ( is => 'rw', isa => 'Int', default => 0 );
 has 'range' => (
     is => 'rw',
     isa => 'Chart::Clicker::Data::Range',
-    default => sub { new Chart::Clicker::Data::Range() }
+    default => sub { Chart::Clicker::Data::Range->new() }
 );
-has 'combined_range' => (
+has 'series' => (
+    metaclass => 'Collection::Array',
     is => 'rw',
-    isa => 'Chart::Clicker::Data::Range',
-    default => sub { new Chart::Clicker::Data::Range() }
+    isa => 'ArrayRef',
+    default => sub { [] },
+    provides => {
+        'count' => 'count',
+        'push' => 'add_to_series',
+        'get' => 'get_series'
+    }
 );
+
+sub get_series_keys {
+    my ($self, $position) = @_;
+
+    return map({ $_->keys->[$position] } @{ $self->series });
+}
+
+sub get_series_values {
+    my ($self, $position) = @_;
+
+    return map({ $_->values->[$position] } @{ $self->series });
+}
 
 sub prepare {
     my $self = shift();
@@ -48,7 +67,7 @@ sub prepare {
         my @keys = @{ $series->keys() };
 
         $self->domain->combine(
-            new Chart::Clicker::Data::Range({
+            Chart::Clicker::Data::Range->new({
                 lower => $keys[0], upper => $keys[ $#keys ]
             })
         );
@@ -60,6 +79,8 @@ sub prepare {
 
     return 1;
 }
+
+no Moose;
 
 1;
 __END__
@@ -82,12 +103,12 @@ to use more than one in your chart.
 
   my @vals = (12, 19, 90, 4, 44, 3, 78, 87, 19, 5);
   my @keys = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-  my $series = new Chart::Clicker::Data::Series({
+  my $series = Chart::Clicker::Data::Series->new({
     keys    => \@keys,
     values  => \@values
   });
 
-  my $ds = new Chart::Clicker::Data::DataSet({
+  my $ds = Chart::Clicker::Data::DataSet->new({
     series => [ $series ]
   });
 
@@ -97,37 +118,49 @@ to use more than one in your chart.
 
 =over 4
 
-=item new
+=item I<new>
 
 Creates a new, empty DataSet
 
 =back
 
-=head2 Class Methods
+=head2 Instance Methods
 
 =over 4
 
-=item count
+=item I<add_to_series>
+
+Add a series to this dataset.
+
+=item I<count>
 
 Get the number of series in this dataset.
 
-=item domain
+=item I<domain>
 
 Get the Range for the domain values
 
-=item max_key_count
+=item I<get_series_keys>
+
+Returns the key at the specified position for every series in this DataSet.
+
+=item I<get_series_values>
+
+Returns the value at the specified position for every series in this DataSet.
+
+=item I<max_key_count>
 
 Get the number of keys in the longest series.
 
-=item range
+=item I<range>
 
 Get the Range for the... range values...
 
-=item series
+=item I<series>
 
 Set/Get the series for this DataSet
 
-=item prepare
+=item I<prepare>
 
 Prepare this DataSet.
 

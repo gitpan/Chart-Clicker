@@ -3,80 +3,83 @@ use Moose;
 
 extends 'Chart::Clicker::Decoration';
 
+use Graphics::Primitive::Stroke;
+use Graphics::Color::RGB;
+
 has '+background_color' => (
     default => sub {
-        new Chart::Clicker::Drawing::Color(
+        Graphics::Color::RGB->new(
             red => 0.9, green => 0.9, blue => 0.9, alpha => 1
         )
     }
 );
+has '+border' => ( default => sub { Graphics::Primitive::Border->new( width => 0 )});
 has '+color' => (
     default => sub {
-        new Chart::Clicker::Drawing::Color(
+        Graphics::Color::RGB->new(
             red => 0, green => 0, blue => 0, alpha => .30
         )
     }
 );
+has 'show_domain' => (
+    is => 'rw',
+    isa => 'Bool',
+    default => 1
+);
+has 'show_range' => (
+    is => 'rw',
+    isa => 'Bool',
+    default => 1
+);
 has 'stroke' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Stroke',
-    default => sub { new Chart::Clicker::Drawing::Stroke() }
+    isa => 'Graphics::Primitive::Stroke',
+    default => sub { Graphics::Primitive::Stroke->new() }
 );
 
-use Chart::Clicker::Drawing::Color;
-use Chart::Clicker::Drawing::Stroke;
-
-use Cairo;
-
-sub prepare {
+override('draw', sub {
     my $self = shift();
-    my $clicker = shift();
-    my $dimension = shift();
 
-    $self->width($dimension->width());
-    $self->height($dimension->height());
+    return unless ($self->show_domain || $self->show_range);
 
-    return 1;
-}
+    my $clicker = $self->clicker;
+    my $cr = $clicker->cairo;
 
-sub draw {
-    my $self = shift();
-    my $clicker = shift();
-
-    my $surface = $self->SUPER::draw($clicker);
-    my $cr = Cairo::Context->create($surface);
-
-    $cr->set_source_rgba($self->background_color->rgba());
+    $cr->set_source_rgba($self->background_color->as_array_with_alpha());
     $cr->paint();
 
-    my $daxis = $clicker->domain_axes->[0];
-    my $raxis = $clicker->range_axes->[0];
+    my $daxis = $clicker->get_context('default')->domain_axis;
+    my $raxis = $clicker->get_context('default')->range_axis;
 
     # Make the grid
-
-    my $per = $daxis->per();
     my $height = $self->height();
-    foreach my $val (@{ $daxis->tick_values() }) {
-        $cr->move_to($daxis->mark($val), 0);
-        $cr->rel_line_to(0, $height);
+
+    if($self->show_domain()) {
+        my $per = $daxis->per();
+        foreach my $val (@{ $daxis->tick_values() }) {
+            $cr->move_to($daxis->mark($val), 0);
+            $cr->rel_line_to(0, $height);
+        }
     }
 
-    $per = $raxis->per();
-    my $width = $self->width();
-    foreach my $val (@{ $raxis->tick_values() }) {
-        $cr->move_to(0, $height - $raxis->mark($val));
-        $cr->rel_line_to($width, 0);
+    if($self->show_range()) {
+        my $per = $raxis->per();
+        my $width = $self->width();
+        foreach my $val (@{ $raxis->tick_values() }) {
+            $cr->move_to(0, $height - $raxis->mark($val));
+            $cr->rel_line_to($width, 0);
+        }
     }
 
-    $cr->set_source_rgba($self->color->rgba());
+    $cr->set_source_rgba($self->color->as_array_with_alpha());
     my $stroke = $self->stroke();
     $cr->set_line_width($stroke->width());
     $cr->set_line_cap($stroke->line_cap());
     $cr->set_line_join($stroke->line_join());
     $cr->stroke();
+});
 
-    return $surface;
-}
+no Moose;
 
 1;
 __END__
@@ -97,39 +100,43 @@ Generates a collection of Markers for use as a background.
 
 =over 4
 
-=item new
+=item I<new>
 
 Creates a new Chart::Clicker::Decoration::Grid object.
 
 =back
 
-=head2 Class Methods
+=head2 Methods
 
 =over 4
 
-=item prepare
+=item I<background_color>
 
-Prepare this Grid for drawing
+Set/Get the background_color for this Grid.
 
-=item color
+=item I<border>
+
+Set/Get the border for this Grid.
+
+=item I<color>
 
 Set/Get the color for this Grid.
 
-=item domain_ticks
+=item I<draw>
 
-Set/Get the domain ticks for this Grid.
+Prepare this Grid for drawing
 
-=item range_ticks
+=item I<show_domain>
 
-Set/Get the range ticks for this Grid.
+Flag show or not show the domain lines.
 
-=item stroke
+=item I<show_range>
+
+Flag show or not show the range lines.
+
+=item I<stroke>
 
 Set/Get the Stroke for this Grid.
-
-=item draw
-
-Draw this Grid.
 
 =cut
 

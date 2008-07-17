@@ -3,22 +3,19 @@ use Moose;
 
 extends 'Chart::Clicker::Decoration';
 
-use Chart::Clicker::Drawing::Font;
-
-has 'color' => (
-    is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Color'
-);
+use Graphics::Primitive::Font;
 
 has 'font' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Drawing::Font'
+    isa => 'Graphics::Primitive::Font'
 );
 
 has 'label' => (
     is => 'rw',
     isa => 'Str'
 );
+
+no Moose;
 
 1;
 __END__
@@ -34,15 +31,13 @@ Chart::Clicker::Decoration::LegendItem represents a single item in a legend.
 =head1 SYNOPSIS
 
   use Chart::Clicker::Decoration::LegendItem;
-  use Chart::Clicker::Drawing::Color;
-  use Chart::Clicker::Drawing::Font;
+  use Graphics::Primitive::Font;
   use Chart::Clicker::Drawing::Insets;
 
-  my $li = new Chart::Clicker::Decoration::LegendItem({
-    color   => new Chart::Clicker::Drawing::Color({ name => 'black' }),
-    insets  => new Chart::Clicker::Drawings::Insets(),
+  my $li = Chart::Clicker::Decoration::LegendItem->new({
+    insets  => Chart::Clicker::Drawings::Insets->new(),
     label   => 'foo',
-    font    => new Chart::Clicker::Drawing::Font()
+    font    => Graphics::Primitive::Font->new()
   });
 
 =head1 METHODS
@@ -51,31 +46,23 @@ Chart::Clicker::Decoration::LegendItem represents a single item in a legend.
 
 =over 4
 
-=item new
+=item I<new>
 
 Creates a new LegendItem object.
 
 =back
 
-=head2 Class Methods
+=head2 Instance Methods
 
 =over 4
 
-=item color
-
-Set/Get this legend item's color.
-
-=item insets
-
-Set/Get this legend item's insets.
-
-=item label
-
-Set/Get this legend item's label.
-
-=item font
+=item I<font>
 
 Set/Get this legend item's font.
+
+=item I<label>
+
+Set/Get this legend item's label.
 
 =back
 
