@@ -4,9 +4,7 @@ use Moose;
 extends 'Chart::Clicker::Drawing::Component';
 with 'Chart::Clicker::Positioned';
 
-use MooseX::AttributeHelpers;
-use Moose::Util::TypeConstraints;
-
+# TODO Geometry::Primitive
 use constant PI => 4 * atan2 1, 1;
 
 use Chart::Clicker::Cairo;
@@ -16,6 +14,11 @@ use Graphics::Color::RGB;
 
 use Graphics::Primitive::Font;
 use Graphics::Primitive::Stroke;
+
+use Moose::Util::TypeConstraints;
+use MooseX::AttributeHelpers;
+
+type 'StrOrCodeRef' => where { (ref($_) eq "") || ref($_) eq 'CODE' };
 
 has 'baseline' => (
     is  => 'rw',
@@ -32,10 +35,11 @@ has '+color' => (
 has 'font' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Font',
-    default => sub { Graphics::Primitive::Font->new(); }
+    default => sub { Graphics::Primitive::Font->new }
 );
-has 'format' => ( is => 'rw', isa => 'Str' );
+has 'format' => ( is => 'rw', isa => 'StrOrCodeRef' );
 has 'fudge_amount' => ( is => 'rw', isa => 'Num', default => 0 );
+has 'hidden' => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'label' => ( is => 'rw', isa => 'Str' );
 has '+orientation' => (
     required => 1
@@ -59,7 +63,6 @@ has 'ticks' => ( is => 'rw', isa => 'Int', default => 5 );
 has 'tick_labels' => (
     is => 'rw',
     isa => 'ArrayRef',
-    default => sub { [] }
 );
 has 'tick_length' => ( is => 'rw', isa => 'Num', default => 3 );
 has 'tick_stroke' => (
@@ -79,7 +82,7 @@ has 'tick_values' => (
     }
 );
 
-sub prepare {
+override('prepare', sub {
     my $self = shift();
 
     if($self->range->span() == 0) {
@@ -103,10 +106,12 @@ sub prepare {
     }
 
     if(!scalar(@{ $self->tick_values() })) {
-        $self->tick_values($self->range->divvy($self->ticks()));
+        $self->tick_values($self->range->divvy($self->ticks() + 1));
     }
 
-    return unless $self->visible;
+    # Return now without setting a min height or width and allow 
+    # Layout::Manager to to set it for us, this is how we 'hide'
+    return if $self->hidden;
 
     my $cairo = $self->clicker->cairo();
 
@@ -117,29 +122,39 @@ sub prepare {
         $font->face(), $font->slant(), $font->weight()
     );
 
+    my %biggest;
     # Determine all this once... much faster.
-    my $biggest = 0;
-    my $key;
-    if($self->visible()) {
-        if($self->is_vertical) {
-            $key = 'width';
+    my @values = @{ $self->tick_values() };
+    for(0..scalar(@values) - 1) {
+        my $val = $values[$_];
+        if(defined($self->tick_labels)) {
+            $val = $self->tick_labels->[$_];
         } else {
-            $key = 'total_height';
+            $val = $self->format_value($val);
         }
-        my @values = @{ $self->tick_values() };
-        for(0..scalar(@values) - 1) {
-            my $val = $self->format_value($self->tick_labels->[$_] || $values[$_]);
-            my $ext = $cairo->text_extents($val);
-            $ext->{total_height} = $ext->{height} - $ext->{y_bearing};
-            $self->{'ticks_extents_cache'}->[$_] = $ext;
-            if($ext->{$key} > $biggest) {
-                $biggest = $ext->{$key};
-            }
+        push(@{ $self->{LABELS} }, $val);
+        my $ext = $cairo->text_extents($val);
+        $ext->{total_height} = $ext->{height} - $ext->{y_bearing};
+        $self->{'ticks_extents_cache'}->[$_] = $ext;
+        if(!(defined($biggest{width}))
+            || ($ext->{'width'} > $biggest{'width'})) {
+            $biggest{'width'} = $ext->{'width'};
         }
+        if(!defined($biggest{'height'})
+            || ($ext->{'total_height'} > $biggest{'height'})) {
+            $biggest{'height'} = $ext->{'total_height'};
+        }
+    }
 
-        if($self->show_ticks()) {
-            $biggest += $self->tick_length();
-        }
+    $self->{'BIGGEST_TICKS'} = \%biggest;
+
+    my $big = $biggest{'height'};
+    if($self->is_vertical) {
+        $big = $biggest{'width'};
+    }
+
+    if($self->show_ticks()) {
+        $big += $self->tick_length();
     }
 
     if ($self->label()) {
@@ -153,20 +168,20 @@ sub prepare {
         my $label_width = $self->label()
             ? $self->{'label_extents_cache'}->{'total_height'}
             : 0;
-        $self->minimum_width($biggest + $label_width + 4);
+        $self->minimum_width($big + $label_width + 4);
         # TODO Wrong, need tallest label + tick length + outside
-        $self->minimum_height($self->outside_height + $biggest);
+        $self->minimum_height($self->outside_height + $big);
     } else {
         my $label_height = $self->label()
             ? $self->{'label_extents_cache'}->{'total_height'}
             : 0;
-        $self->minimum_height($biggest + $label_height + 4);
+        $self->minimum_height($big + $label_height);
         # TODO Wrong, need widest label + tick length + outside
-        $self->minimum_width($biggest + $self->outside_width);
+        $self->minimum_width($big + $self->outside_width);
     }
 
     return 1;
-}
+});
 
 sub mark {
     my $self = shift();
@@ -179,7 +194,7 @@ sub mark {
     if(!defined($self->{'LOWER'})) {
         $self->{'LOWER'} = $self->range->lower();
     }
-    return $self->per() * ($value - $self->{'LOWER'} || 0);
+    return $self->per * ($value - $self->{'LOWER'} || 0);
 }
 
 sub draw {
@@ -191,7 +206,7 @@ sub draw {
         $self->per($self->width / ($self->range->span - 1));
     }
 
-    return unless $self->visible;
+    return if $self->hidden;
 
     my $x = 0;
     my $y = 0;
@@ -265,7 +280,7 @@ sub draw {
         # Draw a line for our axis
         $cr->line_to($x + $width, $y);
 
-        my @values = @{ $self->tick_values() };
+        my @values = @{ $self->tick_values };
         # Draw a tick for each value.
         for(0..scalar(@values) - 1) {
             my $val = $values[$_];
@@ -278,16 +293,16 @@ sub draw {
                 $cr->rel_move_to(-($ext->{'width'} / 1.8), -2);
             } else {
                 $cr->line_to($ix, $y + $tick_length);
-                $cr->rel_move_to(-($ext->{'width'} / 2), $ext->{'height'} + 2);
+                $cr->rel_move_to(-($ext->{'width'} / 2), $self->{'BIGGEST_TICKS'}->{'height'} - 5);
             }
-            $cr->show_text($self->format_value($self->tick_labels->[$_] || $val));
+            $cr->show_text($self->{LABELS}->[$_]);
         }
 
         # Draw the label
         if($self->label()) {
             my $ext = $self->{'label_extents_cache'};
             if ($self->is_bottom) {
-                $cr->move_to(($width - $ext->{'width'}) / 2, $height);
+                $cr->move_to(($width - $ext->{'width'}) / 2, $height - 5);
             } else {
                 $cr->move_to(($width - $ext->{'width'}) / 2, $ext->{'height'} + 2);
             }
@@ -302,11 +317,18 @@ sub format_value {
     my $self = shift;
     my $value = shift;
 
-    if($self->format()) {
-        return sprintf($self->format(), $value);
+    my $format = $self->format;
+    if($format) {
+        if(ref($format) eq 'CODE') {
+            return &$format($value);
+        } else {
+            return sprintf($format, $value);
+        }
+
     }
-    return $value;
 }
+
+__PACKAGE__->meta->make_immutable;
 
 no Moose;
 
@@ -371,9 +393,17 @@ Set/Get the font used for the axis' labels.
 
 =item I<format>
 
-Set/Get the format to use for the axis values.  The format is applied to each
-value 'tick' via sprintf().  See sprintf()s perldoc for details!  This is
-useful for situations where the values end up with repeating decimals.
+Set/Get the format to use for the axis values.
+
+If the format is a string then format is applied to each value 'tick' via
+sprintf().  See sprintf()s perldoc for details!  This is useful for situations
+where the values end up with repeating decimals.
+
+If the format is a coderef then that coderef will be executed and the value
+passed to it as an argument.
+
+  my $nf = Number::Format->new;
+  $default->domain_axis->format(sub { return $nf->format_number(shift); });
 
 =item I<fudge_amount>
 
@@ -473,9 +503,9 @@ CC_HORIZONTAL this method sets the height.  Otherwise sets the width.
 
 Draw this axis.
 
-=item I<visible>
+=item I<hidden>
 
-Set/Get this axis visibility flag.
+Set/Get this axis' hidden flag.
 
 =item I<width>
 

@@ -20,6 +20,10 @@ Revision history for Perl extension Chart::Clicker.
 	  - Move out lots of generic functionality to new modules
 	  - Add context support
 	  - Ignore duplicate axes
+	  - Change Axis 'visible' attribute to 'hidden' to avoid clashing with
+	    Layout::Manager
+	  - Axis' ticks attribute now yields the correct number of ticks, not -1
+	  - Horizontal axes' tick labels now align their baselines properly
 1.4.2
     - Packaging fixes.
 1.4.1

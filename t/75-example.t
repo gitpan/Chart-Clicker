@@ -27,9 +27,7 @@ my $ds = Chart::Clicker::Data::DataSet->new(series => [ $series, $series2 ]);
 $cc->add_to_datasets($ds);
 
 $cc->prepare();
-$cc->do_layout($cc);
 $cc->draw();
-$cc->write('/Users/gphat/foo.png');
-# my $data = $cc->data();
-# ok(defined($data), 'data');
+my $data = $cc->data();
+ok(defined($data), 'data');
 
