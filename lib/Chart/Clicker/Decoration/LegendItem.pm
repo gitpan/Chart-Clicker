@@ -1,7 +1,9 @@
 package Chart::Clicker::Decoration::LegendItem;
 use Moose;
 
-extends 'Chart::Clicker::Decoration';
+extends 'Chart::Clicker::Component';
+
+# TODO Hmmm...
 
 use Graphics::Primitive::Font;
 

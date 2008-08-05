@@ -1,19 +1,18 @@
 package Chart::Clicker::Axis;
 use Moose;
 
-extends 'Chart::Clicker::Drawing::Component';
+extends 'Chart::Clicker::Container';
 with 'Chart::Clicker::Positioned';
 
-# TODO Geometry::Primitive
-use constant PI => 4 * atan2 1, 1;
-
-use Chart::Clicker::Cairo;
 use Chart::Clicker::Data::Range;
 
 use Graphics::Color::RGB;
 
 use Graphics::Primitive::Font;
-use Graphics::Primitive::Stroke;
+
+use Layout::Manager::Absolute;
+
+use Math::Trig ':pi';
 
 use Moose::Util::TypeConstraints;
 use MooseX::AttributeHelpers;
@@ -23,6 +22,12 @@ type 'StrOrCodeRef' => where { (ref($_) eq "") || ref($_) eq 'CODE' };
 has 'baseline' => (
     is  => 'rw',
     isa => 'Num',
+);
+# Remove for border...
+has 'brush' => (
+    is => 'rw',
+    isa => 'Graphics::Primitive::Brush',
+    default => sub { Graphics::Primitive::Brush->new }
 );
 has '+color' => (
     default => sub {
@@ -41,35 +46,29 @@ has 'format' => ( is => 'rw', isa => 'StrOrCodeRef' );
 has 'fudge_amount' => ( is => 'rw', isa => 'Num', default => 0 );
 has 'hidden' => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'label' => ( is => 'rw', isa => 'Str' );
+has '+layout_manager' => ( default => sub { Layout::Manager::Absolute->new });
 has '+orientation' => (
     required => 1
 );
-has 'per' => ( is => 'rw', isa => 'Num' );
 has '+position' => (
     required => 1
 );
 has 'range' => (
     is => 'rw',
     isa => 'Chart::Clicker::Data::Range',
-    default => sub { Chart::Clicker::Data::Range->new() }
+    default => sub { Chart::Clicker::Data::Range->new }
 );
 has 'show_ticks' => ( is => 'rw', isa => 'Bool', default => 1 );
-has 'stroke' => (
+has 'tick_brush' => (
     is => 'rw',
-    isa => 'Graphics::Primitive::Stroke',
-    default => sub { Graphics::Primitive::Stroke->new(); }
+    isa => 'Graphics::Primitive::Brush',
+    default => sub { Graphics::Primitive::Brush->new }
 );
-has 'ticks' => ( is => 'rw', isa => 'Int', default => 5 );
 has 'tick_labels' => (
     is => 'rw',
     isa => 'ArrayRef',
 );
 has 'tick_length' => ( is => 'rw', isa => 'Num', default => 3 );
-has 'tick_stroke' => (
-    is => 'rw',
-    isa => 'Graphics::Primitive::Stroke',
-    default => sub { Graphics::Primitive::Stroke->new(); }
-);
 has 'tick_values' => (
     metaclass => 'Collection::Array',
     is => 'rw',
@@ -81,138 +80,147 @@ has 'tick_values' => (
         'count' => 'tick_value_count'
     }
 );
+has 'ticks' => ( is => 'rw', isa => 'Int', default => 5 );
 
 override('prepare', sub {
-    my $self = shift();
+    my ($self, $driver) = @_;
 
-    if($self->range->span() == 0) {
+    super;
+
+    if($self->range->span == 0) {
         die('This axis has a span of 0, that\'s fatal!');
     }
 
-    if(defined($self->baseline())) {
-        if($self->range->lower() > $self->baseline()) {
-            $self->range->lower($self->baseline());
+    if(defined($self->baseline)) {
+        if($self->range->lower > $self->baseline) {
+            $self->range->lower($self->baseline);
         }
     } else {
-        $self->baseline($self->range->lower());
+        $self->baseline($self->range->lower);
     }
 
-    if($self->fudge_amount()) {
-        my $span = $self->range->span();
-        my $lower = $self->range->lower();
-        $self->range->lower($lower - abs($span * $self->fudge_amount()));
-        my $upper = $self->range->upper();
-        $self->range->upper($upper + ($span * $self->fudge_amount()));
+    if($self->fudge_amount) {
+        my $span = $self->range->span;
+        my $lower = $self->range->lower;
+        $self->range->lower($lower - abs($span * $self->fudge_amount));
+        my $upper = $self->range->upper;
+        $self->range->upper($upper + ($span * $self->fudge_amount));
     }
 
-    if(!scalar(@{ $self->tick_values() })) {
-        $self->tick_values($self->range->divvy($self->ticks() + 1));
+    if(!scalar(@{ $self->tick_values })) {
+        $self->tick_values($self->range->divvy($self->ticks + 1));
     }
 
     # Return now without setting a min height or width and allow 
     # Layout::Manager to to set it for us, this is how we 'hide'
     return if $self->hidden;
 
-    my $cairo = $self->clicker->cairo();
+    my $font = $self->font;
 
-    my $font = $self->font();
-
-    $cairo->set_font_size($font->size());
-    $cairo->select_font_face(
-        $font->face(), $font->slant(), $font->weight()
-    );
-
-    my %biggest;
+    my $bheight = 0;
+    my $bwidth = 0;
     # Determine all this once... much faster.
-    my @values = @{ $self->tick_values() };
-    for(0..scalar(@values) - 1) {
-        my $val = $values[$_];
+    foreach my $val (@{ $self->tick_values }) {
         if(defined($self->tick_labels)) {
             $val = $self->tick_labels->[$_];
         } else {
             $val = $self->format_value($val);
         }
-        push(@{ $self->{LABELS} }, $val);
-        my $ext = $cairo->text_extents($val);
-        $ext->{total_height} = $ext->{height} - $ext->{y_bearing};
-        $self->{'ticks_extents_cache'}->[$_] = $ext;
-        if(!(defined($biggest{width}))
-            || ($ext->{'width'} > $biggest{'width'})) {
-            $biggest{'width'} = $ext->{'width'};
-        }
-        if(!defined($biggest{'height'})
-            || ($ext->{'total_height'} > $biggest{'height'})) {
-            $biggest{'height'} = $ext->{'total_height'};
-        }
+        my $tbox = $driver->get_text_bounding_box($font, $val);
+
+        my $tlabel = Graphics::Primitive::TextBox->new(
+            font => $font,
+            text => $val,
+            color => Graphics::Color::RGB->new( green => 0, blue => 0, red => 0),
+        );
+        $tlabel->prepare($driver);
+
+        $tlabel->width($tlabel->minimum_width);
+        $tlabel->height($tlabel->minimum_height);
+
+        $bwidth = $tlabel->width if($tlabel->width > $bwidth);
+        $bheight = $tlabel->height if($tlabel->height > $bheight);
+
+        $self->add_component($tlabel);
     }
 
-    $self->{'BIGGEST_TICKS'} = \%biggest;
-
-    my $big = $biggest{'height'};
+    my $big = $bheight;
     if($self->is_vertical) {
-        $big = $biggest{'width'};
+        $big = $bwidth;
     }
 
-    if($self->show_ticks()) {
-        $big += $self->tick_length();
+    if($self->show_ticks) {
+        $big += $self->tick_length;
     }
 
-    if ($self->label()) {
-        my $ext = $cairo->text_extents($self->label());
-        $ext->{total_height} = $ext->{height} - $ext->{y_bearing};
-        $self->{'label_extents_cache'} = $ext;
+    my $label_width = 0;
+    my $label_height = 0;
+
+    if ($self->label) {
+
+        my $angle = 0;
+        if($self->is_vertical) {
+            if ($self->is_left) {
+                $angle -= pip2;
+            } else {
+                $angle = pip2;
+            }
+        }
+
+        my $label = Graphics::Primitive::TextBox->new(
+            name => 'label',
+            font => $self->font,
+            text => $self->label,
+            angle => $angle,
+            color => Graphics::Color::RGB->new( green => 0, blue => 0, red => 0),
+        );
+        $label->font->size($label->font->size);
+
+        $label->prepare($driver);
+
+        $label->width($label->minimum_width);
+        $label->height($label->minimum_height);
+
+        $label_width = $label->width;
+        $label_height = $label->height;
+        $self->add_component($label);
     }
 
     if($self->is_vertical) {
-        # The label will be rotated, so use height here too.
-        my $label_width = $self->label()
-            ? $self->{'label_extents_cache'}->{'total_height'}
-            : 0;
-        $self->minimum_width($big + $label_width + 4);
-        # TODO Wrong, need tallest label + tick length + outside
-        $self->minimum_height($self->outside_height + $big);
+        $self->minimum_width($self->minimum_width + $big + $label_width);
+        $self->minimum_height($self->minimum_height + $self->outside_height + $big);
     } else {
-        my $label_height = $self->label()
-            ? $self->{'label_extents_cache'}->{'total_height'}
-            : 0;
-        $self->minimum_height($big + $label_height);
-        # TODO Wrong, need widest label + tick length + outside
-        $self->minimum_width($big + $self->outside_width);
+        $self->minimum_height($self->minimum_height + $big + $label_height);
+        $self->minimum_width($self->minimum_width + $big + $self->outside_width);
     }
 
     return 1;
 });
 
 sub mark {
-    my $self = shift();
-    my $value = shift();
-
-    # TODO Maybe cache repeat values?
+    my ($self, $span, $value) = @_;
 
     # 'caching' this here speeds things up.  Calling after changing the
     # range would result in a messed up chart anyway...
     if(!defined($self->{'LOWER'})) {
-        $self->{'LOWER'} = $self->range->lower();
+        $self->{'LOWER'} = $self->range->lower;
     }
-    return $self->per * ($value - $self->{'LOWER'} || 0);
+    return ($span / ($self->range->span - 1)) * ($value - $self->{'LOWER'} || 0);
 }
 
-sub draw {
-    my $self = shift();
+override('pack', sub {
+    my ($self) = @_;
 
-    if($self->is_vertical) {
-        $self->per($self->height / ($self->range->span - 1));
-    } else {
-        $self->per($self->width / ($self->range->span - 1));
-    }
+    super;
 
     return if $self->hidden;
 
     my $x = 0;
     my $y = 0;
 
-    my $width = $self->width();
-    my $height = $self->height();
+    my $width = $self->width;
+    my $height = $self->height;
+    my $ibb = $self->inside_bounding_box;
 
     if($self->is_left) {
         $x += $width;
@@ -224,94 +232,76 @@ sub draw {
         # nuffin
     }
 
-    my $cr = $self->clicker->cairo();
+    my $tick_length = $self->tick_length;
 
-    my $stroke = $self->stroke();
-    $cr->set_line_width($stroke->width());
-    $cr->set_line_cap($stroke->line_cap());
-    $cr->set_line_join($stroke->line_join());
+    my $lower = $self->range->lower;
 
-    my $font = $self->font();
-    $cr->set_font_size($font->size());
-    $cr->select_font_face(
-        $font->face(), $font->slant(), $font->weight()
-    );
+    my @values = @{ $self->tick_values };
 
-    my $tick_length = $self->tick_length();
-    my $per = $self->per();
-
-    my $lower = $self->range->lower();
-
-    $cr->set_source_rgba($self->color->as_array_with_alpha());
-
-    $cr->move_to($x, $y);
     if($self->is_vertical) {
-        $cr->line_to($x, $y + $height);
 
-        my @values = @{ $self->tick_values() };
         for(0..scalar(@values) - 1) {
             my $val = $values[$_];
-            my $iy = $y + $height - (($val - $lower) * $per);
-            my $ext = $self->{'ticks_extents_cache'}->[$_];
-            $cr->move_to($x, $iy);
+            my $iy = $height - $self->mark($height, $val);
+            my $label = $self->get_component($_);
+
             if($self->is_left) {
-                $cr->line_to($x - $tick_length, $iy);
-                $cr->rel_move_to(-$ext->{'width'} - 2, $ext->{'height'} / 2);
+                $label->origin->x($ibb->origin->x + $ibb->width - $label->width);
+                $label->origin->y($iy - ($label->height / 2));
             } else {
-                $cr->line_to($x + $tick_length, $iy);
-                $cr->rel_move_to(0, $ext->{'height'} / 2);
+                $label->origin->x($ibb->origin->x);
+                $label->origin->y($iy - ($label->height / 2));
             }
-            $cr->show_text($self->format_value($val));
         }
 
         # Draw the label
-        if($self->label()) {
-            my $ext = $self->{'label_extents_cache'};
-            if ($self->is_left) {
-                $cr->move_to($ext->{'height'}, ($height + $ext->{'width'}) / 2);
-                $cr->rotate(3*PI/2);
+        # FIXME Not working, rotated text labels...
+        if($self->label) {
+            my $label = $self->find_component('label');
+
+            if($self->is_left) {
+
+                $label->origin->x($ibb->origin->x);
+                $label->origin->y(($height - $label->height) / 2);
             } else {
-                $cr->move_to($width - $ext->{'height'}, ($height - $ext->{'width'}) / 2);
-                $cr->rotate(PI/2);
+
+                $label->origin->x($ibb->origin->x + $ibb->width - $label->width);
+                $label->origin->y(($height - $label->height) / 2);
             }
-            $cr->show_text($self->label());
         }
     } else {
-        # Draw a line for our axis
-        $cr->line_to($x + $width, $y);
-
-        my @values = @{ $self->tick_values };
         # Draw a tick for each value.
         for(0..scalar(@values) - 1) {
             my $val = $values[$_];
             # Grab the extent from the cache.
-            my $ext = $self->{'ticks_extents_cache'}->[$_];
-            my $ix = $x + ($val - $lower) * $per;
-            $cr->move_to($ix, $y);
+            my $ix = $self->mark($width, $val);
+
+            my $label = $self->get_component($_);
+
             if($self->is_top) {
-                $cr->line_to($ix, $y - $tick_length);
-                $cr->rel_move_to(-($ext->{'width'} / 1.8), -2);
+                $label->origin->x($x - ($label->width / 1.8));
+                $label->origin->y($ibb->origin->y + $ibb->height - $label->height);
             } else {
-                $cr->line_to($ix, $y + $tick_length);
-                $cr->rel_move_to(-($ext->{'width'} / 2), $self->{'BIGGEST_TICKS'}->{'height'} - 5);
+                $label->origin->x($ix - ($label->width / 1.8));
+                $label->origin->y($ibb->origin->y);
             }
-            $cr->show_text($self->{LABELS}->[$_]);
         }
 
         # Draw the label
-        if($self->label()) {
+        # FIXME Not working, rotated text labels...
+        if($self->label) {
+            my $label = $self->find_component('label');
+
             my $ext = $self->{'label_extents_cache'};
             if ($self->is_bottom) {
-                $cr->move_to(($width - $ext->{'width'}) / 2, $height - 5);
+                $label->origin->x(($width - $label->width) / 2);
+                $label->origin->y($height - $label->height - ($self->padding->bottom + $self->margins->bottom + $self->border->width));
             } else {
-                $cr->move_to(($width - $ext->{'width'}) / 2, $ext->{'height'} + 2);
+                $label->origin->x(($width - $label->width) / 2);
             }
-            $cr->show_text($self->label());
         }
     }
-
-    $cr->stroke();
-}
+});
 
 sub format_value {
     my $self = shift;
@@ -347,16 +337,16 @@ Chart::Clicker::Axis represents the plot of the chart.
 
   use Chart::Clicker::Axis;
   use Graphics::Primitive::Font;
-  use Graphics::Primitive::Stroke;
+  use Graphics::Primitive::Brush;
 
   my $axis = Chart::Clicker::Axis->new({
-    font  => Graphics::Primitive::Font->new(),
+    font  => Graphics::Primitive::Font->new,
     orientation => 'vertical',
     position => 'left',
     show_ticks => 1,
-    stroke = Graphics::Primitive::Stroke->new(),
+    brush = Graphics::Primitive::Brush->new,
     tick_length => 2,
-    tick_stroke => Graphics::Primitive::Stroke->new(),
+    tick_brush => Graphics::Primitive::Brush->new,
     visible => 1,
   });
 
@@ -383,6 +373,10 @@ Set the 'baseline' value of this axis.  This is used by some renderers to
 change the way a value is marked.  The Bar render, for instance, considers
 values below the base to be 'negative'.
 
+=item I<brush>
+
+Set/Get the brush for this axis.
+
 =item I<color>
 
 Set/Get the color of the axis.
@@ -396,7 +390,7 @@ Set/Get the font used for the axis' labels.
 Set/Get the format to use for the axis values.
 
 If the format is a string then format is applied to each value 'tick' via
-sprintf().  See sprintf()s perldoc for details!  This is useful for situations
+sprintf.  See sprintf perldoc for details!  This is useful for situations
 where the values end up with repeating decimals.
 
 If the format is a coderef then that coderef will be executed and the value
@@ -427,12 +421,6 @@ Set/Get the label of the axis.
 
 Set/Get the orientation of this axis.  See L<Chart::Clicker::Drawing>.
 
-=item I<per>
-
-Set/Get the 'per' value for the axis.  This is how many physical pixels a unit
-on the axis represents.  If the axis represents a range of 0-100 and the axis
-is 200 pixels high then the per value will be 2.
-
 =item I<position>
 
 Set/Get the position of the axis on the chart.
@@ -446,17 +434,9 @@ Set/Get the Range for this axis.
 Set/Get the show ticks flag.  If this is value then the small tick marks at
 each mark on the axis will not be drawn.
 
-=item I<stroke>
-
-Set/Get the stroke for this axis.
-
 =item I<tick_length>
 
 Set/Get the tick length.
-
-=item I<tick_stroke>
-
-Set/Get the stroke for the tick markers.
 
 =item I<tick_values>
 
@@ -469,6 +449,10 @@ Add a value to the list of tick values.
 =item I<clear_tick_values>
 
 Clear all tick values.
+
+=item I<tick_brush>
+
+Set/Get the stroke for the tick markers.
 
 =item I<tick_value_count>
 
@@ -488,7 +472,7 @@ will have no effect if you specify tick_values.
 
 =item I<mark>
 
-Given a value, returns it's pixel position on this Axis.
+Given a span and a value, returns it's pixel position on this Axis.
 
 =item I<format_value>
 
@@ -525,3 +509,4 @@ perl(1)
 
 You can redistribute and/or modify this code under the same terms as Perl
 itself.
+

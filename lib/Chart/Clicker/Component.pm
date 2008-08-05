@@ -1,9 +1,14 @@
-package Chart::Clicker::Decoration;
+package Chart::Clicker::Component;
 use Moose;
 
-extends 'Graphics::Primitive::Canvas';
+extends 'Graphics::Primitive::Component';
 
-has 'clicker' => ( is => 'rw', isa => 'Chart::Clicker' );
+with 'Graphics::Primitive::Oriented';
+
+has 'clicker' => (
+    is => 'rw',
+    isa => 'Chart::Clicker'
+);
 
 __PACKAGE__->meta->make_immutable;
 
@@ -14,12 +19,11 @@ __END__
 
 =head1 NAME
 
-Chart::Clicker::Decoration
+Chart::Clicker::Component
 
 =head1 DESCRIPTION
 
-Chart::Clicker::Decoration is a straight subclass of
-L<Chart::Clicker::Drawing::Component>.
+Chart::Clicker::Component is a subclass of L<Graphics::Primitive::Component>.
 
 =head1 SYNOPSIS
 
@@ -31,13 +35,17 @@ L<Chart::Clicker::Drawing::Component>.
 
 =item I<new>
 
-Creates a new Chart::Clicker::Decoration
+Creates a new Chart::Clicker::Component
 
 =back
 
 =head2 Instance Methods
 
 =over 4
+
+=item I<clicker>
+
+Set/Get this component's clicker object.
 
 =back
 

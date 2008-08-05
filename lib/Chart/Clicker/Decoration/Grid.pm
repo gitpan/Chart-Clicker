@@ -1,9 +1,10 @@
 package Chart::Clicker::Decoration::Grid;
 use Moose;
 
-extends 'Chart::Clicker::Decoration';
+extends 'Graphics::Primitive::Canvas';
 
-use Graphics::Primitive::Stroke;
+with 'Graphics::Primitive::Oriented';
+
 use Graphics::Color::RGB;
 
 has '+background_color' => (
@@ -14,6 +15,12 @@ has '+background_color' => (
     }
 );
 has '+border' => ( default => sub { Graphics::Primitive::Border->new( width => 0 )});
+has 'brush' => (
+    is => 'rw',
+    isa => 'Graphics::Primitive::Brush',
+    default => sub { Graphics::Primitive::Brush->new }
+);
+has 'clicker' => ( is => 'rw', isa => 'Chart::Clicker' );
 has '+color' => (
     default => sub {
         Graphics::Color::RGB->new(
@@ -31,51 +38,48 @@ has 'show_range' => (
     isa => 'Bool',
     default => 1
 );
-has 'stroke' => (
-    is => 'rw',
-    isa => 'Graphics::Primitive::Stroke',
-    default => sub { Graphics::Primitive::Stroke->new( ) }
-);
 
-override('draw', sub {
+override('pack', sub {
     my $self = shift();
 
     return unless ($self->show_domain || $self->show_range);
 
     my $clicker = $self->clicker;
-    my $cr = $clicker->cairo;
 
-    $cr->set_source_rgba($self->background_color->as_array_with_alpha());
-    $cr->paint();
+    my $dflt = $clicker->get_context('default');
+    my $daxis = $dflt->domain_axis;
+    my $raxis = $dflt->range_axis;
 
-    my $daxis = $clicker->get_context('default')->domain_axis;
-    my $raxis = $clicker->get_context('default')->range_axis;
+    $self->draw_lines($daxis) if $self->show_domain;
 
-    # Make the grid
-    my $height = $self->height();
-    my $width = $self->width();
+    $self->draw_lines($raxis) if $self->show_range;
 
-    if($self->show_domain()) {
-        foreach my $val (@{ $daxis->tick_values() }) {
-            $cr->move_to($daxis->mark($val), 0);
-            $cr->rel_line_to(0, $height);
-        }
-    }
-
-    if($self->show_range()) {
-        foreach my $val (@{ $raxis->tick_values() }) {
-            $cr->move_to(0, $height - $raxis->mark($val));
-            $cr->rel_line_to($width, 0);
-        }
-    }
-
-    $cr->set_source_rgba($self->color->as_array_with_alpha());
-    my $stroke = $self->stroke();
-    $cr->set_line_width($stroke->width());
-    $cr->set_line_cap($stroke->line_cap());
-    $cr->set_line_join($stroke->line_join());
-    $cr->stroke();
+    my $op = Graphics::Primitive::Operation::Stroke->new;
+    $op->brush($self->brush);
+    $op->brush->color($self->color);
+    $self->do($op);
 });
+
+sub draw_lines {
+    my ($self, $axis) = @_;
+
+    my $height = $self->height;
+    my $width = $self->width;
+
+    if($axis->is_horizontal) {
+
+        foreach my $val (@{ $axis->tick_values }) {
+            $self->move_to($axis->mark($width, $val), 0);
+            $self->rel_line_to(0, $height);
+        }
+    } else {
+
+        foreach my $val (@{ $axis->tick_values }) {
+            $self->move_to(0, $height - $axis->mark($height, $val));
+            $self->rel_line_to($width, 0);
+        }
+    }
+}
 
 __PACKAGE__->meta->make_immutable;
 
@@ -122,7 +126,11 @@ Set/Get the border for this Grid.
 
 Set/Get the color for this Grid.
 
-=item I<draw>
+=item I<draw_lines>
+
+Called by pack, draws the lines for a given axis.
+
+=item I<pack>
 
 Prepare this Grid for drawing
 

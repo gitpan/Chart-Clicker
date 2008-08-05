@@ -6,7 +6,6 @@ use Moose::Util::TypeConstraints;
 use Chart::Clicker;
 use Chart::Clicker::Axis;
 use Chart::Clicker::Renderer::Line;
-use Chart::Clicker::Util;
 
 has 'domain_axis' => (
     is => 'rw',
@@ -17,6 +16,16 @@ has 'domain_axis' => (
             position    => 'bottom',
             format      => '%0.2f'
         )
+    }
+);
+has 'markers' => (
+    metaclass => 'Collection::Array',
+    is => 'rw',
+    isa => 'ArrayRef[Chart::Clicker::Data::Marker]',
+    default => sub { [] },
+    provides => {
+        'count' => 'marker_count',
+        'push'  => 'add_marker'
     }
 );
 has 'name' => (
