@@ -13,8 +13,8 @@ requires    'IO::File';
 
 requires    'Geometry::Primitive' => 0.09;
 requires    'Graphics::Color' => 0.08;
-requires    'Graphics::Primitive' => 0.20;
-requires    'Graphics::Primitive::Driver::Cairo' => 0.11;
+requires    'Graphics::Primitive' => 0.21;
+requires    'Graphics::Primitive::Driver::Cairo' => 0.12;
 requires    'Layout::Manager' => 0.14;
 requires    'Scalar::Util' => 1.19;
 

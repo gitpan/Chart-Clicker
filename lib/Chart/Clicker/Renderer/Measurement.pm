@@ -3,6 +3,10 @@ use Moose;
 
 extends 'Chart::Clicker::Renderer';
 
+sub prepare {
+    die('Measurement is unsupported at the moment.');
+}
+
 # sub dontdraw {
 #     my $self = shift();
 #     my $clicker = shift();
@@ -110,9 +114,9 @@ and error bars.
 
 =over 4
 
-=item I<draw>
+=item I<prepare>
 
-Render the series.
+Prepare the series.
 
 =back
 
