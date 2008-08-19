@@ -28,7 +28,7 @@ use Class::MOP;
 
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '1.99_08';
+our $VERSION = '1.99_09';
 
 coerce 'Chart::Clicker::Renderer'
     => from 'Str'
@@ -85,9 +85,19 @@ has 'datasets' => (
 has 'driver' => (
     is => 'rw',
     does => 'Graphics::Primitive::Driver',
-    default => sub { Graphics::Primitive::Driver::Cairo->new },
+    default => sub {
+        my ($self) = @_;
+        Graphics::Primitive::Driver::Cairo->new(
+            format => $self->format
+        )
+    },
     handles => [ qw(data write) ],
     lazy => 1
+);
+has 'format' => (
+    is => 'rw',
+    isa => 'Str',
+    default => sub { 'PNG' }
 );
 has '+height' => (
     default => 300
