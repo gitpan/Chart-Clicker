@@ -40,4 +40,3 @@ $ctx->add_marker($mark2);
 $cc->draw;
 my $data = $cc->data;
 ok(defined($data), 'data');
-
