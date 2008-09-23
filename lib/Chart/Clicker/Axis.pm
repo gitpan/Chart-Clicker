@@ -134,17 +134,18 @@ override('prepare', sub {
         } else {
             $label = $self->format_value($val);
         }
-        my $tbox = $driver->get_text_bounding_box($font, $label);
 
         my $tlabel = Graphics::Primitive::TextBox->new(
-            font => $font,
             text => $label,
-            color => Graphics::Color::RGB->new(green => 0, blue => 0, red => 0),
+            font => $font,
+            color => $self->color,
         );
+        my $lay = $driver->get_textbox_layout($tlabel);
+
         $tlabel->prepare($driver);
 
-        $tlabel->width($tlabel->minimum_width);
-        $tlabel->height($tlabel->minimum_height);
+        $tlabel->width($lay->width);
+        $tlabel->height($lay->height);
 
         $bwidth = $tlabel->width if($tlabel->width > $bwidth);
         $bheight = $tlabel->height if($tlabel->height > $bheight);

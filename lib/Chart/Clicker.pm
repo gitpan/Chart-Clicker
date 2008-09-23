@@ -28,7 +28,7 @@ use Class::MOP;
 
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.09';
+our $VERSION = '2.10';
 
 coerce 'Chart::Clicker::Renderer'
     => from 'Str'
@@ -174,7 +174,7 @@ override('prepare', sub {
     my $plot = $self->plot;
 
     $plot->clear_components;
-    $self->plot->render_area->clear_components;
+    $plot->render_area->clear_components;
 
     # These two adds are here because the plot is too dependant on changes
     # in the axes and such to trust it across multiple prepares.  Putting all
