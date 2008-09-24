@@ -28,7 +28,7 @@ use Class::MOP;
 
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.10';
+our $VERSION = '2.11';
 
 coerce 'Chart::Clicker::Renderer'
     => from 'Str'
@@ -88,7 +88,7 @@ has 'driver' => (
     default => sub {
         my ($self) = @_;
         Graphics::Primitive::Driver::Cairo->new(
-            format => $self->format
+            format => $self->format,
         )
     },
     handles => [ qw(data write) ],
@@ -284,6 +284,8 @@ override('prepare', sub {
     foreach my $c (@{ $self->components }) {
         $c->clicker($self);
     }
+
+    $plot->add_component($plot->render_area, 'c');
 
     super;
 });
