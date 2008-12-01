@@ -1,7 +1,12 @@
 Revision history for Perl extension Chart::Clicker.
 
+2.14
+  - Add examples directory
+  - Don't add padding if axes are hidden.
+  - Fix gradients in Area renderer
+
 2.13
-  - Use G:P's new Linear gradient
+  - Remove some old code (was already commented out)
 
 2.12
   - Fix POD bug (thanks Jay Shirley)

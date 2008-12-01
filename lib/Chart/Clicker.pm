@@ -28,7 +28,7 @@ use Class::MOP;
 
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.13';
+our $VERSION = '2.14';
 
 coerce 'Chart::Clicker::Renderer'
     => from 'Str'
@@ -234,8 +234,10 @@ override('prepare', sub {
                 $xaxis->position('bottom');
             }
 
-            $xaxis->padding->bottom(5);
-            $xaxis->padding->top(5);
+			unless($xaxis->hidden) {
+	            $xaxis->padding->bottom(5);
+	        	$xaxis->padding->top(5);
+			}
 
             $plot->add_component($xaxis, $xaxis->is_top ? 'n' : 's');
             $xaxes{refaddr($xaxis)} = 1;
@@ -258,8 +260,11 @@ override('prepare', sub {
                 $yaxis->border->right->width(1);
                 $yaxis->border->right->color($xaxis->color);
             }
-            $yaxis->padding->left(5);
-            $yaxis->padding->right(5);
+
+			unless($yaxis->hidden) {
+	            $yaxis->padding->left(5);
+	            $yaxis->padding->right(5);
+			}
 
             $plot->add_component($yaxis, $yaxis->is_left ? 'w' : 'e');
             $rcount++;
@@ -386,6 +391,12 @@ context.
   
 New contexts provide a fresh domain and range axis and default to a Line
 renderer. 
+
+B<Caveat>: Clicker expects that the default context (identified by the string
+"default") will always be present.  It is from this context that some of
+Clicker's internals draw their values.  You should use the default context
+unless you need more than one, in which case you should use "default" as the
+base context.
 
 =head1 FORMATS
 
