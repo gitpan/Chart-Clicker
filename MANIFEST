@@ -1,6 +1,7 @@
 Changes
 example/simple.pl
 example/sparkline.pl
+example/tufte-whitegrid.pl
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
