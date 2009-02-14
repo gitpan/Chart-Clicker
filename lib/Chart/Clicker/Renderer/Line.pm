@@ -3,6 +3,7 @@ use Moose;
 
 extends 'Chart::Clicker::Renderer';
 
+use Geometry::Primitive::Point;
 use Graphics::Primitive::Brush;
 use Graphics::Primitive::Operation::Stroke;
 
@@ -13,7 +14,7 @@ has 'brush' => (
 );
 has 'shape' => (
     is => 'rw',
-    isa => 'Chart::Clicker::Shape'
+    isa => 'Geometry::Primitive::Shape',
 );
 has 'shape_brush' => (
     is => 'rw',
@@ -49,7 +50,7 @@ sub finalize {
                 my $x = $domain->mark($width, $keys[$_]);
                 my $y = $height - $range->mark($height, $vals[$_]);
                 if($_ == 0) {
-                    $self->move_to($x, $y)
+                    $self->move_to($x, $y);
                 } else {
                     $self->line_to($x, $y);
                 }
@@ -58,10 +59,32 @@ sub finalize {
             $op->brush($self->brush->clone);
             $op->brush->color($color);
             $self->do($op);
+
+            for(0..$kcount) {
+                my $x = $domain->mark($width, $keys[$_]);
+                my $y = $height - $range->mark($height, $vals[$_]);
+
+                $self->move_to($x, $y);
+                if(defined($self->shape)) {
+                    $self->draw_point($x, $y, $series, $vals[$_]);
+                }
+            }
+            my $op2 = Graphics::Primitive::Operation::Stroke->new;
+            $op2->brush($self->brush->clone);
+            $op2->brush->color($color);
+            $self->do($op2);
         }
     }
 
     return 1;
+}
+
+sub draw_point {
+    my ($self, $x, $y, $series, $count) = @_;
+
+    my $shape = $self->shape->clone;
+    $shape->origin(Geometry::Primitive::Point->new(x => $x, y => $y));
+    $self->path->add_primitive($shape);
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -87,36 +110,28 @@ Chart::Clicker::Renderer::Line renders a dataset as lines.
     })
   });
 
-=head1 ATTRIBUTES
+=head1 METHODS
 
-=over 4
-
-=item I<shape>
+=head2 shape
 
 Set a shape object to draw at each of the data points.
 
-=item I<shape_stroke>
+=head2 shape_brush
 
-Define the stroke to be used on the shapes at each point.  If no shape_stroke
-is provided, then the shapes will be billed.
+Set/Get the Brush to be used on the shapes at each point.  If no shape_brush
+is provided, then the shapes will be filled.
 
-=item I<stroke>
+=head2 brush
 
-Set a Stroke object to be used for the lines.
+Set/Get a Brush to be used for the lines.
 
-=back
+=head2 draw_point
 
-=head1 METHODS
+Called for each point encountered on the line.
 
-=head2 Misc Methods
-
-=over 4
-
-=item I<finalize>
+=head2 finalize
 
 Draw the actual line chart
-
-=back
 
 =head1 AUTHOR
 
