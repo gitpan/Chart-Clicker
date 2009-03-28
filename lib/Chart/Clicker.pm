@@ -28,7 +28,7 @@ use Class::MOP;
 
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.19';
+our $VERSION = '2.20';
 
 coerce 'Chart::Clicker::Renderer'
     => from 'Str'
@@ -292,7 +292,7 @@ override('prepare', sub {
 
         my $rend = $ctx->renderer;
         if($rend->additive) {
-            $yaxis->range->upper($ds->largest_value_slice - 5);
+            $yaxis->range->upper($ds->largest_value_slice);
         } else {
             $yaxis->range->combine($ds->range);
         }
