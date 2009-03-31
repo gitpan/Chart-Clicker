@@ -6,11 +6,10 @@ use Chart::Clicker::Context;
 use Chart::Clicker::Data::DataSet;
 use Chart::Clicker::Data::Marker;
 use Chart::Clicker::Data::Series;
-use Chart::Clicker::Renderer::StackedArea;
 use Geometry::Primitive::Rectangle;
 use Graphics::Color::RGB;
 
-my $cc = Chart::Clicker->new(width => 500, height => 250);
+my $cc = Chart::Clicker->new(width => 500, height => 400);
 
 my @hours = qw(
     1 2 3 4 5 6 7 8 9 10 11 12
@@ -44,25 +43,23 @@ my $ds = Chart::Clicker::Data::DataSet->new(series => [ $series1, $series2, $ser
 $cc->add_to_datasets($ds);
 
 my $defctx = $cc->get_context('default');
-$defctx->renderer(Chart::Clicker::Renderer::StackedArea->new(opacity => .70));
-$defctx->renderer->brush->width(4);
 
 my $grey = Graphics::Color::RGB->new(
-    red => .00, green => .66, blue => .8, alpha => 1
+    red => .36, green => .36, blue => .36, alpha => 1
 );
 my $green = Graphics::Color::RGB->new(
-    red => .75, green => .32, blue => .36, alpha => 1
+    red => 0, green => .36, blue => 0, alpha => 1
 );
 my $blue = Graphics::Color::RGB->new(
-    red => 1, green => .65, blue => 0, alpha => 1
+    red => 0, green => 0, blue => .76, alpha => 1
 );
 
 $cc->color_allocator->colors([ $grey, $green, $blue ]);
 
-# $defctx->range_axis->label('Lorem');
-# $defctx->domain_axis->label('Ipsum');
-# $defctx->domain_axis->tick_label_angle(0.785398163);
-# $defctx->renderer->brush->width(1);
+$defctx->range_axis->label('Lorem');
+$defctx->domain_axis->label('Ipsum');
+$defctx->domain_axis->tick_label_angle(0.785398163);
+$defctx->renderer->brush->width(1);
 
 $cc->draw;
 $cc->write('foo.png');

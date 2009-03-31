@@ -41,6 +41,7 @@ lib/Chart/Clicker/Renderer/Line.pm
 lib/Chart/Clicker/Renderer/Measurement.pm
 lib/Chart/Clicker/Renderer/Pie.pm
 lib/Chart/Clicker/Renderer/Point.pm
+lib/Chart/Clicker/Renderer/StackedArea.pm
 lib/Chart/Clicker/Renderer/StackedBar.pm
 LICENSE
 Makefile.PL

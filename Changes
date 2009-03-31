@@ -1,5 +1,8 @@
 Revision history for Perl extension Chart::Clicker.
 
+2.21
+  - Fix busted MANIFEST (groditi)
+
 2.20
   - Remove ghostly " - 5" that was fucking up additive ranges
   - Clamp Area "fade" gradients to the top of their areas, not the top of the
