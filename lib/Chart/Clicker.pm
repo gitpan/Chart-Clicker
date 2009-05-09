@@ -5,8 +5,6 @@ use MooseX::AttributeHelpers;
 
 extends 'Chart::Clicker::Container';
 
-use Carp;
-
 use Layout::Manager::Compass;
 
 use Graphics::Color::RGB;
@@ -28,7 +26,7 @@ use Class::MOP;
 
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.24';
+our $VERSION = '2.26';
 
 coerce 'Chart::Clicker::Renderer'
     => from 'Str'
@@ -498,10 +496,6 @@ Write the chart output to the specified location. Output is written in the
 format provided to the constructor (which defaults to Png).
 
   $c->write('/path/to/the.png');
-
-=head2 BUILD
-
-Documenting so tests pass.  Moose stuff.
 
 =head1 AUTHOR
 
