@@ -34,4 +34,4 @@ requires:
   Scalar::Util: 1.19
 resources:
   license: http://dev.perl.org/licenses/
-version: 2.26
+version: 2.27
