@@ -1,7 +1,7 @@
 ---
 abstract: 'Powerful, extensible charting.'
 author:
-  - 'Cory ''G' Watson <gphat@cpan.org>'
+  - 'Cory G Watson <gphat@cpan.org>'
 build_requires:
   ExtUtils::MakeMaker: 6.42
 configure_requires:
@@ -34,4 +34,4 @@ requires:
   Scalar::Util: 1.19
 resources:
   license: http://dev.perl.org/licenses/
-version: 2.27
+version: 2.28

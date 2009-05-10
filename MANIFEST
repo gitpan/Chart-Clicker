@@ -4,6 +4,7 @@ example/line-and-shape.pl
 example/multiple-axes.pl
 example/multiple-renderers.pl
 example/overaxis-bar.pl
+example/pie.pl
 example/share-axes.pl
 example/simple.pl
 example/sparkline.pl
@@ -45,7 +46,6 @@ lib/Chart/Clicker/Renderer/Bar.pm
 lib/Chart/Clicker/Renderer/Bubble.pm
 lib/Chart/Clicker/Renderer/CandleStick.pm
 lib/Chart/Clicker/Renderer/Line.pm
-lib/Chart/Clicker/Renderer/Measurement.pm
 lib/Chart/Clicker/Renderer/Pie.pm
 lib/Chart/Clicker/Renderer/Point.pm
 lib/Chart/Clicker/Renderer/StackedArea.pm
