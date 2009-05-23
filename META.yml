@@ -7,7 +7,7 @@ build_requires:
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.86'
+generated_by: 'Module::Install version 0.88'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -19,19 +19,20 @@ no_index:
     - inc
     - t
 requires:
+  Color::Palette: 0.0914
   Color::Scheme: 1.02
   DateTime: 0.47
   DateTime::Set: 0.27
   Geometry::Primitive: 0.13
   Graphics::Color: 0.2
-  Graphics::Primitive: 0.41
-  Graphics::Primitive::Driver::Cairo: 0.37
+  Graphics::Primitive: 0.42
+  Graphics::Primitive::Driver::Cairo: 0.39
   IO::File: 0
-  Layout::Manager: 0.2
+  Layout::Manager: 0.24
   Math::Complex: 1.56
   Moose: 0.76
   MooseX::AttributeHelpers: 0.17
   Scalar::Util: 1.19
 resources:
   license: http://dev.perl.org/licenses/
-version: 2.31
+version: 2.32

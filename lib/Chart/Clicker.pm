@@ -1,6 +1,5 @@
 package Chart::Clicker;
 use Moose;
-use Moose::Util::TypeConstraints;
 use MooseX::AttributeHelpers;
 
 extends 'Chart::Clicker::Container';
@@ -19,28 +18,15 @@ use Chart::Clicker::Context;
 use Chart::Clicker::Decoration::Legend;
 use Chart::Clicker::Decoration::MarkerOverlay;
 use Chart::Clicker::Decoration::Plot;
-use Chart::Clicker::Renderer;
 use Chart::Clicker::Drawing::ColorAllocator;
-
-use Class::MOP;
 
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.31';
-
-coerce 'Chart::Clicker::Renderer'
-    => from 'Str'
-    => via {
-        my $class = 'Chart::Clicker::Renderer::'.$_;
-        Class::MOP::load_class($class);
-        return $class->new
-    };
+our $VERSION = '2.32';
 
 has '+background_color' => (
     default => sub {
-        Graphics::Color::RGB->new(
-            { red => 1, green => 1, blue => 1, alpha => 1 }
-        )
+        Graphics::Color::RGB->new({ red => 1, green => 1, blue => 1, alpha => 1 })
     }
 );
 has '+border' => (
@@ -381,15 +367,6 @@ For examples, see: L<http://www.onemogin.com/clicker/examples>
 
 Check the cookbook at L<http://www.onemogin.com/clicker/cookbook>
 
-=head1 UPGRADING FROM 1.0
-
-The differences between 1.0 and 2.0 are long and onerous.  The way you create
-charts has changed (see the SYNOPSIS) but the way you provide data to them
-has not.
-
-I strongly recommend reading the following section if you used advanced
-features.
-
 =head1 CONTEXTS
 
 The normal use case for a chart is a couple of datasets on the same axes.
@@ -519,9 +496,13 @@ Cory G Watson <gphat@cpan.org>
 Many thanks to the individuals who have contributed various bits:
 
 Ash Berlin
+
 Brian Cassidy
+
 Guillermo Roditi
+
 Torsten Schoenfeld
+
 Yuval Kogman
 
 =head1 SEE ALSO
