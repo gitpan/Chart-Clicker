@@ -7,7 +7,6 @@ use Chart::Clicker::Data::DataSet;
 use Chart::Clicker::Data::Marker;
 use Chart::Clicker::Data::Series;
 use Chart::Clicker::Renderer::Line;
-use Chart::Clicker::Renderer::Spline;
 use Geometry::Primitive::Rectangle;
 use Graphics::Color::RGB;
 
@@ -34,6 +33,7 @@ my $series2 = Chart::Clicker::Data::Series->new(
     keys    => \@hours,
     values  => \@bw2,
 );
+
 my $series3 = Chart::Clicker::Data::Series->new(
     keys    => \@hours,
     values  => \@bw3,
@@ -41,35 +41,18 @@ my $series3 = Chart::Clicker::Data::Series->new(
 
 
 my $ds = Chart::Clicker::Data::DataSet->new(series => [ $series1, $series2, $series3 ]);
-my $ds2 = Chart::Clicker::Data::DataSet->new(series => [ $series1, $series2, $series3 ]);
-# my $ds2 = Chart::Clicker::Data::DataSet->new(series => [ $series3 ]);
 
 $cc->add_to_datasets($ds);
-$cc->add_to_datasets($ds2);
 
 my $def = $cc->get_context('default');
 
-my $con = Chart::Clicker::Context->new(
-    name => 'con2',
-    renderer => Chart::Clicker::Renderer::Spline->new
-);
-$con->share_axes_with($def);
-$ds2->context('con2');
-$cc->add_to_contexts($con);
-
 my $ren = Chart::Clicker::Renderer::Line->new;
-$ren->brush->width(4);
-$def->renderer($ren);
+$ren->brush->width(3);
+$def->renderer($area);
 $def->range_axis->tick_values([qw(1 5 9)]);
 $def->range_axis->format('%d');
 $def->domain_axis->tick_values([qw(2 4 6 8 10)]);
 $def->domain_axis->format('%d');
 
 $cc->draw;
-
-use Forest::Tree::Writer::ASCIIWithBranches;
-my $t = Forest::Tree::Writer::ASCIIWithBranches->new(tree => $cc->get_tree);
-print $t->as_string;
-
-
 $cc->write('foo.png');
