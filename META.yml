@@ -28,11 +28,11 @@ requires:
   Graphics::Primitive: 0.42
   Graphics::Primitive::Driver::Cairo: 0.39
   IO::File: 0
-  Layout::Manager: 0.24
+  Layout::Manager: 0.29
   Math::Complex: 1.56
   Moose: 0.76
   MooseX::AttributeHelpers: 0.17
   Scalar::Util: 1.19
 resources:
   license: http://dev.perl.org/licenses/
-version: 2.34
+version: 2.35
