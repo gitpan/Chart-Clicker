@@ -23,7 +23,7 @@ use Chart::Clicker::Drawing::ColorAllocator;
 use Carp qw(croak);
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.38';
+our $VERSION = '2.39';
 
 has '+background_color' => (
     default => sub {
@@ -317,6 +317,26 @@ override('prepare', sub {
     super;
 });
 
+sub set_renderer {
+    my ($self, $renderer, $context) = @_;
+
+    unless(defined($context)) {
+        $context = 'default';
+    }
+
+    my $ctx = $self->get_context($context);
+    die("Unknown context: '$context'") unless defined($ctx);
+
+    $ctx->renderer($renderer);
+}
+
+sub write_output {
+    my $self = shift;
+
+    $self->draw;
+    $self->write(@_);
+}
+
 __PACKAGE__->meta->make_immutable;
 
 no Moose;
@@ -331,7 +351,7 @@ Chart::Clicker - Powerful, extensible charting.
 
 =head1 SYNOPSIS
 
-  use Chart::Clicker
+  use Chart::Clicker;
   use Chart::Clicker::Data::Series;
   use Chart::Clicker::Data::DataSet;
 
@@ -346,8 +366,7 @@ Chart::Clicker - Powerful, extensible charting.
  
   $cc->add_to_datasets($ds);
 
-  $cc->draw;
-  $cc->write('foo.png')
+  $cc->write_output('foo.png')
 
 =head1 DESCRIPTION
 
@@ -480,12 +499,21 @@ west or center as required by L<Layout::Manager::Compass>.
 Set/Get the marker overlay object that will be used if this chart
 has markers.  This is lazily constructed to save time.
 
+=head2 set_renderer ($renderer_object, [ $context ]);
+
+Sets the renderer on the specified context.  If no context is provided then
+'default' is assumed.
+
 =head2 write
 
-Write the chart output to the specified location. Output is written in the
-format provided to the constructor (which defaults to Png).
+  
+=head2 write_output ($path)
 
-  $c->write('/path/to/the.png');
+Write the chart output to the specified location. Output is written in the
+format provided to the constructor (which defaults to Png).  Internally
+calls C<draw> for you.  If you use this method, do not call C<draw> first!
+
+  $c->write_output('/path/to/the.png');
 
 =head1 AUTHOR
 
