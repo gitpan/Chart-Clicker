@@ -5,20 +5,7 @@ use Chart::Clicker;
 use Chart::Clicker::Data::DataSet;
 use Chart::Clicker::Data::Series;
 
-my $cc = Chart::Clicker->new(width => 500, height => 250);
-
-$cc->title->text('A Title!');
-$cc->title->font->size(20);
-$cc->title->font->family('Calluna');
-$cc->title->padding->bottom(5);
-
-my $defctx = $cc->get_context('default');
-$defctx->range_axis->label_font->family('Hoefler Text');
-$defctx->range_axis->tick_font->family('Gentium');
-$defctx->domain_axis->tick_font->family('Gentium');
-$defctx->domain_axis->label_font->family('Hoefler Text');
-$cc->legend->font->family('Calluna');
-$cc->legend->font->size(15);
+my $cc = Chart::Clicker->new(width => 500, height => 400);
 
 my $series1 = Chart::Clicker::Data::Series->new(
     keys    => [qw(1 2 3 4 5 6 7 8 9 10 11 12)],
