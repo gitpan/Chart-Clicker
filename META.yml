@@ -18,6 +18,9 @@ no_index:
     - example
     - inc
     - t
+recommends:
+  List::Util: 0
+  Statistics::Basic: 0
 requires:
   Color::Palette: 0.0914
   Color::Scheme: 1.02
@@ -35,4 +38,4 @@ requires:
   Scalar::Util: 1.19
 resources:
   license: http://dev.perl.org/licenses/
-version: 2.42
+version: 2.44
