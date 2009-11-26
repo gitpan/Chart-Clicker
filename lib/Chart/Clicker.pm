@@ -25,7 +25,7 @@ use Chart::Clicker::Drawing::ColorAllocator;
 use Carp qw(croak);
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.44';
+our $VERSION = '2.45';
 
 has '+background_color' => (
     default => sub {
@@ -436,9 +436,98 @@ Clicker leverages the power of Graphics::Primitive to create snazzy graphics
 without being tied to specific backend.  You may want to begin with
 L<Chart::Clicker::Tutorial>.
 
-For examples of output, see: L<http://www.onemogin.com/clicker/examples>
+For code examples see the examples repository on GitHub:
+L<http://github.com/gphat/chart-clicker-examples/>
 
-For code examples see the examples directory of this distribution.
+=head1 FEATURES
+
+=head2 Renderers
+
+Clicker supports the following renderers:
+
+=over 4
+
+=item B<Line>
+
+=begin HTML
+
+<p><img src="http://github.com/gphat/chart-clicker-examples/raw/master/line/line.png" width="500" height="250" alt="Line Chart" /></p>
+
+=end HTML
+
+=item B<StackedLine>
+
+=begin HTML
+
+<p><img src="http://github.com/gphat/chart-clicker-examples/raw/master/line/stacked-line.png" width="500" height="250" alt="Stacked Line Chart" /></p>
+
+=end HTML
+
+=item B<Bar>
+
+=begin HTML
+
+<p><img src="http://github.com/gphat/chart-clicker-examples/raw/master/bar/bar.png width="500" height="250" alt="Bar Chart" /></p>
+
+=item B<StackedBar>
+
+=begin HTML
+
+<p><img src="http://github.com/gphat/chart-clicker-examples/raw/master/bar/stacked-bar.png" width="500" height="250" alt="Stacked Bar Chart" /></p>
+
+=end HTML
+
+=item B<Area>
+
+=begin HTML
+
+<p><img src="http://github.com/gphat/chart-clicker-examples/raw/master/area/area.png" width="500" height="250" alt="Area Chart" /></p>
+
+=end HTML
+
+=item B<StackedArea>
+
+=begin HTML
+
+<p><img src="http://github.com/gphat/chart-clicker-examples/raw/master/area/stacked-area.png" width="500" height="250" alt="Stacked Area Chart" /></p>
+
+=end HTML
+
+=item B<Bubble>
+
+=begin HTML
+
+<p><img src="http://github.com/gphat/chart-clicker-examples/raw/master/bubble/bubble.png" width="500" height="250" alt="Bubble Chart" /></p>
+
+=end HTML
+
+=item B<CandleStick>
+
+=begin HTML
+
+<p><img src="http://github.com/gphat/chart-clicker-examples/raw/master/candlestick/candlestick.png" width="500" height="250" alt="Candlestick Chart" /></p>
+
+=end HTML
+
+=item B<Point>
+
+=begin HTML
+
+<p><img src="http://github.com/gphat/chart-clicker-examples/raw/master/point/point.png" width="500" height="250" alt="Point Chart" /></p>
+
+=end HTML
+
+=item B<Pie>
+
+=begin HTML
+
+<p><img src="http://github.com/gphat/chart-clicker-examples/raw/master/pie/pie.png" width="500" height="250" alt="Pie Chart" /></p>
+
+=end HTML
+
+=back
+
+=end HTML
 
 =head1 ADDING DATA
 
@@ -506,9 +595,19 @@ Clicker's internals draw their values.  You should use the default context
 unless you need more than one, in which case you should use "default" as the
 base context.
 
-=head1 FORMATS
+=head1 FORMATS & OUTPUT
 
 Clicker supports PNG, SVG, PDF and PostScript output.
+
+If you are looking to get a scalar of the output for use with HTTP or
+similar things, you can use:
+
+  # ... make your chart
+  $cc->draw;
+  my $image_data = $cc->data;
+
+If you happen to be using Catalyst then take a look at
+L<Catalyst::View::Graphics::Primitive>.
 
 =head1 METHODS
 

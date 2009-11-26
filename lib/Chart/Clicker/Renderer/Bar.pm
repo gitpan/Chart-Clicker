@@ -106,12 +106,19 @@ override('finalize', sub {
                         );
                     }
                 } else {
-                    $self->move_to(
-                        $x - $hbwidth + ($offset * $cbwidth), $basey
-                    );
-                    $self->rectangle(
-                        -int($cbwidth), int($height - $basey - $y)
-                    );
+                    if($self->{SCOUNT} == 1) {
+                        $self->move_to($x + $chbwidth, $basey);
+                        $self->rectangle(
+                            -int($cbwidth), -int($y - ($height - $basey))
+                        );
+                    } else {
+                        $self->move_to(
+                            $x - $hbwidth + ($offset * $cbwidth), $basey
+                        );
+                        $self->rectangle(
+                            -int($cbwidth) + $self->brush->width, int($height - $basey - $y)
+                        );
+                    }
                 }
             }
 
@@ -164,11 +171,29 @@ Chart::Clicker::Renderer::Bar
 
 Chart::Clicker::Renderer::Bar renders a dataset as bars.
 
+=begin HTML
+
+<p><img src="http://github.com/gphat/chart-clicker-examples/raw/master/bar/bar.png" width="500" height="250" alt="Bar Chart" /></p>
+
+=end HTML
+
 =head1 SYNOPSIS
 
   my $br = Chart::Clicker::Renderer::Bar->new();
 
-=head1 METHODS
+=head1 NEGATIVE BARS
+
+If you'd like to render both "negative and positive" bars, look at
+L<Chart::Clicker::Axis>'s C<baseline> attribute.  Setting it will result in
+something like this:
+
+=begin HTML
+
+<p><img src="http://github.com/gphat/chart-clicker-examples/raw/master/bar/bar-baseline.png width="500" height="250" alt="Base (Baseline) Chart" /></p>
+
+=end HTML
+
+=head1 ATTRIBUTES
 
 =head2 bar_padding
 

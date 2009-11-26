@@ -29,7 +29,7 @@ requires:
   Geometry::Primitive: 0.13
   Graphics::Color: 0.2
   Graphics::Primitive: 0.42
-  Graphics::Primitive::Driver::Cairo: 0.39
+  Graphics::Primitive::Driver::Cairo: 0.41
   IO::File: 0
   Layout::Manager: 0.29
   Math::Complex: 1.56
@@ -38,4 +38,4 @@ requires:
   Scalar::Util: 1.19
 resources:
   license: http://dev.perl.org/licenses/
-version: 2.44
+version: 2.45
