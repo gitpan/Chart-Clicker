@@ -1,6 +1,5 @@
 package Chart::Clicker;
 use Moose;
-use MooseX::AttributeHelpers;
 
 extends 'Chart::Clicker::Container';
 
@@ -25,7 +24,7 @@ use Chart::Clicker::Drawing::ColorAllocator;
 use Carp qw(croak);
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.45';
+our $VERSION = '2.46';
 
 has '+background_color' => (
     default => sub {
@@ -46,16 +45,16 @@ has 'color_allocator' => (
     default => sub { Chart::Clicker::Drawing::ColorAllocator->new }
 );
 has 'contexts' => (
-    metaclass => 'Collection::Hash',
+    traits => [ 'Hash' ],
     is => 'rw',
     isa => 'HashRef[Chart::Clicker::Context]',
     default => sub { { default => Chart::Clicker::Context->new(name => 'default') } },
-    provides => {
-        set    => 'set_context',
-        get     => 'get_context',
-        keys    => 'context_names',
-        count   => 'context_count',
-        delete  => 'delete_context'
+    handles => {
+        'set_context' => 'set',
+        'get_context' => 'get',
+        'context_names' => 'keys',
+        'context_count' => 'count',
+        'delete_context' => 'delete'
     }
 );
 has '_data' => (
@@ -65,14 +64,14 @@ has '_data' => (
     default => sub { {} }
 );
 has 'datasets' => (
-    metaclass => 'Collection::Array',
+    traits => [ 'Array' ],
     is => 'rw',
     isa => 'ArrayRef',
     default => sub { [] },
-    provides => {
-        'count'=> 'dataset_count',
-        'push' => 'add_to_datasets',
-        'get' => 'get_dataset'
+    handles => {
+        'dataset_count' => 'count',
+        'add_to_datasets' => 'push',
+        'get_dataset' => 'get'
     }
 );
 has 'driver' => (
@@ -84,7 +83,10 @@ has 'driver' => (
             format => $self->format,
         )
     },
-    handles => [ qw(data write) ],
+    handles => {
+        'rendered_data' => 'data',
+        write => 'write'
+    },
     lazy => 1
 );
 has 'format' => (
@@ -126,14 +128,14 @@ has 'marker_overlay' => (
     }
 );
 has 'over_decorations' => (
-    metaclass => 'Collection::Array',
+    traits => [ 'Array' ],
     is => 'rw',
     isa => 'ArrayRef',
     default => sub { [] },
-    provides => {
-        'count'=> 'over_decoration_count',
-        'push' => 'add_to_over_decorations',
-        'get' => 'get_over_decoration'
+    handles => {
+        'over_decoration_count' => 'count',
+        'add_to_over_decorations' => 'push',
+        'get_over_decoration' => 'get'
     }
 );
 has '+padding' => (
@@ -176,6 +178,12 @@ sub add_to_contexts {
         croak("Context named '".$ctx->name."' already exists.");
     }
     $self->set_context($ctx->name, $ctx);
+}
+
+sub data {
+    my ($self) = @_;
+    print STDERR "WARNING: Calling 'data' to get image data is deprecated, please use rendered_data\n";
+    $self->rendered_data;
 }
 
 sub draw {
@@ -221,13 +229,33 @@ override('prepare', sub {
 
             my $ds = Chart::Clicker::Data::DataSet->new;
             my $vals = $self->_data->{$name};
-            $ds->add_to_series(
-                Chart::Clicker::Data::Series->new(
-                    name    => $name,
-                    keys    => [ 0..scalar(@{ $vals })-1 ],
-                    values  => $vals
-                )
-            );
+
+            if(ref($vals) eq 'ARRAY') {
+                # This allows the user to add data as an array
+
+                $ds->add_to_series(
+                    Chart::Clicker::Data::Series->new(
+                        name    => $name,
+                        keys    => [ 0..scalar(@{ $vals }) - 1 ],
+                        values  => $vals
+                    )
+                );
+            } elsif(ref($vals) eq 'HASH') {
+                # This allows the user to add data as a hashref
+
+                my @keys = sort(keys %{ $vals });
+                my @values = ();
+                foreach my $k (@keys) {
+                    push(@values, $vals->{$k})
+                }
+                $ds->add_to_series(
+                    Chart::Clicker::Data::Series->new(
+                        name => $name,
+                        keys => \@keys,
+                        values => \@values
+                    )
+                );
+            }
             $self->add_to_datasets($ds);
         }
     }
@@ -609,71 +637,20 @@ similar things, you can use:
 If you happen to be using Catalyst then take a look at
 L<Catalyst::View::Graphics::Primitive>.
 
-=head1 METHODS
+=head1 ATTRIBUTES
 
-=head2 new
+=head2 contexts
 
-Creates a new Chart::Clicker object. If no format, width and height are
-specified then defaults of Png, 500 and 300 are chosen, respectively.
-
-=head2 add_to_contexts
-
-Add the specified context to the chart.
-
-=head2 add_to_datasets
-
-Add the specified dataset (or arrayref of datasets) to the chart.
-
-=head2 add_to_markers
-
-Add the specified marker to the chart.
-
-=head2 color_allocator
-
-Set/Get the color_allocator for this chart.
-
-=head2 context
-
-Set/Get the context for this chart.
-
-=head2 data
-
-Returns the data for this chart as a scalar.  Suitable for 'streaming' to a
-client.
+Set/Get the contexts for this chart.
 
 =head2 datasets
 
 Get/Set the datasets for this chart.
 
-=head2 draw
-
-Draw this chart.
-
 =head2 format
 
 Get the format for this Chart.  Required in the constructor.  Must be on of
 Png, Pdf, Ps or Svg.
-
-=head2 get_datasets_for_context
-
-Returns an arrayref containing all datasets for the given context.  Used by
-renderers to get a list of datasets to chart.
-
-=head2 grid_over
-
-Flag controlling if the grid is rendered B<over> the data.  Defaults to 0.
-You probably want to set the grid's background color to an alpha of 0 if you
-enable this flag.
-
-=head2 inside_width
-
-Get the width available in this container after taking away space for
-insets and borders.
-
-=head2 inside_height
-
-Get the height available in this container after taking away space for
-insets and borders.
 
 =head2 legend
 
@@ -684,15 +661,11 @@ Set/Get the legend that will be used with this chart.
 The position the legend will be added.  Should be one of north, south, east,
 west or center as required by L<Layout::Manager::Compass>.
 
-=head2 marker_overlay
+=head2 grid_over
 
-Set/Get the marker overlay object that will be used if this chart
-has markers.  This is lazily constructed to save time.
-
-=head2 set_renderer ($renderer_object, [ $context ]);
-
-Sets the renderer on the specified context.  If no context is provided then
-'default' is assumed.
+Flag controlling if the grid is rendered B<over> the data.  Defaults to 0.
+You probably want to set the grid's background color to an alpha of 0 if you
+enable this flag.
 
 =head2 title
 
@@ -720,6 +693,63 @@ west or center as required by L<Layout::Manager::Compass>.
 
 Note that if no angle is set for the title then it will be changed to
 -1.5707 if the title position is east or west.
+
+=head1 METHODS
+
+=head2 new
+
+Creates a new Chart::Clicker object. If no format, width and height are
+specified then defaults of Png, 500 and 300 are chosen, respectively.
+
+=head2 add_to_contexts
+
+Add the specified context to the chart.
+
+=head2 add_to_datasets
+
+Add the specified dataset (or arrayref of datasets) to the chart.
+
+=head2 add_to_markers
+
+Add the specified marker to the chart.
+
+=head2 color_allocator
+
+Set/Get the color_allocator for this chart.
+
+=head2 data
+
+Returns the data for this chart as a scalar.  Suitable for 'streaming' to a
+client.
+
+=head2 draw
+
+Draw this chart.
+
+=head2 get_datasets_for_context
+
+Returns an arrayref containing all datasets for the given context.  Used by
+renderers to get a list of datasets to chart.
+
+=head2 inside_width
+
+Get the width available in this container after taking away space for
+insets and borders.
+
+=head2 inside_height
+
+Get the height available in this container after taking away space for
+insets and borders.
+
+=head2 marker_overlay
+
+Set/Get the marker overlay object that will be used if this chart
+has markers.  This is lazily constructed to save time.
+
+=head2 set_renderer ($renderer_object, [ $context ]);
+
+Sets the renderer on the specified context.  If no context is provided then
+'default' is assumed.
 
 =head2 write
 

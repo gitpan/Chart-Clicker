@@ -1,18 +1,17 @@
 package Chart::Clicker::Data::Series;
 use Moose;
-use MooseX::AttributeHelpers;
 
 use List::Util qw(max min);
 use Chart::Clicker::Data::Range;
 
 has 'keys' => (
-    metaclass => 'Collection::Array',
+    traits => [ 'Array' ],
     is => 'rw',
     isa => 'ArrayRef[Num]',
     default => sub { [] },
-    provides => {
-        'push' => 'add_to_keys',
-        'count' => 'key_count'
+    handles => {
+        'add_to_keys' => 'push',
+        'key_count' => 'count'
     }
 );
 has 'name' => (
@@ -27,15 +26,32 @@ has 'range' => (
     default => sub { my $self = shift; $self->find_range }
 );
 has 'values' => (
-    metaclass => 'Collection::Array',
+    traits => [ 'Array' ],
     is => 'rw',
     isa => 'ArrayRef[Num]',
     default => sub { [] },
-    provides => {
-        'push' => 'add_to_values',
-        'count' => 'value_count'
+    handles => {
+        'add_to_values' => 'push',
+        'value_count' => 'count'
     }
 );
+
+sub BUILDARGS {
+    my ($class, @args) = @_;
+
+    if(@args == 1 && (ref($args[0]) eq 'HASH') && !exists($args[0]->{keys})) {
+        my @keys = sort(keys %{ $args[0] });
+        my @values = ();
+        foreach my $k (@keys) {
+            push(@values, $args[0]->{$k})
+        }
+        return { keys => \@keys, values => \@values }
+    } elsif(@args % 2 == 0) {
+        return { @args };
+    }
+
+    return $args[0];
+}
 
 sub find_range {
     my ($self) = @_;
@@ -87,6 +103,39 @@ Chart::Clicker::Data::Series represents a series of values to be charted.
     value   => \@values
   });
 
+  # Alternately, if you prefer
+
+  my $series = Chart::Clicker::Data::Series->new({
+    1  => 42,
+    2  => 25,
+    3  => 85,
+    4  => 23,
+    5  => 2,
+    6  => 19,
+    7  => 102,
+    8  => 12,
+    9  => 54,
+    10 => 9
+  });
+
+=head1 ATTRIBUTES
+
+=head2 keys
+
+Set/Get the keys for this series.
+
+=head2 name
+
+Set/Get the name for this Series
+
+=head2 range
+
+Returns the range for this series.
+
+=head2 values
+
+Set/Get the values for this series.
+
 =head1 METHODS
 
 =head2 new
@@ -106,34 +155,18 @@ Add a value to this series.
 Used internally to determine the range for this series.  Exposed so that
 subclasses can implement their own method.
 
-=head2 keys
-
-Set/Get the keys for this series.
-
 =head2 key_count
 
 Get the count of keys in this series.
-
-=head2 name
-
-Set/Get the name for this Series
 
 =head2 prepare
 
 Prepare this series.  Performs various checks and calculates
 various things.
 
-=head2 range
-
-Returns the range for this series.
-
 =head2 value_count
 
 Get the count of values in this series.
-
-=head2 values
-
-Set/Get the values for this series.
 
 =head1 AUTHOR
 
