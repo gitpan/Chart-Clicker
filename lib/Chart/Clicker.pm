@@ -24,7 +24,7 @@ use Chart::Clicker::Drawing::ColorAllocator;
 use Carp qw(croak);
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.48';
+our $VERSION = '2.49';
 
 has '+background_color' => (
     default => sub {
@@ -567,8 +567,6 @@ Clicker supports the following renderers:
 =end HTML
 
 =back
-
-=end HTML
 
 =head1 ADDING DATA
 
