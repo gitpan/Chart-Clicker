@@ -24,7 +24,7 @@ use Chart::Clicker::Drawing::ColorAllocator;
 use Carp qw(croak);
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.49';
+our $VERSION = '2.50';
 
 has '+background_color' => (
     default => sub {
@@ -509,6 +509,8 @@ Clicker supports the following renderers:
 =begin HTML
 
 <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bar/bar.png" width="500" height="250" alt="Bar Chart" /></p>
+
+=end HTML
 
 =item B<StackedBar>
 
