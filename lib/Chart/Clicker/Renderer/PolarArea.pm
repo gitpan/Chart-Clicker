@@ -49,6 +49,14 @@ override('prepare', sub {
 
     my $clicker = $self->clicker;
 
+    # TODO
+    # This implementation is dumb... the better way would be:
+    # draw the first slice
+    # remember once of the corner points
+    # when drawing the next slice, start at the remembered point and arc-neg with no radius
+    # then arc pos again
+    # or something like that
+
     # This is really hinky, basically since figuring out the arcs and whatnot
     # is a pain in the ass, we employ the painter's algorithm and draw
     # the last series first, the pain the next one over it.  As such, we have
@@ -177,7 +185,7 @@ values making the slices longer.  The 360 degrees of pie is divided equally.
 
 =begin HTML
 
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/polararea/polararea.png" width="300" height="250" alt="Pie Chart" /></p>
+<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/polararea/polararea.png" width="500" height="250" alt="Pie Chart" /></p>
 
 =end HTML
 
