@@ -3,6 +3,8 @@ use Moose;
 
 extends 'Chart::Clicker::Data::Series';
 
+use List::Util qw(min max);
+
 has 'sizes' => (
     traits => [ 'Array' ],
     is => 'rw',
@@ -14,6 +16,30 @@ has 'sizes' => (
         'get_size' => 'get'
     }
 );
+
+has max_size => (
+    is => 'ro',
+    isa => 'Num',
+    lazy_build => 1
+);
+
+has min_size => (
+    is => 'ro',
+    isa => 'Num',
+    lazy_build => 1
+);
+
+sub _build_max_size {
+    my ($self) = @_;
+
+    return max(@{ $self->sizes });
+}
+
+sub _build_min_size {
+    my ($self) = @_;
+
+    return min(@{ $self->sizes });
+}
 
 __PACKAGE__->meta->make_immutable;
 
@@ -48,6 +74,14 @@ for the Bubble renderer.
 =head2 sizes
 
 Set/Get the sizes for this series.
+
+=head2 max_size
+
+Gets the largest value from this Series' C<sizes>.
+
+=head2 min_size
+
+Gets the smallest value from this Series' C<sizes>.
 
 =head1 METHODS
 

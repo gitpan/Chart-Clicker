@@ -19,23 +19,23 @@ no_index:
     - inc
     - t
 recommends:
-  List::Util: 0
   Statistics::Basic: 0
 requires:
-  Color::Palette: 0.0914
   Color::Scheme: 1.02
   DateTime: 0.47
   DateTime::Set: 0.27
-  Geometry::Primitive: 0.13
-  Graphics::Color: 0.2
-  Graphics::Primitive: 0.42
-  Graphics::Primitive::Driver::Cairo: 0.41
+  Geometry::Primitive: 0.22
+  Graphics::Color: 0.27
+  Graphics::Primitive: 0.49
+  Graphics::Primitive::Driver::Cairo: 0.42
   IO::File: 0
-  Layout::Manager: 0.29
+  Layout::Manager: 0.31
+  List::Util: 0
   Math::Complex: 1.56
+  Math::Gradient: 0.04
   Moose: 0.76
   Scalar::Util: 1.19
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://github.com/gphat/chart-clicker
-version: 2.58
+version: 2.59

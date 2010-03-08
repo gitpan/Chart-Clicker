@@ -24,7 +24,7 @@ use Chart::Clicker::Drawing::ColorAllocator;
 use Carp qw(croak);
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.58';
+our $VERSION = '2.59';
 
 has '+background_color' => (
     default => sub {
@@ -418,9 +418,7 @@ override('prepare', sub {
 sub set_renderer {
     my ($self, $renderer, $context) = @_;
 
-    unless(defined($context)) {
-        $context = 'default';
-    }
+    $context = 'default' unless defined($context);
 
     my $ctx = $self->get_context($context);
     die("Unknown context: '$context'") unless defined($ctx);
@@ -567,6 +565,15 @@ Clicker supports the following renderers:
 <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/pie/pie.png" width="300" height="250" alt="Pie Chart" /></p>
 
 =end HTML
+
+=item B<PolarArea>
+
+=begin HTML
+
+<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/polararea/polararea.png" width="300" height="250" alt="Polar Area Chart" /></p>
+
+=end HTML
+
 
 =back
 
