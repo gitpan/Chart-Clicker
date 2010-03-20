@@ -38,4 +38,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://github.com/gphat/chart-clicker
-version: 2.59
+version: 2.60
