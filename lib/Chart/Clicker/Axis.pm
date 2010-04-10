@@ -14,10 +14,6 @@ use Layout::Manager::Absolute;
 
 use Math::Trig ':pi';
 
-use Moose::Util::TypeConstraints;
-
-type 'StrOrCodeRef' => where { (ref($_) eq "") || ref($_) eq 'CODE' };
-
 has 'tick_label_angle' => (
     is => 'rw',
     isa => 'Num'
@@ -46,7 +42,7 @@ has '+color' => (
         })
     }
 );
-has 'format' => ( is => 'rw', isa => 'StrOrCodeRef' );
+has 'format' => ( is => 'rw', isa => 'Str|CodeRef' );
 has 'fudge_amount' => ( is => 'rw', isa => 'Num', default => 0 );
 has 'hidden' => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'label' => ( is => 'rw', isa => 'Str' );
@@ -470,7 +466,7 @@ __END__
 
 =head1 NAME
 
-Chart::Clicker::Axis
+Chart::Clicker::Axis - An X or Y Axis
 
 =head1 DESCRIPTION
 
@@ -552,7 +548,7 @@ The font used for the axis' label.
 
 =head2 orientation
 
-The orientation of this axis.  See L<Chart::Clicker::Drawing>.
+The orientation of this axis.  See L<Graphics::Primitive::Oriented>.
 
 =head2 position
 

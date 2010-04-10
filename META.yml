@@ -4,6 +4,7 @@ author:
   - 'Cory G Watson <gphat@cpan.org>'
 build_requires:
   ExtUtils::MakeMaker: 6.42
+  Test::Exception: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 distribution_type: module
@@ -38,4 +39,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://github.com/gphat/chart-clicker
-version: 2.60
+version: 2.61
