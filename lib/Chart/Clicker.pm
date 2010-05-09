@@ -24,7 +24,7 @@ use Chart::Clicker::Drawing::ColorAllocator;
 use Carp qw(croak);
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.63';
+our $VERSION = '2.64';
 
 has '+background_color' => (
     default => sub {
@@ -888,7 +888,9 @@ Chart::Clicker is on github:
 
   http://github.com/gphat/chart-clicker/tree/master
 
-=head1 LICENSE
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2007-2010 by Cory G Watson
 
 You can redistribute and/or modify this code under the same terms as Perl
 itself.
