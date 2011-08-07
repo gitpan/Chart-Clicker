@@ -1,10 +1,19 @@
 package Chart::Clicker::Renderer;
+BEGIN {
+  $Chart::Clicker::Renderer::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Graphics::Primitive::Canvas';
 
+# ABSTRACT: Base class for renderers
+
+
 has 'additive' => ( is => 'rw', isa => 'Bool', default => 0 );
+
 has 'clicker' => ( is => 'rw', isa => 'Chart::Clicker' );
+
+
 has 'context' => ( is => 'rw', isa => 'Str' );
 
 override('prepare', sub {
@@ -19,18 +28,23 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Renderer - Base class for renderers
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-Chart::Clicker::Renderer represents the plot of the chart.
+version 2.70
 
 =head1 SYNOPSIS
 
-  my $renderer = Chart::Clicker::Renderer::Foo->new();
+  my $renderer = Chart::Clicker::Renderer::Foo->new;
+
+=head1 DESCRIPTION
+
+Chart::Clicker::Renderer represents the plot of the chart.
 
 =head1 ATTRIBUTES
 
@@ -46,25 +60,16 @@ results.
 
 The context to which this Renderer is attached.
 
-=head1 METHODS
-
-=head2 new
-
-Creates a new Chart::Clicker::Renderer.
-
-=head2 prepare
-
-Prepare the component.
-
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

@@ -1,7 +1,13 @@
 package Chart::Clicker::Renderer::Bubble;
+BEGIN {
+  $Chart::Clicker::Renderer::Bubble::VERSION = '2.70';
+}
 use Moose;
 
+# ABSTRACT: Bubble render
+
 extends 'Chart::Clicker::Renderer::Point';
+
 
 override('draw_point', sub {
     my ($self, $x, $y, $series, $count) = @_;
@@ -16,26 +22,16 @@ __PACKAGE__->meta->make_immutable;
 no Moose;
 
 1;
-
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Renderer::Bubble - Bubble render
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-Chart::Clicker::Renderer::Bubble is a subclass of the Point renderer where
-the points' radiuses are determined by the size value of a Series::Size.
-
-Note: B<This renderer requires you to use a
-Chart::Clicker::Data::Series::Size>.
-
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bubble/bubble.png" width="500" height="250" alt="Bubble Chart" /></p>
-
-=end HTML
+version 2.70
 
 =head1 SYNOPSIS
 
@@ -46,11 +42,17 @@ Chart::Clicker::Data::Series::Size>.
     })
   });
 
+=head1 DESCRIPTION
+
+Chart::Clicker::Renderer::Bubble is a subclass of the Point renderer where
+the points' radiuses are determined by the size value of a Series::Size.
+
+Note: B<This renderer requires you to use a
+Chart::Clicker::Data::Series::Size>.
+
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bubble/bubble.png" width="500" height="250" alt="Bubble Chart" /></p>
+
 =head1 METHODS
-
-=head2 new
-
-Create a new Bubble renderer
 
 =head2 draw_point
 
@@ -61,11 +63,12 @@ such as Bubble may override the drawing.
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

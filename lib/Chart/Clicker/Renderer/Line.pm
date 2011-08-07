@@ -1,5 +1,10 @@
 package Chart::Clicker::Renderer::Line;
+BEGIN {
+  $Chart::Clicker::Renderer::Line::VERSION = '2.70';
+}
 use Moose;
+
+# ABSTRACT: Line renderer
 
 extends 'Chart::Clicker::Renderer';
 
@@ -7,15 +12,20 @@ use Geometry::Primitive::Point;
 use Graphics::Primitive::Brush;
 use Graphics::Primitive::Operation::Stroke;
 
+
 has 'brush' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Brush',
     default => sub { Graphics::Primitive::Brush->new(width => 2) }
 );
+
+
 has 'shape' => (
     is => 'rw',
     isa => 'Geometry::Primitive::Shape',
 );
+
+
 has 'shape_brush' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Brush',
@@ -124,6 +134,7 @@ sub finalize {
     return 1;
 }
 
+
 sub draw_point {
     my ($self, $x, $y, $series, $count) = @_;
 
@@ -138,28 +149,33 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Renderer::Line - Line renderer
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-Chart::Clicker::Renderer::Line renders a dataset as lines.
-
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/line.png" width="500" height="250" alt="Line Chart" /></p>
-
-=end HTML
+version 2.70
 
 =head1 SYNOPSIS
 
   my $lr = Chart::Clicker::Renderer::Line->new(
     brush => Graphics::Primitive::Brush->new({
-      ...
+      #...
     })
-  });
+  );
+
+=head1 DESCRIPTION
+
+Chart::Clicker::Renderer::Line renders a dataset as lines.
+
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/line.png" width="500" height="250" alt="Line Chart" /></p>
+
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/line-shapes.png" width="500" height="250" alt="Line + Shape Chart" /></p>
+
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/line-shapes-brushed.png" width="500" height="250" alt="Line + Shape (Brushed) Chart" /></p>
 
 =head1 ATTRIBUTES
 
@@ -172,24 +188,10 @@ drawn below it.
 
 Set/Get a Brush to be used for the lines.
 
-=head2 draw_point
-
-Called for each point encountered on the line.
-
-=head2 finalize
-
-Draw the actual line chart
-
 =head2 shape
 
 Set a shape object to draw at each of the data points.  Adding a shape results
 in:
-
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/line-shapes.png" width="500" height="250" alt="Line + Shape Chart" /></p>
-
-=end HTML
 
 =head2 shape_brush
 
@@ -198,21 +200,22 @@ is provided, then the shapes will be filled.  The brush allows you to draw a
 "halo" around each shape.  This sometimes help to separate the points from the
 lines and make them more distinct.
 
-=begin HTML
+=head1 METHODS
 
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/line-shapes-brushed.png" width="500" height="250" alt="Line + Shape (Brushed) Chart" /></p>
+=head2 draw_point
 
-=end HTML
+Called for each point encountered on the line.
 
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

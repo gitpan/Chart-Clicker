@@ -1,13 +1,29 @@
 package Chart::Clicker::Decoration::Glass;
+BEGIN {
+  $Chart::Clicker::Decoration::Glass::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Decoration';
+
+# ABSTRACT: Under-chart gradient decoration
 
 use Graphics::Color::RGB;
 use Graphics::Primitive::Operation::Fill;
 use Graphics::Primitive::Paint::Solid;
 
-has 'background_color' => ( is => 'rw', isa => 'Graphics::Color::RGB', default => sub { Graphics::Color::RGB->new(red => 1, green => 0, blue => 0, alpha => 1) });
+
+has 'background_color' => (
+    is => 'rw',
+    isa => 'Graphics::Color::RGB',
+    default => sub {
+        Graphics::Color::RGB->new(
+            red => 1, green => 0, blue => 0, alpha => 1
+        )
+    }
+);
+
+
 has 'glare_color' => (
     is => 'rw',
     isa => 'Graphics::Color::RGB',
@@ -49,16 +65,19 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Decoration::Glass - Under-chart gradient decoration
 
+=head1 VERSION
+
+version 2.70
+
 =head1 DESCRIPTION
 
 A glass-like decoration.
-
-=head1 SYNOPSIS
 
 =head1 ATTRIBUTES
 
@@ -70,29 +89,16 @@ Set/Get the background color for this glass.
 
 Set/Get the glare color for this glass.
 
-=head1 METHODS
-
-=head2 new
-
-Creates a new Chart::Clicker::Decoration::Glass object.
-
-=head2 draw
-
-Draw this Glass.
-
-=head2 prepare
-
-Prepare this Glass for drawing
-
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

@@ -1,18 +1,26 @@
 package Chart::Clicker::Decoration::OverAxis;
+BEGIN {
+  $Chart::Clicker::Decoration::OverAxis::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Container';
+
+# ABSTRACT: An axis drawn over data
 
 use Graphics::Color::RGB;
 use Graphics::Primitive::Operation::Fill;
 use Graphics::Primitive::Paint::Solid;
 use Layout::Manager::Flow;
 
+
 has 'axis_height' => (
     is => 'rw',
     isa => 'Num',
     default => sub { 20 }
 );
+
+
 has '+background_color' => (
     # is => 'rw',
     # isa => 'Graphics::Color::RGB',
@@ -22,6 +30,8 @@ has '+background_color' => (
         )
     }
 );
+
+
 has 'border_color' => (
     is => 'rw',
     isa => 'Graphics::Color::RGB',
@@ -31,24 +41,34 @@ has 'border_color' => (
         )
     }
 );
+
+
 has 'border_width' => (
     is => 'rw',
     isa => 'Num',
     default => sub { 2 }
 );
+
+
 has 'context' => (
     is => 'rw',
     isa => 'Str',
     required => 1
 );
+
+
 has 'font' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Font',
     default => sub { Graphics::Primitive::Font->new }
 );
+
+
 has '+layout_manager' => (
     default => sub { Layout::Manager::Compass->new }
 );
+
+
 has 'text_color' => (
     is => 'rw',
     isa => 'Graphics::Color::RGB',
@@ -123,17 +143,20 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Decoration::OverAxis - An axis drawn over data
 
+=head1 VERSION
+
+version 2.70
+
 =head1 DESCRIPTION
 
 An axis that is meant to be drawn "over" a chart.  You can find an example
 of an OverAxis at L<http://www.onemogin.com/clicker/images/overaxis.png>.
-
-=head1 SYNOPSIS
 
 =head1 ATTRIBUTES
 
@@ -157,29 +180,29 @@ Set/Get the width of the border for this OverAxis
 
 Set/Get the context that this OverAxis should use.
 
+=head2 font
+
+The font to use for the OverAxis.
+
+=head2 layout_manager
+
+The layout manager to use for this overaxis.  Defaults to a
+L<Layout::Manager::Compass>.
+
 =head2 text_color
 
 Set/Get the color of the text labels dawn for the ticks.
-
-=head1 METHODS
-
-=head2 new
-
-Creates a new Chart::Clicker::Decoration::OverAxis object.
-
-=head2 prepare
-
-Prepare this OverAxis for drawing
 
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

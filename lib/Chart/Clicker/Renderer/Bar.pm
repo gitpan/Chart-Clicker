@@ -1,7 +1,12 @@
 package Chart::Clicker::Renderer::Bar;
+BEGIN {
+  $Chart::Clicker::Renderer::Bar::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Renderer';
+
+# ABSTRACT: Bar renderer
 
 use Graphics::Primitive::Brush;
 
@@ -9,21 +14,28 @@ use Graphics::Primitive::Operation::Fill;
 use Graphics::Primitive::Operation::Stroke;
 use Graphics::Primitive::Paint::Solid;
 
+
 has 'bar_padding' => (
     is => 'rw',
     isa => 'Int',
     default => 0
 );
+
+
 has 'bar_width' => (
     is => 'rw',
     isa => 'Num',
     predicate => 'has_bar_width'
 );
+
+
 has 'brush' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Brush',
     default => sub { Graphics::Primitive::Brush->new }
 );
+
+
 has 'opacity' => (
     is => 'rw',
     isa => 'Num',
@@ -31,7 +43,7 @@ has 'opacity' => (
 );
 
 override('prepare', sub {
-    my $self = shift();
+    my $self = shift;
 
     super;
 
@@ -176,24 +188,23 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Renderer::Bar - Bar renderer
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-Chart::Clicker::Renderer::Bar renders a dataset as bars.
-
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bar/bar.png" width="500" height="250" alt="Bar Chart" /></p>
-
-=end HTML
+version 2.70
 
 =head1 SYNOPSIS
 
-  my $br = Chart::Clicker::Renderer::Bar->new();
+  my $br = Chart::Clicker::Renderer::Bar->new;
+
+=head1 DESCRIPTION
+
+Chart::Clicker::Renderer::Bar renders a dataset as bars.
 
 =head1 NEGATIVE BARS
 
@@ -201,18 +212,16 @@ If you'd like to render both "negative and positive" bars, look at
 L<Chart::Clicker::Axis>'s C<baseline> attribute.  Setting it will result in
 something like this:
 
-=begin HTML
+=for HTML <p><img src="http://www.onemogin.com.com/clicker/chart-clicker-examples/bar/bar-baseline.png" width="500" height="250" alt="Base (Baseline) Chart" /></p>
 
-<p><img src="http://www.onemogin.com.com/clicker/chart-clicker-examples/bar/bar-baseline.png" width="500" height="250" alt="Base (Baseline) Chart" /></p>
-
-=end HTML
-
-=head1 ATTRIBUTES
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bar/bar.png" width="500" height="250" alt="Bar Chart" /></p>
 
 =head2 bar_padding
 
 How much padding to put around a bar.  A padding of 4 will result in 2 pixels
 on each side.
+
+=head1 ATTRIBUTES
 
 =head2 bar_width
 
@@ -233,11 +242,12 @@ Set/Get the alpha value to make each bar more or less opaque.
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

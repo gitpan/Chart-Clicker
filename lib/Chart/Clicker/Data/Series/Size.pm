@@ -1,9 +1,15 @@
 package Chart::Clicker::Data::Series::Size;
+BEGIN {
+  $Chart::Clicker::Data::Series::Size::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Data::Series';
 
+# ABSTRACT: Chart data with additional attributes for Size charts
+
 use List::Util qw(min max);
+
 
 has 'sizes' => (
     traits => [ 'Array' ],
@@ -17,57 +23,63 @@ has 'sizes' => (
     }
 );
 
+
 has max_size => (
     is => 'ro',
     isa => 'Num',
-    lazy_build => 1
+    lazy => 1,
+    default => sub {
+        my ($self) = @_;
+        return max(@{ $self->sizes });
+    }
 );
+
 
 has min_size => (
     is => 'ro',
     isa => 'Num',
-    lazy_build => 1
+    lazy => 1,
+    default => sub {
+        my ($self) = @_;
+        return min(@{ $self->sizes });
+    }
 );
-
-sub _build_max_size {
-    my ($self) = @_;
-
-    return max(@{ $self->sizes });
-}
-
-sub _build_min_size {
-    my ($self) = @_;
-
-    return min(@{ $self->sizes });
-}
 
 __PACKAGE__->meta->make_immutable;
 
 no Moose;
 
 1;
-
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Data::Series::Size - Chart data with additional attributes for Size charts
+
+=head1 VERSION
+
+version 2.70
+
+=head1 SYNOPSIS
+
+  use Chart::Clicker::Data::Series::Size;
+
+  my @keys = ();
+  my @values = ();
+  my @sizes = ();
+
+  my $series = Chart::Clicker::Data::Series::Size->new({
+    keys    => \@keys,
+    values  => \@values,
+    sizes   => \@sizes
+  });
 
 =head1 DESCRIPTION
 
 Chart::Clicker::Data::Series::Size is an extension of the Series class
 that provides storage for a third variable called the size.  This is useful
 for the Bubble renderer.
-
-=head1 SYNOPSIS
-
-  use Chart::Clicker::Data::Series::Size;
-
-  my $series = Chart::Clicker::Data::Series::Size->new({
-    keys    => \@keys,
-    values  => \@values,
-    sizes   => \@sized
-  });
 
 =head1 ATTRIBUTES
 
@@ -85,10 +97,6 @@ Gets the smallest value from this Series' C<sizes>.
 
 =head1 METHODS
 
-=head2 new
-
-Creates a new, empty Series::Size
-
 =head2 add_to_sizes
 
 Adds a size to this series.
@@ -105,9 +113,12 @@ Gets the count of sizes in this series.
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 LICENSE
+=head1 COPYRIGHT AND LICENSE
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-1;
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+

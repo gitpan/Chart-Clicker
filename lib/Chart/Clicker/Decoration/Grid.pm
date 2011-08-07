@@ -1,11 +1,17 @@
 package Chart::Clicker::Decoration::Grid;
+BEGIN {
+  $Chart::Clicker::Decoration::Grid::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Graphics::Primitive::Canvas';
 
 with 'Graphics::Primitive::Oriented';
 
+# ABSTRACT: Under-data grid
+
 use Graphics::Color::RGB;
+
 
 has '+background_color' => (
     default => sub {
@@ -14,7 +20,11 @@ has '+background_color' => (
         )
     }
 );
+
+
 has 'clicker' => ( is => 'rw', isa => 'Chart::Clicker' );
+
+
 has 'domain_brush' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Brush',
@@ -27,6 +37,8 @@ has 'domain_brush' => (
         )
     }
 );
+
+
 has 'range_brush' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Brush',
@@ -39,19 +51,24 @@ has 'range_brush' => (
         )
     }
 );
+
+
 has 'show_domain' => (
     is => 'rw',
     isa => 'Bool',
     default => 1
 );
+
+
 has 'show_range' => (
     is => 'rw',
     isa => 'Bool',
     default => 1
 );
 
+
 override('finalize', sub {
-    my $self = shift();
+    my $self = shift;
 
     return unless ($self->show_domain || $self->show_range);
 
@@ -75,6 +92,7 @@ override('finalize', sub {
         $self->do($rop);
     }
 });
+
 
 sub draw_lines {
     my ($self, $axis) = @_;
@@ -110,17 +128,21 @@ __PACKAGE__->meta->make_immutable;
 no Moose;
 
 1;
+
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Decoration::Grid - Under-data grid
 
+=head1 VERSION
+
+version 2.70
+
 =head1 DESCRIPTION
 
 Generates a collection of Markers for use as a background.
-
-=head1 SYNOPSIS
 
 =head1 ATTRIBUTES
 
@@ -152,33 +174,26 @@ Flag to show or not show the domain lines.
 
 Flag to show or not show the range lines.
 
+=head2 stroke
+
+Set/Get the Stroke for this Grid.
+
 =head1 METHODS
-
-=head2 new
-
-Creates a new Chart::Clicker::Decoration::Grid object.
 
 =head2 draw_lines
 
 Called by pack, draws the lines for a given axis.
 
-=head2 pack
-
-Prepare this Grid for drawing
-
-=head2 stroke
-
-Set/Get the Stroke for this Grid.
-
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

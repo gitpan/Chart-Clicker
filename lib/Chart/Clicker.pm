@@ -1,7 +1,12 @@
 package Chart::Clicker;
+BEGIN {
+  $Chart::Clicker::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Container';
+
+# ABSTRACT: Powerful, extensible charting.
 
 use Layout::Manager::Compass;
 
@@ -24,13 +29,14 @@ use Chart::Clicker::Drawing::ColorAllocator;
 use Carp qw(croak);
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '2.69';
 
 has '+background_color' => (
     default => sub {
         Graphics::Color::RGB->new({ red => 1, green => 1, blue => 1, alpha => 1 })
     }
 );
+
+
 has '+border' => (
     default => sub {
         my $b = Graphics::Primitive::Border->new;
@@ -39,11 +45,15 @@ has '+border' => (
         return $b;
     }
 );
+
+
 has 'color_allocator' => (
     is => 'rw',
     isa => 'Chart::Clicker::Drawing::ColorAllocator',
     default => sub { Chart::Clicker::Drawing::ColorAllocator->new }
 );
+
+
 has 'contexts' => (
     traits => [ 'Hash' ],
     is => 'rw',
@@ -57,12 +67,15 @@ has 'contexts' => (
         'delete_context' => 'delete'
     }
 );
+
 has '_data' => (
     traits => [ 'Hash' ],
     is => 'rw',
     isa => 'HashRef[Str]',
     default => sub { {} }
 );
+
+
 has 'datasets' => (
     traits => [ 'Array' ],
     is => 'rw',
@@ -74,6 +87,8 @@ has 'datasets' => (
         'get_dataset' => 'get'
     }
 );
+
+
 has 'driver' => (
     is => 'rw',
     does => 'Graphics::Primitive::Driver',
@@ -89,22 +104,32 @@ has 'driver' => (
     },
     lazy => 1
 );
+
+
 has 'format' => (
     is => 'rw',
     isa => 'Str',
     default => sub { 'PNG' }
 );
+
+
 has 'grid_over' => (
     is => 'rw',
     isa => 'Bool',
     default => sub { 0 }
 );
+
+
 has '+height' => (
     default => 300
 );
+
+
 has '+layout_manager' => (
     default => sub { Layout::Manager::Compass->new }
 );
+
+
 has 'legend' => (
     is => 'rw',
     isa => 'Chart::Clicker::Decoration::Legend',
@@ -114,11 +139,15 @@ has 'legend' => (
         );
     }
 );
+
+
 has 'legend_position' => (
     is => 'rw',
     isa => 'Str',
     default => sub { 's' }
 );
+
+
 has 'marker_overlay' => (
     is => 'rw',
     isa => 'Chart::Clicker::Decoration::MarkerOverlay',
@@ -127,6 +156,8 @@ has 'marker_overlay' => (
         Chart::Clicker::Decoration::MarkerOverlay->new
     }
 );
+
+
 has 'over_decorations' => (
     traits => [ 'Array' ],
     is => 'rw',
@@ -138,6 +169,8 @@ has 'over_decorations' => (
         'get_over_decoration' => 'get'
     }
 );
+
+
 has '+padding' => (
     default => sub {
         Graphics::Primitive::Insets->new(
@@ -145,6 +178,8 @@ has '+padding' => (
         )
     }
 );
+
+
 has 'plot' => (
     is => 'rw',
     isa => 'Chart::Clicker::Decoration::Plot',
@@ -152,12 +187,16 @@ has 'plot' => (
         Chart::Clicker::Decoration::Plot->new
     }
 );
+
+
 has 'subgraphs' => (
     is => 'rw',
     isa => 'ArrayRef',
     default => sub { [] },
     predicate => 'has_subgraphs'
 );
+
+
 has 'title' => (
     is => 'rw',
     isa => 'Graphics::Primitive::TextBox',
@@ -168,14 +207,19 @@ has 'title' => (
         )
     }
 );
+
+
 has 'title_position' => (
     is => 'rw',
     isa => 'Str',
     default => sub { 'n' }
 );
+
+
 has '+width' => (
     default => 500
 );
+
 
 sub add_to_contexts {
     my ($self, $ctx) = @_;
@@ -186,6 +230,7 @@ sub add_to_contexts {
     $self->set_context($ctx->name, $ctx);
 }
 
+
 sub add_subgraph {
     my ($self, $graph) = @_;
 
@@ -195,11 +240,13 @@ sub add_subgraph {
     push(@{$self->subgraphs}, $graph);
 }
 
+
 sub data {
     my ($self) = @_;
     print STDERR "WARNING: Calling 'data' to get image data is deprecated, please use rendered_data\n";
     $self->rendered_data;
 }
+
 
 sub draw {
     my ($self) = @_;
@@ -210,6 +257,7 @@ sub draw {
     $driver->finalize($self);
     $driver->draw($self);
 }
+
 
 sub get_datasets_for_context {
     my ($self, $name) = @_;
@@ -223,6 +271,7 @@ sub get_datasets_for_context {
 
     return \@dses;
 }
+
 
 sub add_data {
     my ($self, $name, $data) = @_;
@@ -438,6 +487,7 @@ override('prepare', sub {
     super;
 });
 
+
 sub set_renderer {
     my ($self, $renderer, $context) = @_;
 
@@ -448,6 +498,7 @@ sub set_renderer {
 
     $ctx->renderer($renderer);
 }
+
 
 sub write_output {
     my $self = shift;
@@ -462,11 +513,17 @@ no Moose;
 
 1;
 
+
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker - Powerful, extensible charting.
+
+=head1 VERSION
+
+version 2.70
 
 =head1 SYNOPSIS
 
@@ -513,92 +570,47 @@ Clicker supports the following renderers:
 
 =item B<Line>
 
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/line.png" width="500" height="250" alt="Line Chart" /></p>
-
-=end HTML
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/line.png" width="500" height="250" alt="Line Chart" /></p>
 
 =item B<StackedLine>
 
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/stacked-line.png" width="500" height="250" alt="Stacked Line Chart" /></p>
-
-=end HTML
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/stacked-line.png" width="500" height="250" alt="Stacked Line Chart" /></p>
 
 =item B<Bar>
 
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bar/bar.png" width="500" height="250" alt="Bar Chart" /></p>
-
-=end HTML
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bar/bar.png" width="500" height="250" alt="Bar Chart" /></p>
 
 =item B<StackedBar>
 
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bar/stacked-bar.png" width="500" height="250" alt="Stacked Bar Chart" /></p>
-
-=end HTML
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bar/stacked-bar.png" width="500" height="250" alt="Stacked Bar Chart" /></p>
 
 =item B<Area>
 
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/area/area.png" width="500" height="250" alt="Area Chart" /></p>
-
-=end HTML
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/area/area.png" width="500" height="250" alt="Area Chart" /></p>
 
 =item B<StackedArea>
 
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/area/stacked-area.png" width="500" height="250" alt="Stacked Area Chart" /></p>
-
-=end HTML
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/area/stacked-area.png" width="500" height="250" alt="Stacked Area Chart" /></p>
 
 =item B<Bubble>
 
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bubble/bubble.png" width="500" height="250" alt="Bubble Chart" /></p>
-
-=end HTML
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bubble/bubble.png" width="500" height="250" alt="Bubble Chart" /></p>
 
 =item B<CandleStick>
 
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/candlestick/candlestick.png" width="500" height="250" alt="Candlestick Chart" /></p>
-
-=end HTML
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/candlestick/candlestick.png" width="500" height="250" alt="Candlestick Chart" /></p>
 
 =item B<Point>
 
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/point/point.png" width="500" height="250" alt="Point Chart" /></p>
-
-=end HTML
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/point/point.png" width="500" height="250" alt="Point Chart" /></p>
 
 =item B<Pie>
 
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/pie/pie.png" width="300" height="250" alt="Pie Chart" /></p>
-
-=end HTML
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/pie/pie.png" width="300" height="250" alt="Pie Chart" /></p>
 
 =item B<PolarArea>
 
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/polararea/polararea.png" width="300" height="250" alt="Polar Area Chart" /></p>
-
-=end HTML
-
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/polararea/polararea.png" width="300" height="250" alt="Polar Area Chart" /></p>
 
 =back
 
@@ -655,7 +667,7 @@ context.
   $dataset->context('sales');
   
   $clicker->add_to_datasets($dataset);
-  
+
 New contexts provide a fresh domain and range axis and default to a Line
 renderer. 
 
@@ -684,7 +696,22 @@ similar things, you can use:
 If you happen to be using Catalyst then take a look at
 L<Catalyst::View::Graphics::Primitive>.
 
+=cut
+
 =head1 ATTRIBUTES
+
+=head2 background_color
+
+Set/Get the background color.  Expects a L<Graphics::Color> object.  Defaults
+to white.
+
+=head2 border
+
+Set/Get the border.  Expects a L<Graphics::Primitive::Border>.
+
+=head2 color_allocator
+
+Set/Get the color_allocator for this chart.
 
 =head2 contexts
 
@@ -694,10 +721,29 @@ Set/Get the contexts for this chart.
 
 Get/Set the datasets for this chart.
 
+=head2 driver
+
+Set/Get the driver used to render this Chart. Defautls to
+L<Graphics::Primitive::Driver::Cairo>.
+
 =head2 format
 
 Get the format for this Chart.  Required in the constructor.  Must be on of
 Png, Pdf, Ps or Svg.
+
+=head2 grid_over
+
+Flag controlling if the grid is rendered B<over> the data.  Defaults to 0.
+You probably want to set the grid's background color to an alpha of 0 if you
+enable this flag.
+
+=head2 height
+
+Set/Get the height.  Defaults to 300.
+
+=head2 layout_manager
+
+Set/Get the layout manager.  Defaults to L<Layout::Manager::Compass>.
 
 =head2 legend
 
@@ -708,11 +754,24 @@ Set/Get the legend that will be used with this chart.
 The position the legend will be added.  Should be one of north, south, east,
 west or center as required by L<Layout::Manager::Compass>.
 
-=head2 grid_over
+=head2 marker_overlay
 
-Flag controlling if the grid is rendered B<over> the data.  Defaults to 0.
-You probably want to set the grid's background color to an alpha of 0 if you
-enable this flag.
+Set/Get the marker overlay object that will be used if this chart
+has markers.  This is lazily constructed to save time.
+
+=head2 over_decorations
+
+Set/Get an arrayref of "over decorations", or things that are drawn OVER the
+chart.  This is an advanced feature.  See C<overaxis-bar.pl> in the examples.
+
+=head2 padding
+
+Set/Get the padding.  Expects a L<Graphics::Primitive::Insets> object.  Defaults
+to 3px on all sides.
+
+=head2 plot
+
+Set/Get the Plot on which things are drawn.
 
 =head2 subgraphs
 
@@ -747,12 +806,77 @@ west or center as required by L<Layout::Manager::Compass>.
 Note that if no angle is set for the title then it will be changed to
 -1.5707 if the title position is east or west.
 
+=head2 width
+
+Set/Get the width.  Defaults to 500.
+
 =head1 METHODS
 
-=head2 new
+=head2 context_count
 
-Creates a new Chart::Clicker object. If no format, width and height are
-specified then defaults of Png, 500 and 300 are chosen, respectively.
+Get a count of contexts.
+
+=head2 context_names
+
+Get a list of context names.
+
+=head2 delete_context ($name)
+
+Remove the context with the specified name.
+
+=head2 get_context ($name)
+
+Get the context with the specified name
+
+=head2 set_context ($name, $context)
+
+Set a context of the specified name.
+
+=head2 add_to_datasets
+
+Add the specified dataset (or arrayref of datasets) to the chart.
+
+=head2 dataset_count
+
+Get a count of datasets.
+
+=head2 get_dataset ($index)
+
+Get the dataset at the specified index.
+
+=head2 add_to_over_decorations
+
+Add an over decoration to the list.
+
+=head2 get_over_decoration ($index)
+
+Get the over decoration at the specified index.
+
+=head2 over_decoration_count
+
+Get a count of over decorations.
+
+=head2 add_to_contexts
+
+Add the specified context to the chart.
+
+=head2 add_subgraph
+
+Add a subgraph to this chart.
+
+=head2 data
+
+Returns the data for this chart as a scalar.  Suitable for 'streaming' to a
+client.
+
+=head2 draw
+
+Draw this chart.
+
+=head2 get_datasets_for_context
+
+Returns an arrayref containing all datasets for the given context.  Used by
+renderers to get a list of datasets to chart.
 
 =head2 add_data ($name, $data)
 
@@ -792,51 +916,6 @@ thing.  Subsequent calls with the same name will overwrite previous calls.
 
 =back
 
-=head2 add_to_contexts
-
-Add the specified context to the chart.
-
-=head2 add_to_datasets
-
-Add the specified dataset (or arrayref of datasets) to the chart.
-
-=head2 add_subgraph
-
-Add a subgraph to this chart.
-
-=head2 color_allocator
-
-Set/Get the color_allocator for this chart.
-
-=head2 data
-
-Returns the data for this chart as a scalar.  Suitable for 'streaming' to a
-client.
-
-=head2 draw
-
-Draw this chart.
-
-=head2 get_datasets_for_context
-
-Returns an arrayref containing all datasets for the given context.  Used by
-renderers to get a list of datasets to chart.
-
-=head2 inside_width
-
-Get the width available in this container after taking away space for
-insets and borders.
-
-=head2 inside_height
-
-Get the height available in this container after taking away space for
-insets and borders.
-
-=head2 marker_overlay
-
-Set/Get the marker overlay object that will be used if this chart
-has markers.  This is lazily constructed to save time.
-
 =head2 set_renderer ($renderer_object, [ $context ]);
 
 Sets the renderer on the specified context.  If no context is provided then
@@ -856,6 +935,16 @@ calls C<draw> for you.  If you use this method, do not call C<draw> first!
 
   $c->write_output('/path/to/the.png');
 
+=head2 inside_width
+
+Get the width available in this container after taking away space for
+insets and borders.
+
+=head2 inside_height
+
+Get the height available in this container after taking away space for
+insets and borders.
+
 =head1 ISSUES WITH CENTOS
 
 I've had numerous reports of problems with Chart::Clicker when using CentOS.
@@ -865,10 +954,6 @@ had reports that upgrading to at least cairo-1.8.8-3 makes thinks work properly.
 I hesitate to provide any other data with this because it may get out of date
 fast.  If you have trouble feel free to drop me an email and I'll tell you
 what I know.
-
-=head1 AUTHOR
-
-Cory G Watson <gphat@cpan.org>
 
 =head1 CONTRIBUTORS
 
@@ -890,9 +975,16 @@ Chart::Clicker is on github:
 
   http://github.com/gphat/chart-clicker/tree/master
 
-=head1 COPYRIGHT & LICENSE
+=head1 AUTHOR
 
-Copyright 2007-2010 by Cory G Watson
+Cory G Watson <gphat@cpan.org>
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+

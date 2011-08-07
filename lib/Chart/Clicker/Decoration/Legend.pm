@@ -1,16 +1,20 @@
 package Chart::Clicker::Decoration::Legend;
+BEGIN {
+  $Chart::Clicker::Decoration::Legend::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Container';
 with 'Graphics::Primitive::Oriented';
 
-# TODO Move me out of decoration
+# ABSTRACT: Series name, color key
 
 use Graphics::Primitive::Font;
 use Graphics::Primitive::Insets;
 use Graphics::Primitive::TextBox;
 
 use Layout::Manager::Flow;
+
 
 has '+border' => (
     default => sub {
@@ -20,6 +24,8 @@ has '+border' => (
         return $b;
     }
 );
+
+
 has 'font' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Font',
@@ -27,6 +33,8 @@ has 'font' => (
         Graphics::Primitive::Font->new
     }
 );
+
+
 has 'item_padding' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Insets',
@@ -36,6 +44,8 @@ has 'item_padding' => (
         })
     }
 );
+
+
 has '+layout_manager' => (
     default => sub { Layout::Manager::Flow->new(anchor => 'west', wrap => 1) },
     lazy => 1
@@ -89,18 +99,25 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Decoration::Legend - Series name, color key
 
+=head1 VERSION
+
+version 2.70
+
 =head1 DESCRIPTION
 
 Chart::Clicker::Decoration::Legend draws a legend on a Chart.
 
-=head1 SYNOPSIS
-
 =head1 ATTRIBUTES
+
+=head2 border
+
+Set/Get this Legend's border.
 
 =head2 font
 
@@ -114,34 +131,21 @@ Set/Get this Legend's insets.
 
 Set/Get the padding for this legend's items.
 
-=head1 METHODS
+=head2 layout_manager
 
-=head2 new
-
-Creates a new Legend object.
-
-=head2 border
-
-Set/Get this Legend's border.
-
-=head2 draw
-
-Draw this Legend
-
-=head2 prepare
-
-Prepare this Legend by creating the TextBoxes based on the datasets
-provided and testing the lengths of the series names.
+Set/Get the layout manager for this lagend.  Defaults to
+L<Layout::Manager::Flow> with an anchor of C<west> and a C<wrap> of 1.
 
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

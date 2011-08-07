@@ -1,7 +1,12 @@
 package Chart::Clicker::Renderer::Area;
+BEGIN {
+  $Chart::Clicker::Renderer::Area::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Renderer';
+
+# ABSTRACT: Area renderer
 
 use Graphics::Primitive::Brush;
 use Graphics::Primitive::Path;
@@ -10,16 +15,21 @@ use Graphics::Primitive::Operation::Stroke;
 use Graphics::Primitive::Paint::Gradient::Linear;
 use Graphics::Primitive::Paint::Solid;
 
+
 has 'brush' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Brush',
     default => sub { Graphics::Primitive::Brush->new }
 );
+
+
 has 'fade' => (
     is => 'rw',
     isa => 'Bool',
     default => 0
 );
+
+
 has 'opacity' => (
     is => 'rw',
     isa => 'Num',
@@ -130,21 +140,15 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Renderer::Area - Area renderer
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-Chart::Clicker::Renderer::Area renders a dataset as line-like polygons with
-their interior areas filled.
-
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/area/area.png" width="500" height="250" alt="Area Chart" /></p>
-
-=end HTML
+version 2.70
 
 =head1 SYNOPSIS
 
@@ -154,6 +158,13 @@ their interior areas filled.
           width => 2
       })
   });
+
+=head1 DESCRIPTION
+
+Chart::Clicker::Renderer::Area renders a dataset as line-like polygons with
+their interior areas filled.
+
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/area/area.png" width="500" height="250" alt="Area Chart" /></p>
 
 =head1 ATTRIBUTES
 
@@ -170,17 +181,16 @@ Set/Get the fade flag, which turns on or off a gradient in the area renderer.
 
 Set the alpha value for the renderer, which makes things more or less opaque.
 
-=head1 METHODS
-
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-L<Chart::Clicker::Renderer>, perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

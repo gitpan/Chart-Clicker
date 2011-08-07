@@ -1,12 +1,18 @@
 package Chart::Clicker::Decoration::MarkerOverlay;
+BEGIN {
+  $Chart::Clicker::Decoration::MarkerOverlay::VERSION = '2.70';
+}
 
 use Moose;
 
 extends 'Chart::Clicker::Decoration';
 
+# ABSTRACT: Component for drawing markers
+
 use Graphics::Primitive::Operation::Stroke;
 use Graphics::Primitive::Operation::Fill;
 use Graphics::Primitive::Paint::Solid;
+
 
 override('finalize', sub {
     my ($self) = @_;
@@ -100,32 +106,30 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Decoration::MarkerOverlay - Component for drawing markers
 
+=head1 VERSION
+
+version 2.70
+
 =head1 DESCRIPTION
 
 A Component that handles the rendering of Markers.
-
-=head1 SYNOPSIS
-
-=head1 METHODS
-
-=head2 new
-
-Creates a new MarkerOverlay object.
 
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

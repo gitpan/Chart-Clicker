@@ -1,9 +1,12 @@
 package Chart::Clicker::Decoration::Legend::Tabular;
+BEGIN {
+  $Chart::Clicker::Decoration::Legend::Tabular::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Decoration::Legend';
 
-# TODO Move me out of decoration
+# ABSTRACT: Tabular version of Legend
 
 use Graphics::Primitive::Font;
 use Graphics::Primitive::Insets;
@@ -11,6 +14,7 @@ use Graphics::Primitive::TextBox;
 use Graphics::Color::RGB;
 
 use Layout::Manager::Grid;
+
 
 has '+border' => (
     default => sub {
@@ -20,14 +24,20 @@ has '+border' => (
         return $b;
     }
 );
+
+
 has '+color' => (
     default => sub { Graphics::Color::RGB->new( red => 0, green => 0, blue => 0) }
 );
+
+
 has 'data'  => (
     is => 'rw',
     isa => 'ArrayRef[ArrayRef[Str]]',
     required => 1
 );
+
+
 has 'font' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Font',
@@ -35,11 +45,15 @@ has 'font' => (
         Graphics::Primitive::Font->new
     }
 );
+
+
 has 'header' => (
     is => 'rw',
     isa => 'ArrayRef[Str]',
     predicate => 'has_header'
 );
+
+
 has 'item_padding' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Insets',
@@ -144,17 +158,35 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Decoration::Legend::Tabular - Tabular version of Legend
 
+=head1 VERSION
+
+version 2.70
+
+=head1 SYNOPSIS
+
+    my $cc = Chart::Clicker->new;
+
+    my $series1 = Chart::Clicker::Data::Series->new;
+    my $series2 = Chart::Clicker::Data::Series->new;
+
+    $cc->legend(Chart::Clicker::Decoration::Legend::Tabular->new(
+        header => [ qw(Name Min Max) ],
+        data => [
+            [ min(@{ $series1->values }), max(@{ $series1->values }) ],
+            [ min(@{ $series2->values }), max(@{ $series2->values }) ]
+        ]
+    ));
+
 =head1 DESCRIPTION
 
 Chart::Clicker::Decoration::Legend::Tabular draws a legend on a Chart with
 tabular data display.
-
-=head1 SYNOPSIS
 
 The Tabular legend is a legend with a few extra attributes that allow you to
 pass it data to display.  The attributes are c<header> and c<data>.  The
@@ -170,28 +202,20 @@ containing n elements.  Having that, C<header> will expect n + 1 elements
 with one for the series name and the remaining (n) matching the number of
 elements in each of C<data>'s arrayrefs.
 
-    $cc->legend(Chart::Clicker::Decoration::Legend::Tabular->new(
-        header => [ qw(Name Min Max) ],
-        data => [
-            [ min(@{ $series1->values }), max(@{ $series1->values }) ],
-            [ min(@{ $series2->values }), max(@{ $series2->values }) ]
-        ]
-    ));
-
 =head1 ATTRIBUTES
 
 =head2 border
 
 Set/Get this Legend's border.
 
+=head2 color
+
+Set/Get the color to use as the foreground for the legend.
+
 =head2 data
 
 Set/Get the data for this legend.  Expects an arrayref of arrayrefs, with
 one inner arrayref for every series charted.
-
-=head2 draw
-
-Draw this Legend
 
 =head2 font
 
@@ -215,20 +239,16 @@ Set/Get the padding for this legend's items.
 
 Predicate returning true of this legend has a header, else 1.
 
-=head2 prepare
-
-Prepare this Legend by creating the TextBoxes based on the datasets
-provided and testing the lengths of the series names.
-
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

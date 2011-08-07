@@ -1,9 +1,15 @@
 package Chart::Clicker::Container;
+BEGIN {
+  $Chart::Clicker::Container::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Graphics::Primitive::Container';
 
 with 'Graphics::Primitive::Oriented';
+
+# ABSTRACT: Base class that extends Graphics::Primitive::Container
+
 
 has 'clicker' => (
     is => 'rw',
@@ -16,16 +22,19 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Container - Base class that extends Graphics::Primitive::Container
 
+=head1 VERSION
+
+version 2.70
+
 =head1 DESCRIPTION
 
 Chart::Clicker::Container is a subclass of L<Graphics::Primitive::Container>.
-
-=head1 SYNOPSIS
 
 =head1 ATTRIBUTES
 
@@ -33,21 +42,16 @@ Chart::Clicker::Container is a subclass of L<Graphics::Primitive::Container>.
 
 Set/Get this component's clicker object.
 
-=head1 METHODS
-
-=head2 new
-
-Creates a new Chart::Clicker::Container
-
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

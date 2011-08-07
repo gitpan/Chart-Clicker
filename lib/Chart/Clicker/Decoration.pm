@@ -1,7 +1,13 @@
 package Chart::Clicker::Decoration;
+BEGIN {
+  $Chart::Clicker::Decoration::VERSION = '2.70';
+}
 use Moose;
 
+# ABSTRACT: Shiny baubles!
+
 extends 'Graphics::Primitive::Canvas';
+
 
 has 'clicker' => ( is => 'rw', isa => 'Chart::Clicker' );
 
@@ -11,33 +17,31 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Decoration - Shiny baubles!
+
+=head1 VERSION
+
+version 2.70
 
 =head1 DESCRIPTION
 
 Chart::Clicker::Decoration is a straight subclass of
 L<Graphics::Primitive::Canvas>.
 
-=head1 SYNOPSIS
-
-=head1 METHODS
-
-=head2 new
-
-Creates a new Chart::Clicker::Decoration
-
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

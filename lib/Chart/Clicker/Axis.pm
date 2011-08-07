@@ -1,8 +1,13 @@
 package Chart::Clicker::Axis;
+BEGIN {
+  $Chart::Clicker::Axis::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Container';
 with 'Chart::Clicker::Positioned';
+
+# ABSTRACT: An X or Y Axis
 
 use Chart::Clicker::Data::Range;
 
@@ -14,15 +19,19 @@ use Layout::Manager::Absolute;
 
 use Math::Trig ':pi';
 
+
 has 'tick_label_angle' => (
     is => 'rw',
     isa => 'Num'
 );
+
+
 has 'baseline' => (
     is  => 'rw',
     isa => 'Num',
 );
-# Remove for border...
+
+
 has 'brush' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Brush',
@@ -35,6 +44,8 @@ has 'brush' => (
         )
     }
 );
+
+
 has '+color' => (
     default => sub {
         Graphics::Color::RGB->new({
@@ -42,10 +53,20 @@ has '+color' => (
         })
     }
 );
+
+
 has 'format' => ( is => 'rw', isa => 'Str|CodeRef' );
+
+
 has 'fudge_amount' => ( is => 'rw', isa => 'Num', default => 0 );
+
+
 has 'hidden' => ( is => 'rw', isa => 'Bool', default => 0 );
+
+
 has 'label' => ( is => 'rw', isa => 'Str' );
+
+
 has 'label_color' => (
     is => 'rw',
     isa => 'Graphics::Color',
@@ -55,35 +76,55 @@ has 'label_color' => (
         })
     }
 );
+
+
 has 'label_font' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Font',
     default => sub { Graphics::Primitive::Font->new }
 );
+
+
 has '+layout_manager' => ( default => sub { Layout::Manager::Absolute->new });
+
+
 has '+orientation' => (
     required => 1
 );
+
+
 has '+position' => (
     required => 1
 );
+
+
 has 'range' => (
     is => 'rw',
     isa => 'Chart::Clicker::Data::Range',
     default => sub { Chart::Clicker::Data::Range->new }
 );
+
+
 has 'show_ticks' => ( is => 'rw', isa => 'Bool', default => 1 );
+
+
 has 'staggered' => ( is => 'rw', isa => 'Bool', default => 0 );
+
+
 has 'skip_range' => (
     is => 'rw',
     isa => 'Chart::Clicker::Data::Range',
     predicate => 'has_skip_range'
 );
+
+
 has 'tick_font' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Font',
     default => sub { Graphics::Primitive::Font->new }
 );
+
+
 has 'tick_label_color' => (
     is => 'rw',
     isa => 'Graphics::Color',
@@ -93,10 +134,14 @@ has 'tick_label_color' => (
         })
     }
 );
+
+
 has 'tick_labels' => (
     is => 'rw',
     isa => 'ArrayRef',
 );
+
+
 has 'tick_values' => (
     traits => [ 'Array' ],
     is => 'rw',
@@ -108,6 +153,8 @@ has 'tick_values' => (
         'tick_value_count' => 'count'
     }
 );
+
+
 has 'ticks' => ( is => 'rw', isa => 'Int', default => 5 );
 
 sub BUILD {
@@ -245,11 +292,15 @@ override('prepare', sub {
     }
 
     if($self->is_vertical) {
-        $self->minimum_width($self->outside_width + $big + $label_width);
-        $self->minimum_height($self->outside_height + $self->outside_height + $big);
+        my $new_min_width = $self->outside_width + $big + $label_width;
+        $self->minimum_width($new_min_width) if $new_min_width > $self->minimum_width;
+        my $new_min_height = $self->outside_height + $big;
+        $self->minimum_height($new_min_height) if $new_min_height > $self->minimum_height;
     } else {
-        $self->minimum_height($self->outside_height + $big + $label_height);
-        $self->minimum_width($self->outside_width + $big + $self->outside_width);
+        my $new_min_height = $self->outside_height + $big + $label_height;
+        my $new_min_width = $self->outside_width + $big;
+        $self->minimum_height($new_min_height)  if $new_min_height > $self->minimum_height;
+        $self->minimum_width($new_min_width) if $new_min_width > $self->minimum_width;
         if($self->staggered) {
             $self->minimum_height($self->minimum_height * 2);
         }
@@ -257,6 +308,7 @@ override('prepare', sub {
 
     return 1;
 });
+
 
 sub mark {
     my ($self, $span, $value) = @_;
@@ -337,7 +389,7 @@ override('finalize', sub {
 
             # Adjust text on the Y axis to fit when it is
             # too close to the edges
-			my $standardYOrigin = $iy - ($label->height / 2);
+            my $standardYOrigin = $iy - ($label->height / 2);
             #my $lowerYOrigin = $iy - $label->height;
             my $lowerYOrigin = $ioy + $iheight - $label->height;
             my $upperYOrigin = $ioy;
@@ -439,6 +491,7 @@ override('finalize', sub {
     super;
 });
 
+
 sub format_value {
     my $self = shift;
     my $value = shift;
@@ -460,14 +513,15 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Axis - An X or Y Axis
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-Chart::Clicker::Axis represents the plot of the chart.
+version 2.70
 
 =head1 SYNOPSIS
 
@@ -483,7 +537,23 @@ Chart::Clicker::Axis represents the plot of the chart.
     visible => 1,
   });
 
+=head1 DESCRIPTION
+
+Chart::Clicker::Axis represents the plot of the chart.
+
 =head1 ATTRIBUTES
+
+=head2 height
+
+The height of the axis.
+
+=head2 width
+
+This axis' width.
+
+=head2 tick_label_angle
+
+The angle (in radians) to rotate the tick's labels.
 
 =head2 baseline
 
@@ -493,11 +563,12 @@ below the base to be 'negative'.
 
 =head2 brush
 
-The brush for this axis.
+The brush for this axis.  Expects a L<Graphics::Primitve::Brush>.
 
 =head2 color
 
-The color of the axis' border.
+The color of the axis' border.  Expects a L<Graphics::Color::RGB> object.
+Defaults to black.
 
 =head2 format
 
@@ -523,10 +594,6 @@ below the dataset.
 As an example, a fugdge_amount of .10 on an axis with a span of 10 to 50
 would add 5 to the top and bottom of the axis.
 
-=head2 height
-
-The height of the axis.
-
 =head2 hidden
 
 This axis' hidden flag.  If this is true then the Axis will not be drawn.
@@ -542,6 +609,10 @@ The color of the Axis' labels.
 =head2 label_font
 
 The font used for the axis' label.
+
+=head2 layout_manager
+
+Set/Get the Layout Manager.  Defaults to L<Layout::Manager::Absolute>.
 
 =head2 orientation
 
@@ -560,6 +631,13 @@ The Range for this axis.
 If this is value is false then 'ticks' and their labels will not drawn for
 this axis.
 
+=head2 staggered
+
+If true, causes horizontally labeled axes to 'stagger' the labels so that half
+are at the top of the box and the other half are at the bottom.  This makes
+long, overlapping labels less likely to overlap.  It only does something
+useful with B<horizontal> labels.
+
 =head2 skip_range
 
 Allows you to specify a range of values that will be skipped completely on
@@ -570,36 +648,17 @@ attribute will make for a much more useful chart, albeit somewhat visually
 skewed.
 
   $axis->skip_range(Chart::Clicker::Data::Range->new(lower => 10, upper => 100));
-  
+
 Note that B<any> data points, including ticks, that fall inside the range
 specified will be completely ignored.
-
-=head2 stagger
-
-If true, causes horizontally labeled axes to 'stagger' the labels so that half
-are at the top of the box and the other half are at the bottom.  This makes
-long, overlapping labels less likely to overlap.  It only does something
-useful with B<horizontal> labels.
 
 =head2 tick_font
 
 The font used for the axis' ticks.
 
-=head2 tick_label_angle
-
-The angle (in radians) to rotate the tick's labels.
-
 =head2 tick_label_color
 
 The color of the tick labels.
-
-=head2 tick_values
-
-The arrayref of values show as ticks on this Axis.
-
-=head2 tick_value_count
-
-Get a count of tick values.
 
 =head2 tick_labels
 
@@ -607,22 +666,17 @@ The arrayref of labels to show for ticks on this Axis.  This arrayref is
 consulted for every tick, in order.  So placing a string at the zeroeth index
 will result in it being displayed on the zeroeth tick, etc, etc.
 
+=head2 tick_values
+
+The arrayref of values show as ticks on this Axis.
+
 =head2 ticks
 
 The number of 'ticks' to show.  Setting this will divide the range on this
 axis by the specified value to establish tick values.  This will have no
 effect if you specify tick_values.
 
-=head2 width
-
-This axis' width.
-
 =head1 METHODS
-
-=head2 new
-
-Creates a new Chart::Clicker::Axis.  If no arguments are given then sane
-defaults are chosen.
 
 =head2 add_to_tick_values
 
@@ -632,6 +686,10 @@ Add a value to the list of tick values.
 
 Clear all tick values.
 
+=head2 tick_value_count
+
+Get a count of tick values.
+
 =head2 mark
 
 Given a span and a value, returns it's pixel position on this Axis.
@@ -640,29 +698,16 @@ Given a span and a value, returns it's pixel position on this Axis.
 
 Given a value, returns it formatted using this Axis' formatter.
 
-=head2 prepare
-
-Prepare this Axis by determining the size required.  If the orientation is
-CC_HORIZONTAL this method sets the height.  Otherwise sets the width.
-
-=head2 draw
-
-Draw this axis.
-
-=head2 BUILD
-
-Documening for POD::Coverage tests, Moose stuff.
-
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
 

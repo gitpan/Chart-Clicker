@@ -1,7 +1,12 @@
 package Chart::Clicker::Renderer::PolarArea;
+BEGIN {
+  $Chart::Clicker::Renderer::PolarArea::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Renderer';
+
+# ABSTRACT: Polar Area renderer
 
 use Graphics::Color::RGB;
 use Geometry::Primitive::Arc;
@@ -9,20 +14,18 @@ use Graphics::Primitive::Brush;
 
 use Scalar::Util qw(refaddr);
 
+
 has 'border_color' => (
     is => 'rw',
     isa => 'Graphics::Color::RGB',
     default => sub { Graphics::Color::RGB->new },
 );
+
+
 has 'brush' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Brush',
     default => sub { Graphics::Primitive::Brush->new }
-);
-has 'center_radius' => (
-    is => 'rw',
-    isa => 'Num',
-    default => 5
 );
 has '_accum' => (
     is => 'rw',
@@ -59,7 +62,7 @@ override('prepare', sub {
 
     # This is really hinky, basically since figuring out the arcs and whatnot
     # is a pain in the ass, we employ the painter's algorithm and draw
-    # the last series first, the pain the next one over it.  As such, we have
+    # the last series first, then paint the next one over it.  As such, we have
     # to know the total "accumulated" value for each series' position so that
     # we can decrement it on each run through the series... this finds the
     # totals
@@ -74,9 +77,9 @@ override('prepare', sub {
         my $count = $ds->max_key_count;
         for(0..$count - 1) {
             my $pos = $_;
-            my @vals = $ds->get_series_values($pos);
+            my $vals = $ds->get_series_values($pos);
             my $total = 0;
-            foreach my $v (@vals) {
+            foreach my $v (@{ $vals }) {
                 $total += $v;
             }
             $self->_accum->[$pos] += $total;
@@ -172,22 +175,15 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Renderer::PolarArea - Polar Area renderer
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-Chart::Clicker::Renderer::PolarArea renders each series as a slice of a pie.
-The values of the series determine the radius of each slice, with larger
-values making the slices longer.  The 360 degrees of pie is divided equally.
-
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/polararea/polararea.png" width="300" height="250" alt="Polar Area Chart" /></p>
-
-=end HTML
+version 2.70
 
 =head1 SYNOPSIS
 
@@ -196,6 +192,14 @@ values making the slices longer.  The 360 degrees of pie is divided equally.
   $par->brush->width(2);
   # and color
   $par->border_color(Graphics::Color::RGB->new(red => 1, green => 1, blue => 1));
+
+=head1 DESCRIPTION
+
+Chart::Clicker::Renderer::PolarArea renders each series as a slice of a pie.
+The values of the series determine the radius of each slice, with larger
+values making the slices longer.  The 360 degrees of pie is divided equally.
+
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/polararea/polararea.png" width="300" height="250" alt="Polar Area Chart" /></p>
 
 =head1 ATTRIBUTES
 
@@ -208,21 +212,16 @@ Set/Get the Color to use for the border.
 Set/Get a Brush to be used for the polar area's borders, which are around
 each slice.
 
-=head1 METHODS
-
-=head2 render
-
-Render the series.
-
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

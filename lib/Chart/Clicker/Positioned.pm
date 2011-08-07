@@ -1,14 +1,21 @@
 package Chart::Clicker::Positioned;
+BEGIN {
+  $Chart::Clicker::Positioned::VERSION = '2.70';
+}
 use Moose::Role;
+
+# ABSTRACT: Role for components that care about position.
 
 use Moose::Util::TypeConstraints;
 
 enum 'Chart::Clicker::Position' => qw(left right top bottom);
 
+
 has 'position' => (
     is => 'rw',
     isa => 'Chart::Clicker::Position'
 );
+
 
 sub is_left {
     my ($self) = @_;
@@ -16,17 +23,20 @@ sub is_left {
     return $self->position eq 'left';
 }
 
+
 sub is_right {
     my ($self) = @_;
 
     return $self->position eq 'right';
 }
 
+
 sub is_top {
     my ($self) = @_;
 
     return $self->position eq 'top';
 }
+
 
 sub is_bottom {
     my ($self) = @_;
@@ -37,30 +47,41 @@ sub is_bottom {
 no Moose;
 1;
 __END__
+=pod
+
 =head1 NAME
 
 Chart::Clicker::Positioned - Role for components that care about position.
 
+=head1 VERSION
+
+version 2.70
+
 =head1 SYNOPSIS
+
+    package My::Component;
+    use Moose;
+
+    extends 'Chart::Clicker::Drawing::Component';
+
+    with 'Chart::Clicker::Positioned';
+
+    1;
+
+=head1 DESCRIPTION
 
 Some components draw differently depending on which 'side' they are
 positioned.  If an Axis is on the left, it will put the numbers left and the
 bar on the right.  If positioned on the other side then those two piece are
 reversed.
 
-    package My::Component;
-    
-    extends 'Chart::Clicker::Drawing::Component';
-    
-    with 'Chart::Clicker::Positioned';
-    
-    1;
+=head1 ATTRIBUTES
+
+=head2 position
+
+The 'side' on which this component is positioned.
 
 =head1 METHODS
-
-=head2 is_bottom
-
-Returns true if the component is positioned bottom.
 
 =head2 is_left
 
@@ -74,19 +95,20 @@ Returns true if the component is positioned right.
 
 Returns true if the component is positioned top.
 
-=head2 position
+=head2 is_bottom
 
-The 'side' on which this component is positioned.
+Returns true if the component is positioned bottom.
 
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

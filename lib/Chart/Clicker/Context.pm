@@ -1,8 +1,14 @@
 package Chart::Clicker::Context;
+BEGIN {
+  $Chart::Clicker::Context::VERSION = '2.70';
+}
 use Moose;
+
+# ABSTRACT: A rendering context: Axes, Markers and a Renderer
 
 use Chart::Clicker::Axis;
 use Chart::Clicker::Renderer::Line;
+
 
 has 'domain_axis' => (
     is => 'rw',
@@ -15,6 +21,8 @@ has 'domain_axis' => (
         )
     }
 );
+
+
 has 'markers' => (
     traits => [ 'Array' ],
     is => 'rw',
@@ -25,11 +33,15 @@ has 'markers' => (
         'add_marker' => 'push'
     }
 );
+
+
 has 'name' => (
     is => 'rw',
     isa => 'Str',
     required => 1
 );
+
+
 has 'range_axis' => (
     is => 'rw',
     isa => 'Chart::Clicker::Axis',
@@ -41,11 +53,14 @@ has 'range_axis' => (
         )
     }
 );
+
+
 has 'renderer' => (
     is => 'rw',
     isa => 'Chart::Clicker::Renderer',
     default => sub { Chart::Clicker::Renderer::Line->new },
 );
+
 
 sub share_axes_with {
     my ($self, $other_context) = @_;
@@ -60,10 +75,25 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Context - A rendering context: Axes, Markers and a Renderer
+
+=head1 VERSION
+
+version 2.70
+
+=head1 SYNOPSIS
+
+  my $clicker = Chart::Clicker->new;
+
+  my $context = Chart::Clicker::Context->new(
+    name => 'Foo'
+  );
+
+  $clicker->add_to_contexts('foo', $context);
 
 =head1 DESCRIPTION
 
@@ -71,18 +101,19 @@ Contexts represent the way a dataset should be charted.  Multiple contexts
 allow a chart with multiple renderers and axes.  See the CONTEXTS section
 in L<Chart::Clicker>.
 
-=head1 SYNOPSIS
+=head2 renderer
 
-  my $context = Chart::Clicker::Context->new(
-    name => 'Foo'
-  );
-  $clicker->add_to_contexts('foo', $context);
+Set/get this context's renderer
 
 =head1 ATTRIBUTES
 
 =head2 domain_axis
 
 Set/get this context's domain axis
+
+=head2 markers
+
+An arrayref of L<Chart::Clicker::Data::Marker>s for this context.
 
 =head2 name
 
@@ -92,15 +123,15 @@ Set/get this context's name
 
 Set/get this context's range axis
 
-=head2 renderer
-
-Set/get this context's renderer
-
 =head1 METHODS
 
-=head2 new
+=head2 add_marker
 
-Creates a new Context object.
+Add a marker to this context.
+
+=head2 marker_count
+
+Get a count of markers in this context.
 
 =head2 share_axes_with ($other_context)
 
@@ -114,11 +145,12 @@ convenience method for quickly sharing axes.  It's simple doing:
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

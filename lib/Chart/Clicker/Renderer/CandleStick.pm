@@ -1,7 +1,12 @@
 package Chart::Clicker::Renderer::CandleStick;
+BEGIN {
+  $Chart::Clicker::Renderer::CandleStick::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Renderer';
+
+# ABSTRACT: CandleStick renderer
 
 use Graphics::Primitive::Brush;
 use Graphics::Primitive::Operation::Fill;
@@ -10,11 +15,14 @@ use Graphics::Primitive::Paint::Solid;
 
 use List::Util qw(max min);
 
+
 has 'bar_padding' => (
     is => 'rw',
     isa => 'Int',
     default => 0
 );
+
+
 has 'brush' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Brush',
@@ -22,7 +30,7 @@ has 'brush' => (
 );
 
 override('prepare', sub {
-    my $self = shift();
+    my $self = shift;
 
     super;
 
@@ -145,25 +153,26 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Renderer::CandleStick - CandleStick renderer
+
+=head1 VERSION
+
+version 2.70
+
+=head1 SYNOPSIS
+
+  my $br = Chart::Clicker::Renderer::CandleStick->new;
 
 =head1 DESCRIPTION
 
 Chart::Clicker::Renderer::CandleStick renders a dataset as a candlestick style
 bar chart.
 
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/candlestick/candlestick.png" width="500" height="250" alt="Candlestick Chart" /></p>
-
-=end HTML
-
-=head1 SYNOPSIS
-
-  my $br = Chart::Clicker::Renderer::CandleStick->new();
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/candlestick/candlestick.png" width="500" height="250" alt="Candlestick Chart" /></p>
 
 =head1 ATTRIBUTES
 
@@ -180,11 +189,12 @@ Set/Get the Brush to use around each bar and on each line.
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1), L<http://en.wikipedia.org/wiki/Candlestick_chart>
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

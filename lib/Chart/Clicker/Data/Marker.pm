@@ -1,8 +1,14 @@
 package Chart::Clicker::Data::Marker;
+BEGIN {
+  $Chart::Clicker::Data::Marker::VERSION = '2.70';
+}
 use Moose;
+
+# ABSTRACT: Highlight arbitrary value(s)
 
 use Graphics::Color::RGB;
 use Graphics::Primitive::Brush;
+
 
 has 'brush' => (
     is => 'rw',
@@ -11,6 +17,8 @@ has 'brush' => (
         Graphics::Primitive::Brush->new(width => 1);
     }
 );
+
+
 has 'color' => (
     is => 'rw',
     isa => 'Graphics::Color',
@@ -20,6 +28,8 @@ has 'color' => (
         );
     }
 );
+
+
 has 'inside_color' => (
     is => 'rw',
     isa => 'Graphics::Color',
@@ -29,9 +39,17 @@ has 'inside_color' => (
         );
     }
 );
+
+
 has 'key' => ( is => 'rw', isa => 'Num' );
+
+
 has 'key2' => ( is => 'rw', isa => 'Num' );
+
+
 has 'value' => ( is => 'rw', isa => 'Num' );
+
+
 has 'value2' => ( is => 'rw', isa => 'Num' );
 
 __PACKAGE__->meta->make_immutable;
@@ -40,14 +58,15 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Data::Marker - Highlight arbitrary value(s)
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-Used to highlight a particular key, value or range of either.
+version 2.70
 
 =head1 SYNOPSIS
 
@@ -55,7 +74,7 @@ Used to highlight a particular key, value or range of either.
  use Graphics::Color::RGB;
  use Graphics::Primitive::Brush;
 
- my $cc = Chart::Clicker->new(...);
+ my $cc = Chart::Clicker->new;
 
  my $mark = Chart::Clicker::Data::Marker->new(
     color   => Graphics::Color::RGB->new,
@@ -72,6 +91,15 @@ Used to highlight a particular key, value or range of either.
  
  $cc->write_output('foo.png');
 
+=head1 DESCRIPTION
+
+Used to highlight a particular key, value or range of either.
+
+=head2 value2
+
+Set/Get the value2 for this marker.  This represents a second point on the
+range and is used to specify a range.
+
 =head1 ATTRIBUTES
 
 =head2 brush
@@ -81,6 +109,11 @@ Set/Get the brush for this Marker.
 =head2 color
 
 Set/Get the color for this marker.
+
+=head2 inside_color
+
+Set/Get the inside color, which will be used if this range has two keys and
+two values.
 
 =head2 key
 
@@ -95,26 +128,16 @@ and is used to specify a range.
 
 Set/Get the value for this marker.  This represents a point on the range.
 
-=head2 value2
-
-Set/Get the value2 for this marker.  This represents a second point on the
-range and is used to specify a range.
-
-=head1 METHODS
-
-=head2 new
-
-Create a new Marker.
-
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

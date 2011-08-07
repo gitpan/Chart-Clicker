@@ -1,10 +1,15 @@
 package Chart::Clicker::Drawing::ColorAllocator;
+BEGIN {
+  $Chart::Clicker::Drawing::ColorAllocator::VERSION = '2.70';
+}
 use Moose;
+
+# ABSTRACT: Color picker
 
 use Graphics::Color::RGB;
 use Color::Scheme;
 
-my @defaults = (qw());;
+
 
 has 'colors' => (
     traits => [ 'Array' ],
@@ -18,7 +23,10 @@ has 'colors' => (
         'get_color' => 'get'
     }
 );
+
+
 has 'position' => ( is => 'rw', isa => 'Int', default => -1 );
+
 
 has 'color_scheme' => (
     is => 'rw',
@@ -26,12 +34,14 @@ has 'color_scheme' => (
     lazy_build => 1,
 );
 
+
 has 'seed_hue' => (
     is => 'rw',
     isa => 'Int',
     required => 1,
     default => sub { 270 },
 );
+
 
 has hues => (
     is => 'rw',
@@ -43,6 +53,7 @@ has hues => (
       [ map { ($seed + $_) % 360 } (0, 45, 75, 15, 60, 30) ]
     },
 );
+
 
 has shade_order => (
     is => 'rw',
@@ -60,24 +71,26 @@ sub _build_color_scheme {
   return $scheme;
 }
 
+
 sub next {
-    my $self = shift();
+    my $self = shift;
 
-    $self->position($self->position() + 1);
+    $self->position($self->position + 1);
 
-    return $self->colors->[$self->position()];
+    return $self->colors->[$self->position];
 }
 
 # Before we attempt to get the next color, we'll instantiate it if we need it
 # that way we don't waste a bunch of memory with useless colors.
 before 'next' => sub {
-    my $self = shift();
+    my $self = shift;
 
-    my $pos = $self->position();
+    my $pos = $self->position;
     if(!defined($self->colors->[$pos + 1])) {
         $self->add_to_colors($self->allocate_color);
     }
 };
+
 
 sub allocate_color {
   my $self = shift;
@@ -103,8 +116,9 @@ sub allocate_color {
   )
 }
 
+
 sub reset {
-    my $self = shift();
+    my $self = shift;
 
     $self->position(-1);
     return 1;
@@ -116,15 +130,15 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Drawing::ColorAllocator - Color picker
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-Allocates colors for use in the chart.  The position in the color allocator
-corresponds to the series that will be colored.
+version 2.70
 
 =head1 SYNOPSIS
 
@@ -136,16 +150,21 @@ corresponds to the series that will be colored.
             Graphics::Color::RGB->new(
                 red => 1.0, green => 0, blue => 0, alpha => 1.0
             ),
-            ...
+            #...
         )
     });
 
     my $red = $ca->get(0);
 
     #or let Chart::Clicker autmatically pick complementing colors for you
-    my $ca = Chart::Clicker::Drawing::ColorAllocator->new({
+    my $ca2 = Chart::Clicker::Drawing::ColorAllocator->new({
         seed_hue => 0, #red
     });
+
+=head1 DESCRIPTION
+
+Allocates colors for use in the chart.  The position in the color allocator
+corresponds to the series that will be colored.
 
 =head1 AUTOMATIC COLOR ALLOCATION
 
@@ -158,18 +177,20 @@ values of C<hues> have been utilized, it repeats them using a different shade.
 This has the effect of generating evenly spaced complementing colors to ensure
 colors are well ditinguishable from one another and have appropriate contrast.
 
+=head2 position
+
+Gets the current position.
+
 =head1 ATTRIBUTES
+
+=head2 colors
+
+An arrayref of colors that will be used for series that Clicker draws.
 
 =head2 color_scheme
 
 A lazy-building L<Color::Scheme> object used to generate the color scheme of
 the chart;
-
-=head2 hues
-
-An array reference of evenly spaced seed hues for color allocation. By default
-it will use the seed hue plus 0, 45, 75, 15, 60 and 30 which is enough to cover
-all web-safe colors when using a tetrade color scheme.
 
 =head2 seed_hue
 
@@ -179,6 +200,12 @@ Subsequent colors will be allocated based on their distance from this color
 to maintain sifficient contrast between colors. If not specified the seed_hue
 will default to 270, blue.
 
+=head2 hues
+
+An array reference of evenly spaced seed hues for color allocation. By default
+it will use the seed hue plus 0, 45, 75, 15, 60 and 30 which is enough to cover
+all web-safe colors when using a tetrade color scheme.
+
 =head2 shade_order
 
 An array reference of the order in which the different shades of each color
@@ -186,11 +213,6 @@ will be used for every color scheme generated. It defaults to 1, 3, 0, 2 for
 optimum color spacing.
 
 =head1 METHODS
-
-=head2 new
-
-Create a new ColorAllocator.  You can optionally pass an arrayref of colors
-to 'seed' the allocator.
 
 =head2 add_to_colors
 
@@ -204,14 +226,10 @@ Clear this allocator's colors
 
 Get the number of colors in this allocator.
 
-=head2 get_color
+=head2 get_color ($index)
 
 Gets the color at the specified index.  Returns undef if that position has no
 color.
-
-=head2 position
-
-Gets the current position.
 
 =head2 next
 
@@ -230,11 +248,12 @@ Resets this allocator back to the beginning.
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

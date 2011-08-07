@@ -1,5 +1,10 @@
 package Chart::Clicker::Renderer::StackedArea;
+BEGIN {
+  $Chart::Clicker::Renderer::StackedArea::VERSION = '2.70';
+}
 use Moose;
+
+# ABSTRACT: Stacked Area renderer
 
 extends 'Chart::Clicker::Renderer::Area';
 
@@ -10,7 +15,9 @@ use Graphics::Primitive::Operation::Stroke;
 use Graphics::Primitive::Paint::Gradient::Linear;
 use Graphics::Primitive::Paint::Solid;
 
+
 has '+additive' => ( default => sub { 1 } );
+
 
 override('finalize', sub {
     my ($self) = @_;
@@ -133,21 +140,15 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Renderer::StackedArea - Stacked Area renderer
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-Chart::Clicker::Renderer::StackedArea renders a dataset as line-like
-polygons stacked atop one another.
-
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/area/stacked-area.png" width="500" height="250" alt="Stacked Area Chart" /></p>
-
-=end HTML
+version 2.70
 
 =head1 SYNOPSIS
 
@@ -157,6 +158,20 @@ polygons stacked atop one another.
           width => 2
       })
   });
+
+=head1 DESCRIPTION
+
+Chart::Clicker::Renderer::StackedArea renders a dataset as line-like
+polygons stacked atop one another.
+
+=head1 NOTES
+
+Note that series with varying keys (e.g. Series 1 has keys 1, 2, 3 but Series
+2 only has 1 and 3) will cause you some problems.  Since the keys don't match
+up, neither will the accumulation of area.  This may be addressed in the
+future.
+
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/area/stacked-area.png" width="500" height="250" alt="Stacked Area Chart" /></p>
 
 =head1 ATTRIBUTES
 
@@ -177,11 +192,12 @@ Set the alpha value for the renderer, which makes things more or less opaque.
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-L<Chart::Clicker::Renderer>, perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

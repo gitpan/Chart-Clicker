@@ -1,9 +1,21 @@
 package Chart::Clicker::Data::Range;
+BEGIN {
+  $Chart::Clicker::Data::Range::VERSION = '2.70';
+}
 use Moose;
 
+# ABSTRACT: A range of Data
+
+
 has 'lower' => ( is => 'rw', isa => 'Num' );
+
+
 has 'max' => ( is => 'rw', isa => 'Num' );
+
+
 has 'min' => ( is => 'rw', isa => 'Num' );
+
+
 has 'upper' => ( is => 'rw', isa => 'Num' );
 
 after 'lower' => sub {
@@ -38,6 +50,7 @@ after 'max' => sub {
     }
 };
 
+
 sub add {
     my ($self, $range) = @_;
 
@@ -51,6 +64,7 @@ sub add {
         $self->lower($range->lower);
     }
 }
+
 
 sub combine {
     my ($self, $range) = @_;
@@ -70,12 +84,14 @@ sub combine {
     return 1;
 }
 
+
 sub contains {
     my ($self, $value) = @_;
 
     return 1 if $value >= $self->lower && $value <= $self->upper;
     return 0;
 }
+
 
 sub divvy {
     my ($self, $n) = @_;
@@ -94,6 +110,7 @@ sub divvy {
     return \@vals;
 }
 
+
 sub span {
     my ($self) = @_;
 
@@ -106,14 +123,15 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Data::Range - A range of Data
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-Chart::Clicker::Data::Range implements a range of values.
+version 2.70
 
 =head1 SYNOPSIS
 
@@ -123,6 +141,10 @@ Chart::Clicker::Data::Range implements a range of values.
     lower => 1,
     upper => 10
   });
+
+=head1 DESCRIPTION
+
+Chart::Clicker::Data::Range implements a range of values.
 
 =head1 ATTRIBUTES
 
@@ -145,10 +167,6 @@ set if you want to EXPLICITLY set the lower value.
 Set/Get the upper bound for this Range
 
 =head1 METHODS
-
-=head2 new
-
-Creates a new, empty Series
 
 =head2 add
 
@@ -181,7 +199,12 @@ Returns the span of this range, or UPPER - LOWER.
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 LICENSE
+=head1 COPYRIGHT AND LICENSE
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+

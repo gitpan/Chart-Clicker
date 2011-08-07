@@ -1,7 +1,12 @@
 package Chart::Clicker::Renderer::Pie;
+BEGIN {
+  $Chart::Clicker::Renderer::Pie::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Renderer';
+
+# ABSTRACT: Pie renderer
 
 use Graphics::Color::RGB;
 use Geometry::Primitive::Arc;
@@ -11,26 +16,35 @@ use Graphics::Primitive::Paint::Gradient::Radial;
 
 use Scalar::Util qw(refaddr);
 
+
 has 'border_color' => (
     is => 'rw',
     isa => 'Graphics::Color::RGB',
     default => sub { Graphics::Color::RGB->new },
 );
+
+
 has 'brush' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Brush',
     default => sub { Graphics::Primitive::Brush->new }
 );
+
+
 has 'gradient_color' => (
     is => 'rw',
     isa => 'Graphics::Color::RGB',
     predicate => 'has_gradient_color'
 );
+
+
 has 'gradient_reverse' => (
     is => 'rw',
     isa	=> 'Bool',
     default => 0,
 );
+
+
 has 'starting_angle' => (
     is => 'rw',
     isa	=> 'Int',
@@ -154,11 +168,25 @@ __PACKAGE__->meta->make_immutable;
 no Moose;
 
 1;
+
+
+
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Renderer::Pie - Pie renderer
+
+=head1 VERSION
+
+version 2.70
+
+=head1 SYNOPSIS
+
+  my $pier = Chart::Clicker::Renderer::Pie->new;
+  # Optionally set the stroke width
+  $pier->brush->width(2);
 
 =head1 DESCRIPTION
 
@@ -174,21 +202,15 @@ of like-named Series are totaled and keys are ignored.  So for a dataset like:
       keys    => [ 1, 2, 3],
       values  => [ 1, 1, 1 ],
   );
-  
+
 The keys are discarded and a pie chart will be drawn with $series' slice at
 66% (1 + 2 + 3 = 6) and $series2's at 33% (1 + 1 + 1 = 3).
 
-=begin HTML
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/pie/pie.png" width="300" height="250" alt="Pie Chart" /></p>
 
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/pie/pie.png" width="300" height="250" alt="Pie Chart" /></p>
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/pie/pie-gradient.png" width="300" height="250" alt="Pie Chart" /></p>
 
-=end HTML
-
-=head1 SYNOPSIS
-
-  my $pier = Chart::Clicker::Renderer::Pie->new;
-  # Optionally set the stroke width
-  $pier->brush->width(2);
+=head1 ATTRIBUTES
 
 =head1 ATTRIBUTES
 
@@ -209,31 +231,28 @@ white or black and manipulating the alpha, like so:
   $ren->gradient_color(
     Graphics::Color::RGB->new(red => 1, green => 1, blue => 1, alpha => .3)
   );
-  
+
 The above will cause each generated color to fade toward a lighter version of
 itself.  Adjust the alpha to increase or decrease the effect.
 
-=begin HTML
+=head2 brush
 
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/pie/pie-gradient.png" width="300" height="250" alt="Pie Chart" /></p>
+Set/Get whether or not the gradient is to be reversed.
 
-=end HTML
+=head2 starting_angle
 
-=head1 METHODS
-
-=head2 render
-
-Render the series.
+Set/Get a starting angle for the gradient.
 
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+

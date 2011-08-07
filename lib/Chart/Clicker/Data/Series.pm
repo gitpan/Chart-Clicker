@@ -1,8 +1,14 @@
 package Chart::Clicker::Data::Series;
+BEGIN {
+  $Chart::Clicker::Data::Series::VERSION = '2.70';
+}
 use Moose;
+
+# ABSTRACT: A series of key, value pairs representing chart data
 
 use List::Util qw(max min);
 use Chart::Clicker::Data::Range;
+
 
 has 'keys' => (
     traits => [ 'Array' ],
@@ -14,16 +20,22 @@ has 'keys' => (
         'key_count' => 'count'
     }
 );
+
+
 has 'name' => (
     is => 'rw',
     isa => 'Str',
     predicate => 'has_name'
 );
+
+
 has 'range' => (
     is => 'rw',
     isa => 'Chart::Clicker::Data::Range',
     lazy_build => 1
 );
+
+
 has 'values' => (
     traits => [ 'Array' ],
     is => 'rw',
@@ -65,11 +77,25 @@ sub BUILDARGS {
     return $args[0];
 }
 
+
 sub add_pair {
     my ($self, $key, $value) = @_;
 
     $self->add_to_keys($key);
     $self->add_to_values($value);
+}
+
+
+sub get_value_for_key {
+    my ($self, $key) = @_;
+
+    for(0..$self->key_count) {
+        my $ikey = $self->keys->[$_];
+        return $self->values->[$_] if defined($ikey) && $ikey == $key;
+    }
+
+    # We found nothing, return undef
+    return undef;
 }
 
 sub prepare {
@@ -87,15 +113,17 @@ __PACKAGE__->meta->make_immutable;
 no Moose;
 
 1;
+
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Data::Series - A series of key, value pairs representing chart data
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-Chart::Clicker::Data::Series represents a series of values to be charted.
+version 2.70
 
 =head1 SYNOPSIS
 
@@ -111,7 +139,7 @@ Chart::Clicker::Data::Series represents a series of values to be charted.
 
   # Alternately, if you prefer
 
-  my $series = Chart::Clicker::Data::Series->new({
+  my $series2 = Chart::Clicker::Data::Series->new({
     1  => 42,
     2  => 25,
     3  => 85,
@@ -124,11 +152,23 @@ Chart::Clicker::Data::Series represents a series of values to be charted.
     10 => 9
   });
 
+=head1 DESCRIPTION
+
+Chart::Clicker::Data::Series represents a series of values to be charted.
+
+Despite the name (keys and values) it is expected that all keys and values
+will be numeric.  Values is pretty obvious, but it is important that keys
+also be numeric, as otherwise we'd have no idea how to order the data.
+
 =head1 ATTRIBUTES
 
 =head2 keys
 
 Set/Get the keys for this series.
+
+=head2 add_to_keys
+
+Adds a key to this series.
 
 =head2 name
 
@@ -144,41 +184,37 @@ Set/Get the values for this series.
 
 =head1 METHODS
 
-=head2 new
+=head2 key_count
 
-Creates a new, empty Series
-
-=head2 add_pair ($key, $value)
-
-Add a key and a value to the series.  Internally wraps C<add_to_keys> and
-C<add_to_values>.
-
-=head2 add_to_keys
-
-Adds a key to this series.
+Get the count of keys in this series.
 
 =head2 add_to_values
 
 Add a value to this series.
 
-=head2 key_count
-
-Get the count of keys in this series.
-
-=head2 prepare
-
-Prepare this series.  Performs various checks and calculates
-various things.
-
 =head2 value_count
 
 Get the count of values in this series.
+
+=head2 add_pair ($key, $value)
+
+Convenience method to add a single key and a single value to the series.
+
+=head2 get_value_for_key ($key)
+
+Returns the value associated with the specified key.  This is necessary
+because not all series will have values for every key.
 
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 LICENSE
+=head1 COPYRIGHT AND LICENSE
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+

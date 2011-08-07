@@ -1,27 +1,89 @@
-use inc::Module::Install 0.75;
 
-name        'Chart-Clicker';
-all_from    'lib/Chart/Clicker.pm';
+use strict;
+use warnings;
 
-test_requires 'Test::Exception';
 
-requires    'Color::Scheme'     => '1.02';
-requires    'Moose'             => '0.76';
-requires    'DateTime'          => '0.47';
-requires    'DateTime::Set'     => '0.27';
-requires    'IO::File';
-requires    'Math::Complex'     => '1.56';
-requires    'Scalar::Util'      => '1.19';
-requires    'List::Util'        => '0';
-requires    'Geometry::Primitive' => '0.22';
-requires    'Graphics::Color' => '0.27';
-requires    'Graphics::Primitive' => '0.49';
-requires    'Graphics::Primitive::Driver::Cairo' => '0.42';
-requires    'Layout::Manager' => '0.31';
-requires    'Math::Gradient'    => '0.04';
 
-recommends 'Statistics::Basic'  => 0;
+use ExtUtils::MakeMaker 6.30;
 
-repository 'http://github.com/gphat/chart-clicker';
 
-WriteAll;
+
+my %WriteMakefileArgs = (
+  'ABSTRACT' => 'Powerful, extensible charting.',
+  'AUTHOR' => 'Cory G Watson <gphat@cpan.org>',
+  'BUILD_REQUIRES' => {
+    'Test::Exception' => '0',
+    'Test::More' => '0'
+  },
+  'CONFIGURE_REQUIRES' => {
+    'ExtUtils::MakeMaker' => '6.30'
+  },
+  'DISTNAME' => 'Chart-Clicker',
+  'EXE_FILES' => [],
+  'LICENSE' => 'perl',
+  'NAME' => 'Chart::Clicker',
+  'PREREQ_PM' => {
+    'Carp' => '0',
+    'Color::Scheme' => '0',
+    'DateTime' => '0',
+    'DateTime::Set' => '0',
+    'Geometry::Primitive::Arc' => '0',
+    'Geometry::Primitive::Circle' => '0',
+    'Geometry::Primitive::Point' => '0',
+    'Graphics::Color::RGB' => '0',
+    'Graphics::Primitive::Border' => '0',
+    'Graphics::Primitive::Brush' => '0',
+    'Graphics::Primitive::Canvas' => '0',
+    'Graphics::Primitive::Component' => '0',
+    'Graphics::Primitive::Container' => '0',
+    'Graphics::Primitive::Driver::Cairo' => '0',
+    'Graphics::Primitive::Font' => '0',
+    'Graphics::Primitive::Insets' => '0',
+    'Graphics::Primitive::Operation::Fill' => '0',
+    'Graphics::Primitive::Operation::Stroke' => '0',
+    'Graphics::Primitive::Oriented' => '0',
+    'Graphics::Primitive::Paint::Gradient::Linear' => '0',
+    'Graphics::Primitive::Paint::Gradient::Radial' => '0',
+    'Graphics::Primitive::Paint::Solid' => '0',
+    'Graphics::Primitive::Path' => '0',
+    'Graphics::Primitive::TextBox' => '0',
+    'Layout::Manager::Absolute' => '0',
+    'Layout::Manager::Axis' => '0',
+    'Layout::Manager::Compass' => '0',
+    'Layout::Manager::Flow' => '0',
+    'Layout::Manager::Grid' => '0',
+    'Layout::Manager::Single' => '0',
+    'List::Util' => '0',
+    'Math::Trig' => '0',
+    'Moose' => '0',
+    'Moose::Role' => '0',
+    'Moose::Util::TypeConstraints' => '0',
+    'Scalar::Util' => '0'
+  },
+  'VERSION' => '2.70',
+  'test' => {
+    'TESTS' => 't/*.t t/series/*.t t/xt/*.t'
+  }
+);
+
+
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
+  my $br = delete $WriteMakefileArgs{BUILD_REQUIRES};
+  my $pp = $WriteMakefileArgs{PREREQ_PM};
+  for my $mod ( keys %$br ) {
+    if ( exists $pp->{$mod} ) {
+      $pp->{$mod} = $br->{$mod} if $br->{$mod} > $pp->{$mod};
+    }
+    else {
+      $pp->{$mod} = $br->{$mod};
+    }
+  }
+}
+
+delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
+  unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
+
+WriteMakefile(%WriteMakefileArgs);
+
+
+

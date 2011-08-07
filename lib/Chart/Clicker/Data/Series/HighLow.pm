@@ -1,9 +1,15 @@
 package Chart::Clicker::Data::Series::HighLow;
+BEGIN {
+  $Chart::Clicker::Data::Series::HighLow::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Data::Series';
 
+# ABSTRACT: Series data with additional attributes for High-Low charts
+
 use List::Util qw(max min);
+
 
 sub _build_range {
     my ($self) = @_;
@@ -13,6 +19,7 @@ sub _build_range {
         upper => max(@{ $self->highs })
     );
 }
+
 
 has 'highs' => (
     traits => [ 'Array' ],
@@ -26,6 +33,7 @@ has 'highs' => (
     }
 );
 
+
 has 'lows' => (
     traits => [ 'Array' ],
     is => 'rw',
@@ -37,6 +45,7 @@ has 'lows' => (
         'get_low' => 'get'
     }
 );
+
 
 has 'opens' => (
     traits => [ 'Array' ],
@@ -55,12 +64,34 @@ __PACKAGE__->meta->make_immutable;
 no Moose;
 
 1;
-
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Data::Series::HighLow - Series data with additional attributes for High-Low charts
+
+=head1 VERSION
+
+version 2.70
+
+=head1 SYNOPSIS
+
+  use Chart::Clicker::Data::Series::HighLow;
+
+  my @keys = ();
+  my @values = ();
+  my @highs = ();
+  my @lows = ();
+  my @opens = ();
+
+  my $series = Chart::Clicker::Data::Series::HighLow->new({
+    keys    => \@keys,
+    values  => \@values,
+    highs   => \@highs,
+    lows    => \@lows,
+    opens   => \@opens
+  });
 
 =head1 DESCRIPTION
 
@@ -79,18 +110,6 @@ CandleStick renderer.  The general idea is:
    |
   --- <-- Low
 
-=head1 SYNOPSIS
-
-  use Chart::Clicker::Data::Series::HighLow;
-
-  my $series = Chart::Clicker::Data::Series::HighLow->new({
-    keys    => \@keys,
-    values  => \@values,
-    highs   => \@highs,
-    lows    => \@lows,
-    opens   => \@opens
-  });
-
 =head1 ATTRIBUTES
 
 =head2 highs
@@ -107,41 +126,37 @@ Set/Get the opens for this series.
 
 =head1 METHODS
 
-=head2 new
-
-Creates a new, empty Series::Size
-
 =head2 add_to_highs
 
 Adds a high to this series.
 
-=head2 add_to_lows
-
-Adds a high to this series.
-
-=head2 add_to_opens
-
-Adds an open to this series.
-
-=head2 get_high
+=head2 get_high ($index)
 
 Get a high by it's index.
-
-=head2 get_low
-
-Get a low by it's index.
-
-=head2 get_open
-
-Get an open by it's index.
 
 =head2 high_count
 
 Gets the count of sizes in this series.
 
+=head2 add_to_lows
+
+Adds a high to this series.
+
+=head2 get_low ($index)
+
+Get a low by it's index.
+
 =head2 low_count
 
 Gets the count of lows in this series.
+
+=head2 add_to_opens
+
+Adds an open to this series.
+
+=head2 get_open
+
+Get an open by it's index.
 
 =head2 open_count
 
@@ -151,9 +166,12 @@ Gets the count of opens in this series.
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 LICENSE
+=head1 COPYRIGHT AND LICENSE
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-1;
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+

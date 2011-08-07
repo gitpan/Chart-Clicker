@@ -1,29 +1,43 @@
 package Chart::Clicker::Renderer::StackedBar;
+BEGIN {
+  $Chart::Clicker::Renderer::StackedBar::VERSION = '2.70';
+}
 use Moose;
 
 extends 'Chart::Clicker::Renderer';
+
+# ABSTRACT: Stacked Bar renderer
 
 use Graphics::Primitive::Brush;
 use Graphics::Primitive::Paint::Solid;
 use Graphics::Primitive::Operation::Fill;
 use Graphics::Primitive::Operation::Stroke;
 
+
 has '+additive' => ( default => 1 );
+
+
 has 'bar_padding' => (
     is => 'rw',
     isa => 'Int',
     default => 0
 );
+
+
 has 'bar_width' => (
     is => 'rw',
     isa => 'Num',
     predicate => 'has_bar_width'
 );
+
+
 has 'brush' => (
     is => 'rw',
     isa => 'Graphics::Primitive::Brush',
     default => sub { Graphics::Primitive::Brush->new }
 );
+
+
 has 'opacity' => (
     is => 'rw',
     isa => 'Num',
@@ -86,23 +100,27 @@ override('finalize', sub {
     # Iterate over each key...
     for (my $i = 0; $i < scalar(@keys); $i++) {
 
+        # Mark the x, since it's the same for each Y value
+        my $x = $domain->mark($width, $keys[$i]);
+        my $accum = 0;
+
         # Get all the values from every dataset's series for each key
         my @values;
         foreach my $ds (@{ $dses }) {
-            push(@values, $ds->get_series_values($i));
+            push(@values, @{ $ds->get_series_values_for_key($keys[$i]) });
         }
-
-        # Mark the x, since it's the same for each Y value
-        my $x = $domain->mark($width, $keys[$i],);
-        my $accum = 0;
 
         my $val = 0;
         for my $j (0 .. $#values) {
             my $sval = $values[$j];
-            if(defined($sval)) {
-                next if $sval == $range->baseline; # no reason to draw anything if no value
-                $val += $sval;
-            }
+
+            # Skip this if there is no value for the specified key position
+            next if !defined($sval);
+
+            # Skip it if it's equal to our baseline, as there's no reason to
+            # draw anything if so
+            next if $sval == $range->baseline;
+            $val += $sval;
 
             my $y = $range->mark($height, $val);
             next unless defined($y);
@@ -148,24 +166,25 @@ no Moose;
 
 1;
 __END__
+=pod
 
 =head1 NAME
 
 Chart::Clicker::Renderer::StackedBar - Stacked Bar renderer
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-Chart::Clicker::Renderer::StackedBar renders a dataset as stacked bars.
-
-=begin HTML
-
-<p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bar/stacked-bar.png" width="500" height="250" alt="Stacked Bar Chart" /></p>
-
-=end HTML
+version 2.70
 
 =head1 SYNOPSIS
 
   my $br = Chart::Clicker::Renderer::Bar->new;
+
+=head1 DESCRIPTION
+
+Chart::Clicker::Renderer::StackedBar renders a dataset as stacked bars.
+
+=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bar/stacked-bar.png" width="500" height="250" alt="Stacked Bar Chart" /></p>
 
 =head1 ATTRIBUTES
 
@@ -187,19 +206,16 @@ A stroke to use on each bar.
 
 If true this value will be used when setting the opacity of the bar's fill.
 
-=head2 prepare
-
-Prepare the renderer
-
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-perl(1)
+This software is copyright (c) 2011 by Cold Hard Code, LLC.
 
-=head1 LICENSE
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-You can redistribute and/or modify this code under the same terms as Perl
-itself.
+=cut
+
