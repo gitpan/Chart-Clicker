@@ -1,6 +1,6 @@
 package Chart::Clicker::Data::DataSet;
 BEGIN {
-  $Chart::Clicker::Data::DataSet::VERSION = '2.70';
+  $Chart::Clicker::Data::DataSet::VERSION = '2.71';
 }
 use Moose;
 
@@ -137,7 +137,7 @@ Chart::Clicker::Data::DataSet - A collection of series
 
 =head1 VERSION
 
-version 2.70
+version 2.71
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::Grid;
 BEGIN {
-  $Chart::Clicker::Decoration::Grid::VERSION = '2.70';
+  $Chart::Clicker::Decoration::Grid::VERSION = '2.71';
 }
 use Moose;
 
@@ -138,7 +138,7 @@ Chart::Clicker::Decoration::Grid - Under-data grid
 
 =head1 VERSION
 
-version 2.70
+version 2.71
 
 =head1 DESCRIPTION
 

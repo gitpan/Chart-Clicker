@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::Legend::Tabular;
 BEGIN {
-  $Chart::Clicker::Decoration::Legend::Tabular::VERSION = '2.70';
+  $Chart::Clicker::Decoration::Legend::Tabular::VERSION = '2.71';
 }
 use Moose;
 
@@ -166,7 +166,7 @@ Chart::Clicker::Decoration::Legend::Tabular - Tabular version of Legend
 
 =head1 VERSION
 
-version 2.70
+version 2.71
 
 =head1 SYNOPSIS
 

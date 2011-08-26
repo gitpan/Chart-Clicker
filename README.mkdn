@@ -4,7 +4,7 @@ Chart::Clicker - Powerful, extensible charting.
 
 # VERSION
 
-version 2.70
+version 2.71
 
 # SYNOPSIS
 
@@ -87,7 +87,6 @@ shake off this simple method and build Series & DataSets explicitly.
   );
 
   my $ds = Chart::Clicker::Data::DataSet->new(series => [ $series ]);
- 
 
   $cc->add_to_datasets($ds);
 
@@ -109,15 +108,13 @@ context.
 
   my $context = Chart::Clicker::Context->new( name => 'sales' );
   $clicker->add_to_contexts($context);
-  
 
   $dataset->context('sales');
-  
 
   $clicker->add_to_datasets($dataset);
 
 New contexts provide a fresh domain and range axis and default to a Line
-renderer. 
+renderer.
 
 __Caveat__: Clicker expects that the default context (identified by the string
 "default") will always be present.  It is from this context that some of

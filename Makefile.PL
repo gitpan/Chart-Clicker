@@ -60,7 +60,7 @@ my %WriteMakefileArgs = (
     'Moose::Util::TypeConstraints' => '0',
     'Scalar::Util' => '0'
   },
-  'VERSION' => '2.70',
+  'VERSION' => '2.71',
   'test' => {
     'TESTS' => 't/*.t t/series/*.t t/xt/*.t'
   }

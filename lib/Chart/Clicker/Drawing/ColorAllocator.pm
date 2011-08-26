@@ -1,6 +1,6 @@
 package Chart::Clicker::Drawing::ColorAllocator;
 BEGIN {
-  $Chart::Clicker::Drawing::ColorAllocator::VERSION = '2.70';
+  $Chart::Clicker::Drawing::ColorAllocator::VERSION = '2.71';
 }
 use Moose;
 
@@ -138,7 +138,7 @@ Chart::Clicker::Drawing::ColorAllocator - Color picker
 
 =head1 VERSION
 
-version 2.70
+version 2.71
 
 =head1 SYNOPSIS
 
@@ -146,12 +146,12 @@ version 2.70
     use Chart::Clicker::Drawing::ColorAllocator;
 
     my $ca = Chart::Clicker::Drawing::ColorAllocator->new({
-        colors => (
+        colors => [
             Graphics::Color::RGB->new(
                 red => 1.0, green => 0, blue => 0, alpha => 1.0
             ),
             #...
-        )
+        ]
     });
 
     my $red = $ca->get(0);

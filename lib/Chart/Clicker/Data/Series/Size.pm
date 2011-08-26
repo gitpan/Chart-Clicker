@@ -1,6 +1,6 @@
 package Chart::Clicker::Data::Series::Size;
 BEGIN {
-  $Chart::Clicker::Data::Series::Size::VERSION = '2.70';
+  $Chart::Clicker::Data::Series::Size::VERSION = '2.71';
 }
 use Moose;
 
@@ -59,7 +59,7 @@ Chart::Clicker::Data::Series::Size - Chart data with additional attributes for S
 
 =head1 VERSION
 
-version 2.70
+version 2.71
 
 =head1 SYNOPSIS
 

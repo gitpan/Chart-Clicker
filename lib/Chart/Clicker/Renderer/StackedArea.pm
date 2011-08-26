@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::StackedArea;
 BEGIN {
-  $Chart::Clicker::Renderer::StackedArea::VERSION = '2.70';
+  $Chart::Clicker::Renderer::StackedArea::VERSION = '2.71';
 }
 use Moose;
 
@@ -148,7 +148,7 @@ Chart::Clicker::Renderer::StackedArea - Stacked Area renderer
 
 =head1 VERSION
 
-version 2.70
+version 2.71
 
 =head1 SYNOPSIS
 

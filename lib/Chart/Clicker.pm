@@ -1,6 +1,6 @@
 package Chart::Clicker;
 BEGIN {
-  $Chart::Clicker::VERSION = '2.70';
+  $Chart::Clicker::VERSION = '2.71';
 }
 use Moose;
 
@@ -523,7 +523,7 @@ Chart::Clicker - Powerful, extensible charting.
 
 =head1 VERSION
 
-version 2.70
+version 2.71
 
 =head1 SYNOPSIS
 
@@ -570,47 +570,47 @@ Clicker supports the following renderers:
 
 =item B<Line>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/line.png" width="500" height="250" alt="Line Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/line.png" width="500" height="250" alt="Line Chart" /></p>
 
 =item B<StackedLine>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/stacked-line.png" width="500" height="250" alt="Stacked Line Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/stacked-line.png" width="500" height="250" alt="Stacked Line Chart" /></p>
 
 =item B<Bar>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bar/bar.png" width="500" height="250" alt="Bar Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/bar.png" width="500" height="250" alt="Bar Chart" /></p>
 
 =item B<StackedBar>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bar/stacked-bar.png" width="500" height="250" alt="Stacked Bar Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/stacked-bar.png" width="500" height="250" alt="Stacked Bar Chart" /></p>
 
 =item B<Area>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/area/area.png" width="500" height="250" alt="Area Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/area.png" width="500" height="250" alt="Area Chart" /></p>
 
 =item B<StackedArea>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/area/stacked-area.png" width="500" height="250" alt="Stacked Area Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/stacked-area.png" width="500" height="250" alt="Stacked Area Chart" /></p>
 
 =item B<Bubble>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bubble/bubble.png" width="500" height="250" alt="Bubble Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/bubble.png" width="500" height="250" alt="Bubble Chart" /></p>
 
 =item B<CandleStick>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/candlestick/candlestick.png" width="500" height="250" alt="Candlestick Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/candlestick.png" width="500" height="250" alt="Candlestick Chart" /></p>
 
 =item B<Point>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/point/point.png" width="500" height="250" alt="Point Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/point.png" width="500" height="250" alt="Point Chart" /></p>
 
 =item B<Pie>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/pie/pie.png" width="300" height="250" alt="Pie Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/pie.png" width="300" height="250" alt="Pie Chart" /></p>
 
 =item B<PolarArea>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/polararea/polararea.png" width="300" height="250" alt="Polar Area Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/polararea.png" width="300" height="250" alt="Polar Area Chart" /></p>
 
 =back
 
@@ -642,7 +642,7 @@ shake off this simple method and build Series & DataSets explicitly.
   );
 
   my $ds = Chart::Clicker::Data::DataSet->new(series => [ $series ]);
- 
+
   $cc->add_to_datasets($ds);
 
 This used to be the only way to add data, but repeated requests to make the
@@ -663,13 +663,13 @@ context.
 
   my $context = Chart::Clicker::Context->new( name => 'sales' );
   $clicker->add_to_contexts($context);
-  
+
   $dataset->context('sales');
-  
+
   $clicker->add_to_datasets($dataset);
 
 New contexts provide a fresh domain and range axis and default to a Line
-renderer. 
+renderer.
 
 B<Caveat>: Clicker expects that the default context (identified by the string
 "default") will always be present.  It is from this context that some of
@@ -695,8 +695,6 @@ similar things, you can use:
 
 If you happen to be using Catalyst then take a look at
 L<Catalyst::View::Graphics::Primitive>.
-
-=cut
 
 =head1 ATTRIBUTES
 
