@@ -4,7 +4,7 @@ Chart::Clicker - Powerful, extensible charting.
 
 # VERSION
 
-version 2.71
+version 2.72
 
 # SYNOPSIS
 
@@ -136,7 +136,7 @@ similar things, you can use:
 
   # ... make your chart
   $cc->draw;
-  my $image_data = $cc->data;
+  my $image_data = $cc->rendered_data;
 
 If you happen to be using Catalyst then take a look at
 [Catalyst::View::Graphics::Primitive](http://search.cpan.org/perldoc?Catalyst::View::Graphics::Primitive).
@@ -287,6 +287,11 @@ Get a count of datasets.
 
 Get the dataset at the specified index.
 
+## rendered_data
+
+Returns the data for this chart as a scalar.  Suitable for 'streaming' to a
+client.
+
 ## add_to_over_decorations
 
 Add an over decoration to the list.
@@ -306,11 +311,6 @@ Add the specified context to the chart.
 ## add_subgraph
 
 Add a subgraph to this chart.
-
-## data
-
-Returns the data for this chart as a scalar.  Suitable for 'streaming' to a
-client.
 
 ## draw
 

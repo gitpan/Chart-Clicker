@@ -1,6 +1,6 @@
 package Chart::Clicker;
-BEGIN {
-  $Chart::Clicker::VERSION = '2.71';
+{
+  $Chart::Clicker::VERSION = '2.72';
 }
 use Moose;
 
@@ -239,7 +239,6 @@ sub add_subgraph {
     }
     push(@{$self->subgraphs}, $graph);
 }
-
 
 sub data {
     my ($self) = @_;
@@ -523,7 +522,7 @@ Chart::Clicker - Powerful, extensible charting.
 
 =head1 VERSION
 
-version 2.71
+version 2.72
 
 =head1 SYNOPSIS
 
@@ -691,7 +690,7 @@ similar things, you can use:
 
   # ... make your chart
   $cc->draw;
-  my $image_data = $cc->data;
+  my $image_data = $cc->rendered_data;
 
 If you happen to be using Catalyst then take a look at
 L<Catalyst::View::Graphics::Primitive>.
@@ -842,6 +841,11 @@ Get a count of datasets.
 
 Get the dataset at the specified index.
 
+=head2 rendered_data
+
+Returns the data for this chart as a scalar.  Suitable for 'streaming' to a
+client.
+
 =head2 add_to_over_decorations
 
 Add an over decoration to the list.
@@ -861,11 +865,6 @@ Add the specified context to the chart.
 =head2 add_subgraph
 
 Add a subgraph to this chart.
-
-=head2 data
-
-Returns the data for this chart as a scalar.  Suitable for 'streaming' to a
-client.
 
 =head2 draw
 

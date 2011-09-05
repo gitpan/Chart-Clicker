@@ -5,10 +5,12 @@ author:
 build_requires:
   Test::Exception: 0
   Test::More: 0
+  strict: 0
+  warnings: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.30
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.200007, CPAN::Meta::Converter version 2.110440'
+generated_by: 'Dist::Zilla version 4.300000, CPAN::Meta::Converter version 2.112150'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -52,6 +54,6 @@ requires:
   Moose::Util::TypeConstraints: 0
   Scalar::Util: 0
 resources:
-  homepage: http://github.com/gphat/chart-clicker
-  repository: http://github.com/gphat/chart-clicker
-version: 2.71
+  homepage: https://github.com/gphat/chart-clicker
+  repository: https://github.com/gphat/chart-clicker.git
+version: 2.72

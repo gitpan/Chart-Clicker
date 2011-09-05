@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Pie;
-BEGIN {
-  $Chart::Clicker::Renderer::Pie::VERSION = '2.71';
+{
+  $Chart::Clicker::Renderer::Pie::VERSION = '2.72';
 }
 use Moose;
 
@@ -180,7 +180,7 @@ Chart::Clicker::Renderer::Pie - Pie renderer
 
 =head1 VERSION
 
-version 2.71
+version 2.72
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package Chart::Clicker::Tutorial;
-BEGIN {
-  $Chart::Clicker::Tutorial::VERSION = '2.71';
+{
+  $Chart::Clicker::Tutorial::VERSION = '2.72';
 }
 
 # ABSTRACT: A Tutorial for using Chart::Clicker
@@ -16,7 +16,7 @@ Chart::Clicker::Tutorial - A Tutorial for using Chart::Clicker
 
 =head1 VERSION
 
-version 2.71
+version 2.72
 
 =head1 DESCRIPTION
 

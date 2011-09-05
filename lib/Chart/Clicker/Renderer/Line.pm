@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Line;
-BEGIN {
-  $Chart::Clicker::Renderer::Line::VERSION = '2.71';
+{
+  $Chart::Clicker::Renderer::Line::VERSION = '2.72';
 }
 use Moose;
 
@@ -157,7 +157,7 @@ Chart::Clicker::Renderer::Line - Line renderer
 
 =head1 VERSION
 
-version 2.71
+version 2.72
 
 =head1 SYNOPSIS
 

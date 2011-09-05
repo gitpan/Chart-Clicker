@@ -1,6 +1,6 @@
 package Chart::Clicker::Axis;
-BEGIN {
-  $Chart::Clicker::Axis::VERSION = '2.71';
+{
+  $Chart::Clicker::Axis::VERSION = '2.72';
 }
 use Moose;
 
@@ -521,7 +521,7 @@ Chart::Clicker::Axis - An X or Y Axis
 
 =head1 VERSION
 
-version 2.71
+version 2.72
 
 =head1 SYNOPSIS
 
