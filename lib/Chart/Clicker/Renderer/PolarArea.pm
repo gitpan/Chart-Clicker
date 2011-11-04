@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::PolarArea;
 {
-  $Chart::Clicker::Renderer::PolarArea::VERSION = '2.72';
+  $Chart::Clicker::Renderer::PolarArea::VERSION = '2.73';
 }
 use Moose;
 
@@ -183,7 +183,7 @@ Chart::Clicker::Renderer::PolarArea - Polar Area renderer
 
 =head1 VERSION
 
-version 2.72
+version 2.73
 
 =head1 SYNOPSIS
 
@@ -199,7 +199,7 @@ Chart::Clicker::Renderer::PolarArea renders each series as a slice of a pie.
 The values of the series determine the radius of each slice, with larger
 values making the slices longer.  The 360 degrees of pie is divided equally.
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/polararea/polararea.png" width="300" height="250" alt="Polar Area Chart" /></p>
+=for HTML <p><img src=http://gphat.github.com/chart-clicker/static/images/examples/polararea.png" width="300" height="250" alt="Polar Area Chart" /></p>
 
 =head1 ATTRIBUTES
 

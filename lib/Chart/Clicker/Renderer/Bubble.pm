@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Bubble;
 {
-  $Chart::Clicker::Renderer::Bubble::VERSION = '2.72';
+  $Chart::Clicker::Renderer::Bubble::VERSION = '2.73';
 }
 use Moose;
 
@@ -31,7 +31,7 @@ Chart::Clicker::Renderer::Bubble - Bubble render
 
 =head1 VERSION
 
-version 2.72
+version 2.73
 
 =head1 SYNOPSIS
 
@@ -50,7 +50,7 @@ the points' radiuses are determined by the size value of a Series::Size.
 Note: B<This renderer requires you to use a
 Chart::Clicker::Data::Series::Size>.
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bubble/bubble.png" width="500" height="250" alt="Bubble Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/bubble.png" width="500" height="250" alt="Bubble Chart" /></p>
 
 =head1 METHODS
 

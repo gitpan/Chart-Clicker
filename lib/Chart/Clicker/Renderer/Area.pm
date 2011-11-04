@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Area;
 {
-  $Chart::Clicker::Renderer::Area::VERSION = '2.72';
+  $Chart::Clicker::Renderer::Area::VERSION = '2.73';
 }
 use Moose;
 
@@ -148,7 +148,7 @@ Chart::Clicker::Renderer::Area - Area renderer
 
 =head1 VERSION
 
-version 2.72
+version 2.73
 
 =head1 SYNOPSIS
 
@@ -164,7 +164,7 @@ version 2.72
 Chart::Clicker::Renderer::Area renders a dataset as line-like polygons with
 their interior areas filled.
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/area/area.png" width="500" height="250" alt="Area Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/area.png" width="500" height="250" alt="Area Chart" /></p>
 
 =head1 ATTRIBUTES
 

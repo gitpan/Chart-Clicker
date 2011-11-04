@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::StackedArea;
 {
-  $Chart::Clicker::Renderer::StackedArea::VERSION = '2.72';
+  $Chart::Clicker::Renderer::StackedArea::VERSION = '2.73';
 }
 use Moose;
 
@@ -148,7 +148,7 @@ Chart::Clicker::Renderer::StackedArea - Stacked Area renderer
 
 =head1 VERSION
 
-version 2.72
+version 2.73
 
 =head1 SYNOPSIS
 
@@ -171,7 +171,7 @@ Note that series with varying keys (e.g. Series 1 has keys 1, 2, 3 but Series
 up, neither will the accumulation of area.  This may be addressed in the
 future.
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/area/stacked-area.png" width="500" height="250" alt="Stacked Area Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/stacked-area.png" width="500" height="250" alt="Stacked Area Chart" /></p>
 
 =head1 ATTRIBUTES
 

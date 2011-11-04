@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Line;
 {
-  $Chart::Clicker::Renderer::Line::VERSION = '2.72';
+  $Chart::Clicker::Renderer::Line::VERSION = '2.73';
 }
 use Moose;
 
@@ -157,7 +157,7 @@ Chart::Clicker::Renderer::Line - Line renderer
 
 =head1 VERSION
 
-version 2.72
+version 2.73
 
 =head1 SYNOPSIS
 
@@ -171,11 +171,11 @@ version 2.72
 
 Chart::Clicker::Renderer::Line renders a dataset as lines.
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/line.png" width="500" height="250" alt="Line Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/line.png" width="500" height="250" alt="Line Chart" /></p>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/line-shapes.png" width="500" height="250" alt="Line + Shape Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/line-shapes.png" width="500" height="250" alt="Line + Shape Chart" /></p>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/line/line-shapes-brushed.png" width="500" height="250" alt="Line + Shape (Brushed) Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/line-shapes-brushed.png" width="500" height="250" alt="Line + Shape (Brushed) Chart" /></p>
 
 =head1 ATTRIBUTES
 

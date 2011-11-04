@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::CandleStick;
 {
-  $Chart::Clicker::Renderer::CandleStick::VERSION = '2.72';
+  $Chart::Clicker::Renderer::CandleStick::VERSION = '2.73';
 }
 use Moose;
 
@@ -161,7 +161,7 @@ Chart::Clicker::Renderer::CandleStick - CandleStick renderer
 
 =head1 VERSION
 
-version 2.72
+version 2.73
 
 =head1 SYNOPSIS
 
@@ -172,7 +172,7 @@ version 2.72
 Chart::Clicker::Renderer::CandleStick renders a dataset as a candlestick style
 bar chart.
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/candlestick/candlestick.png" width="500" height="250" alt="Candlestick Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/candlestick.png" width="500" height="250" alt="Candlestick Chart" /></p>
 
 =head1 ATTRIBUTES
 

@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::OverAxis;
 {
-  $Chart::Clicker::Decoration::OverAxis::VERSION = '2.72';
+  $Chart::Clicker::Decoration::OverAxis::VERSION = '2.73';
 }
 use Moose;
 
@@ -151,12 +151,12 @@ Chart::Clicker::Decoration::OverAxis - An axis drawn over data
 
 =head1 VERSION
 
-version 2.72
+version 2.73
 
 =head1 DESCRIPTION
 
 An axis that is meant to be drawn "over" a chart.  You can find an example
-of an OverAxis at L<http://www.onemogin.com/clicker/images/overaxis.png>.
+of an OverAxis at L<http://gphat.github.com/chart-clicker/static/images/examples/overaxis.png>.
 
 =head1 ATTRIBUTES
 

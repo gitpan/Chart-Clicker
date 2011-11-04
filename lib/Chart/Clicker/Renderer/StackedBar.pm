@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::StackedBar;
 {
-  $Chart::Clicker::Renderer::StackedBar::VERSION = '2.72';
+  $Chart::Clicker::Renderer::StackedBar::VERSION = '2.73';
 }
 use Moose;
 
@@ -174,7 +174,7 @@ Chart::Clicker::Renderer::StackedBar - Stacked Bar renderer
 
 =head1 VERSION
 
-version 2.72
+version 2.73
 
 =head1 SYNOPSIS
 
@@ -184,7 +184,7 @@ version 2.72
 
 Chart::Clicker::Renderer::StackedBar renders a dataset as stacked bars.
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bar/stacked-bar.png" width="500" height="250" alt="Stacked Bar Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/stacked-bar.png" width="500" height="250" alt="Stacked Bar Chart" /></p>
 
 =head1 ATTRIBUTES
 

@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Bar;
 {
-  $Chart::Clicker::Renderer::Bar::VERSION = '2.72';
+  $Chart::Clicker::Renderer::Bar::VERSION = '2.73';
 }
 use Moose;
 
@@ -196,7 +196,7 @@ Chart::Clicker::Renderer::Bar - Bar renderer
 
 =head1 VERSION
 
-version 2.72
+version 2.73
 
 =head1 SYNOPSIS
 
@@ -212,9 +212,9 @@ If you'd like to render both "negative and positive" bars, look at
 L<Chart::Clicker::Axis>'s C<baseline> attribute.  Setting it will result in
 something like this:
 
-=for HTML <p><img src="http://www.onemogin.com.com/clicker/chart-clicker-examples/bar/bar-baseline.png" width="500" height="250" alt="Base (Baseline) Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/bar-baseline.png" width="500" height="250" alt="Base (Baseline) Chart" /></p>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/bar/bar.png" width="500" height="250" alt="Bar Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/bar.png" width="500" height="250" alt="Bar Chart" /></p>
 
 =head2 bar_padding
 

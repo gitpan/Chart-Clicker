@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Pie;
 {
-  $Chart::Clicker::Renderer::Pie::VERSION = '2.72';
+  $Chart::Clicker::Renderer::Pie::VERSION = '2.73';
 }
 use Moose;
 
@@ -180,7 +180,7 @@ Chart::Clicker::Renderer::Pie - Pie renderer
 
 =head1 VERSION
 
-version 2.72
+version 2.73
 
 =head1 SYNOPSIS
 
@@ -206,9 +206,9 @@ of like-named Series are totaled and keys are ignored.  So for a dataset like:
 The keys are discarded and a pie chart will be drawn with $series' slice at
 66% (1 + 2 + 3 = 6) and $series2's at 33% (1 + 1 + 1 = 3).
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/pie/pie.png" width="300" height="250" alt="Pie Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/pie.png" width="300" height="250" alt="Pie Chart" /></p>
 
-=for HTML <p><img src="http://www.onemogin.com/clicker/chart-clicker-examples/pie/pie-gradient.png" width="300" height="250" alt="Pie Chart" /></p>
+=for HTML <p><img src="http://gphat.github.com/chart-clicker/static/images/examples/pie-gradient.png" width="300" height="250" alt="Pie Chart" /></p>
 
 =head1 ATTRIBUTES
 
