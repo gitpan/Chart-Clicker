@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Bubble;
 {
-  $Chart::Clicker::Renderer::Bubble::VERSION = '2.73';
+  $Chart::Clicker::Renderer::Bubble::VERSION = '2.74';
 }
 use Moose;
 
@@ -31,14 +31,13 @@ Chart::Clicker::Renderer::Bubble - Bubble render
 
 =head1 VERSION
 
-version 2.73
+version 2.74
 
 =head1 SYNOPSIS
 
   my $pr = Chart::Clicker::Renderer::Bubble->new({
-    shape => Chart::Clicker::Shape::Arc->new({
-        angle1 => 0,
-        angle2 => 180,
+    shape => Geometry::Primitive::Circle->new({
+        radius => 3
     })
   });
 

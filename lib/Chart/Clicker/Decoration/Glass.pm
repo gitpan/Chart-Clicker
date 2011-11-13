@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::Glass;
 {
-  $Chart::Clicker::Decoration::Glass::VERSION = '2.73';
+  $Chart::Clicker::Decoration::Glass::VERSION = '2.74';
 }
 use Moose;
 
@@ -73,7 +73,7 @@ Chart::Clicker::Decoration::Glass - Under-chart gradient decoration
 
 =head1 VERSION
 
-version 2.73
+version 2.74
 
 =head1 DESCRIPTION
 

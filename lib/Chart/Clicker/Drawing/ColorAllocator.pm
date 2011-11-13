@@ -1,6 +1,6 @@
 package Chart::Clicker::Drawing::ColorAllocator;
 {
-  $Chart::Clicker::Drawing::ColorAllocator::VERSION = '2.73';
+  $Chart::Clicker::Drawing::ColorAllocator::VERSION = '2.74';
 }
 use Moose;
 
@@ -138,7 +138,7 @@ Chart::Clicker::Drawing::ColorAllocator - Color picker
 
 =head1 VERSION
 
-version 2.73
+version 2.74
 
 =head1 SYNOPSIS
 

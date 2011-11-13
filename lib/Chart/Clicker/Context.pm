@@ -1,6 +1,6 @@
 package Chart::Clicker::Context;
 {
-  $Chart::Clicker::Context::VERSION = '2.73';
+  $Chart::Clicker::Context::VERSION = '2.74';
 }
 use Moose;
 
@@ -83,7 +83,7 @@ Chart::Clicker::Context - A rendering context: Axes, Markers and a Renderer
 
 =head1 VERSION
 
-version 2.73
+version 2.74
 
 =head1 SYNOPSIS
 
