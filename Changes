@@ -1,5 +1,8 @@
 Revision history for Perl extension Chart::Clicker.
 
+2.75 Dec 5 2011
+  - Add Graphics::Primitive::Cairo dep (thanks TEEJAY)
+
 2.74 Nov 13 2011
   - POD fixes
 
