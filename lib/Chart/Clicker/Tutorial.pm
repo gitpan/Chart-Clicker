@@ -1,6 +1,6 @@
 package Chart::Clicker::Tutorial;
 {
-  $Chart::Clicker::Tutorial::VERSION = '2.75';
+  $Chart::Clicker::Tutorial::VERSION = '2.76';
 }
 
 # ABSTRACT: A Tutorial for using Chart::Clicker
@@ -16,7 +16,7 @@ Chart::Clicker::Tutorial - A Tutorial for using Chart::Clicker
 
 =head1 VERSION
 
-version 2.75
+version 2.76
 
 =head1 DESCRIPTION
 
@@ -193,7 +193,7 @@ This document aims to provide a tutorial for using Chart::Clicker.
   my $chart = Chart::Clicker->new;
 
   # a sprintf format to have 3 decimal places showing on the Y-Axis
-  $chart->get_context('default')->range_axis->format('%.3f')
+  $chart->get_context('default')->range_axis->format('%.3f');
 
 =begin :postlude
 

@@ -1,6 +1,6 @@
 package Chart::Clicker::Data::Series;
 {
-  $Chart::Clicker::Data::Series::VERSION = '2.75';
+  $Chart::Clicker::Data::Series::VERSION = '2.76';
 }
 use Moose;
 
@@ -123,7 +123,7 @@ Chart::Clicker::Data::Series - A series of key, value pairs representing chart d
 
 =head1 VERSION
 
-version 2.75
+version 2.76
 
 =head1 SYNOPSIS
 
