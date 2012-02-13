@@ -1,6 +1,6 @@
 package Chart::Clicker::Axis;
 {
-  $Chart::Clicker::Axis::VERSION = '2.76';
+  $Chart::Clicker::Axis::VERSION = '2.77';
 }
 use Moose;
 
@@ -55,7 +55,7 @@ has '+color' => (
 );
 
 
-has 'format' => ( is => 'rw', isa => 'Str|CodeRef' );
+has 'format' => ( is => 'rw', isa => 'Str|CodeRef', default => '%s' );
 
 
 has 'fudge_amount' => ( is => 'rw', isa => 'Num', default => 0 );
@@ -521,7 +521,7 @@ Chart::Clicker::Axis - An X or Y Axis
 
 =head1 VERSION
 
-version 2.76
+version 2.77
 
 =head1 SYNOPSIS
 
@@ -530,7 +530,7 @@ version 2.76
   use Graphics::Primitive::Brush;
 
   my $axis = Chart::Clicker::Axis->new({
-    font  => Graphics::Primitive::Font->new,
+    label_font  => Graphics::Primitive::Font->new,
     orientation => 'vertical',
     position => 'left',
     brush => Graphics::Primitive::Brush->new,
@@ -704,7 +704,7 @@ Cory G Watson <gphat@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Cold Hard Code, LLC.
+This software is copyright (c) 2012 by Cold Hard Code, LLC.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
