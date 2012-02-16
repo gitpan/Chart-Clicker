@@ -1,6 +1,6 @@
 package Chart::Clicker::Context;
 {
-  $Chart::Clicker::Context::VERSION = '2.77';
+  $Chart::Clicker::Context::VERSION = '2.78';
 }
 use Moose;
 
@@ -83,7 +83,7 @@ Chart::Clicker::Context - A rendering context: Axes, Markers and a Renderer
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 SYNOPSIS
 
@@ -109,7 +109,7 @@ Set/get this context's renderer
 
 =head2 domain_axis
 
-Set/get this context's domain axis
+Set/get this context's domain L<Axis|Chart::Clicker::Axis>.
 
 =head2 markers
 
@@ -121,7 +121,7 @@ Set/get this context's name
 
 =head2 range_axis
 
-Set/get this context's range axis
+Set/get this context's range L<Axis|Chart::Clicker::Axis>.
 
 =head1 METHODS
 

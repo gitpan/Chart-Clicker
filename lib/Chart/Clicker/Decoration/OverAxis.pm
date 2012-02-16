@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::OverAxis;
 {
-  $Chart::Clicker::Decoration::OverAxis::VERSION = '2.77';
+  $Chart::Clicker::Decoration::OverAxis::VERSION = '2.78';
 }
 use Moose;
 
@@ -151,7 +151,7 @@ Chart::Clicker::Decoration::OverAxis - An axis drawn over data
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 DESCRIPTION
 
@@ -166,11 +166,11 @@ Set/Get the height of the OverAxis that will be drawn.
 
 =head2 background_color
 
-Set/Get the background color for this OverAxis.
+Set/Get the background L<color|Graphics::Color::RGB> for this OverAxis.
 
 =head2 border_color
 
-Set/Get the border color for this OverAxis.
+Set/Get the border L<color|Graphics::Color::RGB> for this OverAxis.
 
 =head2 border_width
 
@@ -182,7 +182,7 @@ Set/Get the context that this OverAxis should use.
 
 =head2 font
 
-The font to use for the OverAxis.
+The L<font|Graphics::Primitive::Font> to use for the OverAxis.
 
 =head2 layout_manager
 
@@ -191,7 +191,7 @@ L<Layout::Manager::Compass>.
 
 =head2 text_color
 
-Set/Get the color of the text labels dawn for the ticks.
+Set/Get the L<color|Graphics::Color::RGB> of the text labels dawn for the ticks.
 
 =head1 AUTHOR
 

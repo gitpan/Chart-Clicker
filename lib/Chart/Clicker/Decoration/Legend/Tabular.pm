@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::Legend::Tabular;
 {
-  $Chart::Clicker::Decoration::Legend::Tabular::VERSION = '2.77';
+  $Chart::Clicker::Decoration::Legend::Tabular::VERSION = '2.78';
 }
 use Moose;
 
@@ -166,7 +166,7 @@ Chart::Clicker::Decoration::Legend::Tabular - Tabular version of Legend
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 SYNOPSIS
 
@@ -206,11 +206,11 @@ elements in each of C<data>'s arrayrefs.
 
 =head2 border
 
-Set/Get this Legend's border.
+Set/Get this Legend's L<border|Graphics::Primitive::Border>.
 
 =head2 color
 
-Set/Get the color to use as the foreground for the legend.
+Set/Get the L<color|Graphics::Color::RGB> to use as the foreground for the legend.
 
 =head2 data
 
@@ -219,7 +219,7 @@ one inner arrayref for every series charted.
 
 =head2 font
 
-Set/Get the font used for this legend's items.
+Set/Get the L<font|Graphics::Primitive::Font> used for this legend's items.
 
 =head2 header
 
@@ -231,7 +231,7 @@ Set/Get this Legend's insets.
 
 =head2 item_padding
 
-Set/Get the padding for this legend's items.
+Set/Get the L<padding|Graphics::Primitive::Insets> for this legend's items.
 
 =head1 METHODS
 

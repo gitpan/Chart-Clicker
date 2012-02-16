@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Area;
 {
-  $Chart::Clicker::Renderer::Area::VERSION = '2.77';
+  $Chart::Clicker::Renderer::Area::VERSION = '2.78';
 }
 use Moose;
 
@@ -148,7 +148,7 @@ Chart::Clicker::Renderer::Area - Area renderer
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 SYNOPSIS
 
@@ -170,7 +170,7 @@ their interior areas filled.
 
 =head2 brush
 
-Set/Get the brush that informs the line surrounding the area renders
+Set/Get the L<brush|Graphics::Primitive::Brush> that informs the line surrounding the area renders
 individual segments.
 
 =head2 fade

@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Point;
 {
-  $Chart::Clicker::Renderer::Point::VERSION = '2.77';
+  $Chart::Clicker::Renderer::Point::VERSION = '2.78';
 }
 use Moose;
 
@@ -107,7 +107,7 @@ Chart::Clicker::Renderer::Point - Point renderer
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 SYNOPSIS
 
@@ -129,12 +129,12 @@ Chart::Clicker::Renderer::Point renders a dataset as points.
 
 =head2 shape
 
-Specify the shape to be used at each point.  Defaults to 360 degree arc with
+Specify the L<shape|Geometry::Primitive::Shape> to be used at each point.  Defaults to 360 degree arc with
 a radius of 3.
 
 =head2 shape_brush
 
-Optionally provide a brush with with to stroke each point.
+Optionally provide a L<brush|Graphics::Primitive::Brush> with with to stroke each point.
 
 =head1 METHODS
 

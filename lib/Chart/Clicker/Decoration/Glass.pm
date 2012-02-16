@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::Glass;
 {
-  $Chart::Clicker::Decoration::Glass::VERSION = '2.77';
+  $Chart::Clicker::Decoration::Glass::VERSION = '2.78';
 }
 use Moose;
 
@@ -73,7 +73,7 @@ Chart::Clicker::Decoration::Glass - Under-chart gradient decoration
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 DESCRIPTION
 
@@ -83,11 +83,11 @@ A glass-like decoration.
 
 =head2 background_color
 
-Set/Get the background color for this glass.
+Set/Get the background L<color|Graphics::Color::RGB> for this glass.
 
 =head2 glare_color
 
-Set/Get the glare color for this glass.
+Set/Get the glare L<color|Graphics::Color::RGB> for this glass.
 
 =head1 AUTHOR
 

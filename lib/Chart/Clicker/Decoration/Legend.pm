@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::Legend;
 {
-  $Chart::Clicker::Decoration::Legend::VERSION = '2.77';
+  $Chart::Clicker::Decoration::Legend::VERSION = '2.78';
 }
 use Moose;
 
@@ -107,7 +107,7 @@ Chart::Clicker::Decoration::Legend - Series name, color key
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 DESCRIPTION
 
@@ -117,19 +117,19 @@ Chart::Clicker::Decoration::Legend draws a legend on a Chart.
 
 =head2 border
 
-Set/Get this Legend's border.
+Set/Get this Legend's L<border|Graphics::Primitive::Border>.
 
 =head2 font
 
-Set/Get the font used for this legend's items.
+Set/Get the L<font|Graphics::Primitive::Font> used for this legend's items.
 
 =head2 insets
 
-Set/Get this Legend's insets.
+Set/Get this Legend's L<insets|Graphics::Primitive::Insets>.
 
 =head2 item_padding
 
-Set/Get the padding for this legend's items.
+Set/Get the L<padding|Graphics::Primitive::Insets> for this legend's items.
 
 =head2 layout_manager
 

@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Bubble;
 {
-  $Chart::Clicker::Renderer::Bubble::VERSION = '2.77';
+  $Chart::Clicker::Renderer::Bubble::VERSION = '2.78';
 }
 use Moose;
 
@@ -31,7 +31,7 @@ Chart::Clicker::Renderer::Bubble - Bubble render
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 SYNOPSIS
 

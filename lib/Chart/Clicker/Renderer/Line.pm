@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Line;
 {
-  $Chart::Clicker::Renderer::Line::VERSION = '2.77';
+  $Chart::Clicker::Renderer::Line::VERSION = '2.78';
 }
 use Moose;
 
@@ -157,7 +157,7 @@ Chart::Clicker::Renderer::Line - Line renderer
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 SYNOPSIS
 
@@ -186,16 +186,16 @@ drawn below it.
 
 =head2 brush
 
-Set/Get a Brush to be used for the lines.
+Set/Get a L<brush|Graphics::Primitive::Brush> to be used for the lines.
 
 =head2 shape
 
-Set a shape object to draw at each of the data points.  Adding a shape results
+Set a L<shape|Geometry::Primitive::Shape> object to draw at each of the data points.  Adding a shape results
 in:
 
 =head2 shape_brush
 
-Set/Get the Brush to be used on the shapes at each point.  If no shape_brush
+Set/Get the L<brush|Graphics::Primitive::Brush> to be used on the shapes at each point.  If no shape_brush
 is provided, then the shapes will be filled.  The brush allows you to draw a
 "halo" around each shape.  This sometimes help to separate the points from the
 lines and make them more distinct.

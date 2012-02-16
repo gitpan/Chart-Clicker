@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::Grid;
 {
-  $Chart::Clicker::Decoration::Grid::VERSION = '2.77';
+  $Chart::Clicker::Decoration::Grid::VERSION = '2.78';
 }
 use Moose;
 
@@ -138,7 +138,7 @@ Chart::Clicker::Decoration::Grid - Under-data grid
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 DESCRIPTION
 
@@ -148,23 +148,23 @@ Generates a collection of Markers for use as a background.
 
 =head2 background_color
 
-Set/Get the background_color for this Grid.
+Set/Get the background L<color|Graphics::Color::RGB> for this Grid.
 
 =head2 border
 
-Set/Get the border for this Grid.
+Set/Get the L<border|Graphics::Primitive::Border> for this Grid.
 
 =head2 color
 
-Set/Get the color for this Grid.
+Set/Get the L<color|Graphics::Color::RGB> for this Grid.
 
 =head2 domain_brush
 
-Set/Get the brush for inking the domain markers.
+Set/Get the L<brush|Graphics::Primitive::Brush> for inking the domain markers.
 
 =head2 range_brush
 
-Set/Get the brush for inking the range markers.
+Set/Get the L<brush|Graphics::Primitive::Brush> for inking the range markers.
 
 =head2 show_domain
 

@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::PolarArea;
 {
-  $Chart::Clicker::Renderer::PolarArea::VERSION = '2.77';
+  $Chart::Clicker::Renderer::PolarArea::VERSION = '2.78';
 }
 use Moose;
 
@@ -183,7 +183,7 @@ Chart::Clicker::Renderer::PolarArea - Polar Area renderer
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 SYNOPSIS
 
@@ -205,11 +205,11 @@ values making the slices longer.  The 360 degrees of pie is divided equally.
 
 =head2 border_color
 
-Set/Get the Color to use for the border.
+Set/Get the L<color|Graphics::Color::RGB> to use for the border.
 
 =head2 brush
 
-Set/Get a Brush to be used for the polar area's borders, which are around
+Set/Get a L<brush|Graphics::Primitive::Brush> to be used for the polar area's borders, which are around
 each slice.
 
 =head1 AUTHOR

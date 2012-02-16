@@ -1,6 +1,6 @@
 package Chart::Clicker::Data::DataSet;
 {
-  $Chart::Clicker::Data::DataSet::VERSION = '2.77';
+  $Chart::Clicker::Data::DataSet::VERSION = '2.78';
 }
 use Moose;
 
@@ -137,7 +137,7 @@ Chart::Clicker::Data::DataSet - A collection of series
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 SYNOPSIS
 
@@ -174,11 +174,11 @@ Set/Get the context this DataSet will be charted under.
 
 =head2 domain
 
-Get the Range for the domain values
+Get the L<Range|Chart::Clicker::Data::Range> for the domain values
 
 =head2 range
 
-Get the Range for the... range values...
+Get the L<Range|Chart::Clicker::Data::Range> for the... range values...
 
 =head2 series
 

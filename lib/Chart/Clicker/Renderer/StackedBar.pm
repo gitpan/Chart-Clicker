@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::StackedBar;
 {
-  $Chart::Clicker::Renderer::StackedBar::VERSION = '2.77';
+  $Chart::Clicker::Renderer::StackedBar::VERSION = '2.78';
 }
 use Moose;
 
@@ -174,7 +174,7 @@ Chart::Clicker::Renderer::StackedBar - Stacked Bar renderer
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 SYNOPSIS
 
@@ -200,7 +200,7 @@ bars.  Be careful using this as it can making things look terrible.
 
 =head2 brush
 
-A stroke to use on each bar.
+A L<brush|Graphics::Primitive::Brush> to stroke on each bar.
 
 =head2 opacity
 

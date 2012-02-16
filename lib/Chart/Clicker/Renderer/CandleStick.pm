@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::CandleStick;
 {
-  $Chart::Clicker::Renderer::CandleStick::VERSION = '2.77';
+  $Chart::Clicker::Renderer::CandleStick::VERSION = '2.78';
 }
 use Moose;
 
@@ -161,7 +161,7 @@ Chart::Clicker::Renderer::CandleStick - CandleStick renderer
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 SYNOPSIS
 
@@ -183,7 +183,7 @@ on each side.
 
 =head2 brush
 
-Set/Get the Brush to use around each bar and on each line.
+Set/Get the L<brush|Graphics::Primitive::Brush> to use around each bar and on each line.
 
 =head1 AUTHOR
 

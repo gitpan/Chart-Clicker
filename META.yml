@@ -56,4 +56,4 @@ requires:
 resources:
   homepage: https://github.com/gphat/chart-clicker
   repository: https://github.com/gphat/chart-clicker.git
-version: 2.77
+version: 2.78

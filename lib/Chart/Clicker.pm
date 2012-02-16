@@ -1,6 +1,6 @@
 package Chart::Clicker;
 {
-  $Chart::Clicker::VERSION = '2.77';
+  $Chart::Clicker::VERSION = '2.78';
 }
 use Moose;
 
@@ -522,7 +522,7 @@ Chart::Clicker - Powerful, extensible charting.
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 SYNOPSIS
 
@@ -699,20 +699,19 @@ L<Catalyst::View::Graphics::Primitive>.
 
 =head2 background_color
 
-Set/Get the background color.  Expects a L<Graphics::Color> object.  Defaults
-to white.
+Set/Get the background L<color|Graphics::Color::RGB>. Defaults to white.
 
 =head2 border
 
-Set/Get the border.  Expects a L<Graphics::Primitive::Border>.
+Set/Get the L<border|Graphics::Primitive::Border>.
 
 =head2 color_allocator
 
-Set/Get the color_allocator for this chart.
+Set/Get the L<color_allocator|Chart::Clicker::Drawing::ColorAllocator> for this chart.
 
 =head2 contexts
 
-Set/Get the contexts for this chart.
+Set/Get the L<contexts|Chart::Clicker::Context> for this chart.
 
 =head2 datasets
 
@@ -720,7 +719,7 @@ Get/Set the datasets for this chart.
 
 =head2 driver
 
-Set/Get the driver used to render this Chart. Defautls to
+Set/Get the L<driver|Graphics::Primitive::Driver> used to render this Chart. Defaults to
 L<Graphics::Primitive::Driver::Cairo>.
 
 =head2 format
@@ -744,7 +743,7 @@ Set/Get the layout manager.  Defaults to L<Layout::Manager::Compass>.
 
 =head2 legend
 
-Set/Get the legend that will be used with this chart.
+Set/Get the L<legend|Chart::Clicker::Decoration::Legend> that will be used with this chart.
 
 =head2 legend_position
 
@@ -753,7 +752,7 @@ west or center as required by L<Layout::Manager::Compass>.
 
 =head2 marker_overlay
 
-Set/Get the marker overlay object that will be used if this chart
+Set/Get the L<marker overlay|Chart::Clicker::Decoration::MarkerOverlay> object that will be used if this chart
 has markers.  This is lazily constructed to save time.
 
 =head2 over_decorations
@@ -763,12 +762,12 @@ chart.  This is an advanced feature.  See C<overaxis-bar.pl> in the examples.
 
 =head2 padding
 
-Set/Get the padding.  Expects a L<Graphics::Primitive::Insets> object.  Defaults
+Set/Get the L<padding|Graphics::Primitive::Insets>. Defaults
 to 3px on all sides.
 
 =head2 plot
 
-Set/Get the Plot on which things are drawn.
+Set/Get the L<plot|Chart::Clicker::Decoration::Plot> on which things are drawn.
 
 =head2 subgraphs
 

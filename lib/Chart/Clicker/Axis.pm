@@ -1,6 +1,6 @@
 package Chart::Clicker::Axis;
 {
-  $Chart::Clicker::Axis::VERSION = '2.77';
+  $Chart::Clicker::Axis::VERSION = '2.78';
 }
 use Moose;
 
@@ -262,15 +262,20 @@ override('prepare', sub {
     my $label_height = 0;
 
     if ($self->label) {
-
         my $label = Graphics::Primitive::TextBox->new(
             # angle => $angle,
             color => $self->label_color,
             name => 'label',
             font => $self->label_font,
             text => $self->label,
-            width => $self->height
+            width => $self->height,
+            horizontal_align => 'center'
         );
+        $label->name('label');
+        $label->border->width(1);
+        use Graphics::Color::RGB;
+        $label->border->color(Graphics::Color::RGB->new(r => 0, g => 0, b => 0));
+        
 
         if($self->is_vertical) {
             if ($self->is_left) {
@@ -521,7 +526,7 @@ Chart::Clicker::Axis - An X or Y Axis
 
 =head1 VERSION
 
-version 2.77
+version 2.78
 
 =head1 SYNOPSIS
 
@@ -604,11 +609,11 @@ The label of the axis.
 
 =head2 label_color
 
-The color of the Axis' labels.
+The color of the Axis' labels. Expects a L<Graphics::Color::RGB> object.
 
 =head2 label_font
 
-The font used for the axis' label.
+The font used for the axis' label. Expects a L<Graphics::Primitive::Font> object.
 
 =head2 layout_manager
 
@@ -624,7 +629,11 @@ The position of the axis on the chart.
 
 =head2 range
 
-The Range for this axis.
+The Range for this axis. Expects a L<Chart::Clicker::Data::Range> object.
+You may use this to explicitly set an upper and lower bound for the chart:
+
+  $axis->range->max(1000);
+  $axis->range->min(1);
 
 =head2 show_ticks
 
@@ -654,11 +663,11 @@ specified will be completely ignored.
 
 =head2 tick_font
 
-The font used for the axis' ticks.
+The font used for the axis' ticks. Expects a L<Graphics::Primitive::Font> object.
 
 =head2 tick_label_color
 
-The color of the tick labels.
+The color of the tick labels. Expects a L<Graphics::Color::RGB> object.
 
 =head2 tick_labels
 

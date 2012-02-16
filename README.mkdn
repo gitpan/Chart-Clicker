@@ -4,7 +4,7 @@ Chart::Clicker - Powerful, extensible charting.
 
 # VERSION
 
-version 2.77
+version 2.78
 
 # SYNOPSIS
 
@@ -145,20 +145,19 @@ If you happen to be using Catalyst then take a look at
 
 ## background_color
 
-Set/Get the background color.  Expects a [Graphics::Color](http://search.cpan.org/perldoc?Graphics::Color) object.  Defaults
-to white.
+Set/Get the background [color](http://search.cpan.org/perldoc?Graphics::Color::RGB). Defaults to white.
 
 ## border
 
-Set/Get the border.  Expects a [Graphics::Primitive::Border](http://search.cpan.org/perldoc?Graphics::Primitive::Border).
+Set/Get the [border](http://search.cpan.org/perldoc?Graphics::Primitive::Border).
 
 ## color_allocator
 
-Set/Get the color_allocator for this chart.
+Set/Get the [color_allocator](http://search.cpan.org/perldoc?Chart::Clicker::Drawing::ColorAllocator) for this chart.
 
 ## contexts
 
-Set/Get the contexts for this chart.
+Set/Get the [contexts](http://search.cpan.org/perldoc?Chart::Clicker::Context) for this chart.
 
 ## datasets
 
@@ -166,7 +165,7 @@ Get/Set the datasets for this chart.
 
 ## driver
 
-Set/Get the driver used to render this Chart. Defautls to
+Set/Get the [driver](http://search.cpan.org/perldoc?Graphics::Primitive::Driver) used to render this Chart. Defaults to
 [Graphics::Primitive::Driver::Cairo](http://search.cpan.org/perldoc?Graphics::Primitive::Driver::Cairo).
 
 ## format
@@ -190,7 +189,7 @@ Set/Get the layout manager.  Defaults to [Layout::Manager::Compass](http://searc
 
 ## legend
 
-Set/Get the legend that will be used with this chart.
+Set/Get the [legend](http://search.cpan.org/perldoc?Chart::Clicker::Decoration::Legend) that will be used with this chart.
 
 ## legend_position
 
@@ -199,7 +198,7 @@ west or center as required by [Layout::Manager::Compass](http://search.cpan.org/
 
 ## marker_overlay
 
-Set/Get the marker overlay object that will be used if this chart
+Set/Get the [marker overlay](http://search.cpan.org/perldoc?Chart::Clicker::Decoration::MarkerOverlay) object that will be used if this chart
 has markers.  This is lazily constructed to save time.
 
 ## over_decorations
@@ -209,12 +208,12 @@ chart.  This is an advanced feature.  See `overaxis-bar.pl` in the examples.
 
 ## padding
 
-Set/Get the padding.  Expects a [Graphics::Primitive::Insets](http://search.cpan.org/perldoc?Graphics::Primitive::Insets) object.  Defaults
+Set/Get the [padding](http://search.cpan.org/perldoc?Graphics::Primitive::Insets). Defaults
 to 3px on all sides.
 
 ## plot
 
-Set/Get the Plot on which things are drawn.
+Set/Get the [plot](http://search.cpan.org/perldoc?Chart::Clicker::Decoration::Plot) on which things are drawn.
 
 ## subgraphs
 
