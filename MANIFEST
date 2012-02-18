@@ -28,8 +28,6 @@ example/stackedbar.pl
 example/tabularlegend.pl
 example/tufte-whitegrid.pl
 example/very-simple.pl
-foo.html
-foo.png
 lib/Chart/Clicker.pm
 lib/Chart/Clicker/Axis.pm
 lib/Chart/Clicker/Axis/DateTime.pm

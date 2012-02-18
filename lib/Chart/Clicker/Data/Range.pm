@@ -1,6 +1,6 @@
 package Chart::Clicker::Data::Range;
 {
-  $Chart::Clicker::Data::Range::VERSION = '2.78';
+  $Chart::Clicker::Data::Range::VERSION = '2.79';
 }
 use Moose;
 
@@ -131,7 +131,7 @@ Chart::Clicker::Data::Range - A range of Data
 
 =head1 VERSION
 
-version 2.78
+version 2.79
 
 =head1 SYNOPSIS
 
