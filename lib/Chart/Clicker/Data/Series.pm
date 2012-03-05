@@ -1,6 +1,6 @@
 package Chart::Clicker::Data::Series;
 {
-  $Chart::Clicker::Data::Series::VERSION = '2.79';
+  $Chart::Clicker::Data::Series::VERSION = '2.80';
 }
 use Moose;
 
@@ -123,7 +123,7 @@ Chart::Clicker::Data::Series - A series of key, value pairs representing chart d
 
 =head1 VERSION
 
-version 2.79
+version 2.80
 
 =head1 SYNOPSIS
 
@@ -159,6 +159,9 @@ Chart::Clicker::Data::Series represents a series of values to be charted.
 Despite the name (keys and values) it is expected that all keys and values
 will be numeric.  Values is pretty obvious, but it is important that keys
 also be numeric, as otherwise we'd have no idea how to order the data.
+
+If you want to use text labels for your domain's see L<Chart::Clicker::Axis>'s
+L<tick_labels> method.
 
 =head1 ATTRIBUTES
 

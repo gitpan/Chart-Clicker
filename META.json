@@ -4,7 +4,7 @@
       "Cory G Watson <gphat@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.300006, CPAN::Meta::Converter version 2.113640",
+   "generated_by" : "Dist::Zilla version 4.300009, CPAN::Meta::Converter version 2.120630",
    "license" : [
       "perl_5"
    ],
@@ -21,55 +21,58 @@
       },
       "runtime" : {
          "requires" : {
-            "Carp" : 0,
-            "Color::Scheme" : 0,
-            "DateTime" : 0,
-            "DateTime::Set" : 0,
-            "Geometry::Primitive::Arc" : 0,
-            "Geometry::Primitive::Circle" : 0,
-            "Geometry::Primitive::Point" : 0,
-            "Graphics::Color::RGB" : 0,
-            "Graphics::Primitive::Border" : 0,
-            "Graphics::Primitive::Brush" : 0,
-            "Graphics::Primitive::Canvas" : 0,
-            "Graphics::Primitive::Component" : 0,
-            "Graphics::Primitive::Container" : 0,
-            "Graphics::Primitive::Driver::Cairo" : 0,
-            "Graphics::Primitive::Font" : 0,
-            "Graphics::Primitive::Insets" : 0,
-            "Graphics::Primitive::Operation::Fill" : 0,
-            "Graphics::Primitive::Operation::Stroke" : 0,
-            "Graphics::Primitive::Oriented" : 0,
-            "Graphics::Primitive::Paint::Gradient::Linear" : 0,
-            "Graphics::Primitive::Paint::Gradient::Radial" : 0,
-            "Graphics::Primitive::Paint::Solid" : 0,
-            "Graphics::Primitive::Path" : 0,
-            "Graphics::Primitive::TextBox" : 0,
-            "Layout::Manager::Absolute" : 0,
-            "Layout::Manager::Axis" : 0,
-            "Layout::Manager::Compass" : 0,
-            "Layout::Manager::Flow" : 0,
-            "Layout::Manager::Grid" : 0,
-            "Layout::Manager::Single" : 0,
-            "List::Util" : 0,
-            "Math::Trig" : 0,
-            "Moose" : 0,
-            "Moose::Role" : 0,
-            "Moose::Util::TypeConstraints" : 0,
-            "Scalar::Util" : 0
+            "Carp" : "0",
+            "Color::Scheme" : "0",
+            "DateTime" : "0",
+            "DateTime::Set" : "0",
+            "Geometry::Primitive::Arc" : "0",
+            "Geometry::Primitive::Circle" : "0",
+            "Geometry::Primitive::Point" : "0",
+            "Graphics::Color::RGB" : "0",
+            "Graphics::Primitive::Border" : "0",
+            "Graphics::Primitive::Brush" : "0",
+            "Graphics::Primitive::Canvas" : "0",
+            "Graphics::Primitive::Component" : "0",
+            "Graphics::Primitive::Container" : "0",
+            "Graphics::Primitive::Driver::Cairo" : "0",
+            "Graphics::Primitive::Font" : "0",
+            "Graphics::Primitive::Insets" : "0",
+            "Graphics::Primitive::Operation::Fill" : "0",
+            "Graphics::Primitive::Operation::Stroke" : "0",
+            "Graphics::Primitive::Oriented" : "0",
+            "Graphics::Primitive::Paint::Gradient::Linear" : "0",
+            "Graphics::Primitive::Paint::Gradient::Radial" : "0",
+            "Graphics::Primitive::Paint::Solid" : "0",
+            "Graphics::Primitive::Path" : "0",
+            "Graphics::Primitive::TextBox" : "0",
+            "Layout::Manager::Absolute" : "0",
+            "Layout::Manager::Axis" : "0",
+            "Layout::Manager::Compass" : "0",
+            "Layout::Manager::Flow" : "0",
+            "Layout::Manager::Grid" : "0",
+            "Layout::Manager::Single" : "0",
+            "List::Util" : "0",
+            "Math::Trig" : "0",
+            "Moose" : "0",
+            "Moose::Role" : "0",
+            "Moose::Util::TypeConstraints" : "0",
+            "Scalar::Util" : "0"
          }
       },
       "test" : {
          "requires" : {
-            "Test::Exception" : 0,
-            "Test::More" : 0,
-            "strict" : 0,
-            "warnings" : 0
+            "Test::Exception" : "0",
+            "Test::More" : "0",
+            "strict" : "0",
+            "warnings" : "0"
          }
       }
    },
    "release_status" : "stable",
    "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/gphat/chart-clicker/issues"
+      },
       "homepage" : "https://github.com/gphat/chart-clicker",
       "repository" : {
          "type" : "git",
@@ -77,6 +80,6 @@
          "web" : "https://github.com/gphat/chart-clicker"
       }
    },
-   "version" : "2.79"
+   "version" : "2.80"
 }
 
