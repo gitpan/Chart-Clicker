@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer;
 {
-  $Chart::Clicker::Renderer::VERSION = '2.80';
+  $Chart::Clicker::Renderer::VERSION = '2.81';
 }
 use Moose;
 
@@ -36,7 +36,7 @@ Chart::Clicker::Renderer - Base class for renderers
 
 =head1 VERSION
 
-version 2.80
+version 2.81
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::Plot;
 {
-  $Chart::Clicker::Decoration::Plot::VERSION = '2.80';
+  $Chart::Clicker::Decoration::Plot::VERSION = '2.81';
 }
 use Moose;
 
@@ -75,7 +75,7 @@ Chart::Clicker::Decoration::Plot - Area on which renderers draw
 
 =head1 VERSION
 
-version 2.80
+version 2.81
 
 =head1 DESCRIPTION
 

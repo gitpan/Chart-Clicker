@@ -4,6 +4,7 @@ author:
   - 'Cory G Watson <gphat@cpan.org>'
 build_requires:
   Test::Exception: 0
+  Test::Fatal: 0
   Test::More: 0
   strict: 0
   warnings: 0
@@ -57,4 +58,4 @@ resources:
   bugtracker: https://github.com/gphat/chart-clicker/issues
   homepage: https://github.com/gphat/chart-clicker
   repository: https://github.com/gphat/chart-clicker.git
-version: 2.80
+version: 2.81

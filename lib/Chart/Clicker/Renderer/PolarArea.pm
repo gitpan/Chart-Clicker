@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::PolarArea;
 {
-  $Chart::Clicker::Renderer::PolarArea::VERSION = '2.80';
+  $Chart::Clicker::Renderer::PolarArea::VERSION = '2.81';
 }
 use Moose;
 
@@ -183,7 +183,7 @@ Chart::Clicker::Renderer::PolarArea - Polar Area renderer
 
 =head1 VERSION
 
-version 2.80
+version 2.81
 
 =head1 SYNOPSIS
 

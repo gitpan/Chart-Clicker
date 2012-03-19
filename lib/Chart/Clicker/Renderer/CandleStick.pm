@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::CandleStick;
 {
-  $Chart::Clicker::Renderer::CandleStick::VERSION = '2.80';
+  $Chart::Clicker::Renderer::CandleStick::VERSION = '2.81';
 }
 use Moose;
 
@@ -161,7 +161,7 @@ Chart::Clicker::Renderer::CandleStick - CandleStick renderer
 
 =head1 VERSION
 
-version 2.80
+version 2.81
 
 =head1 SYNOPSIS
 

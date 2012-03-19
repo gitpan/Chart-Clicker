@@ -1,6 +1,6 @@
 package Chart::Clicker::Container;
 {
-  $Chart::Clicker::Container::VERSION = '2.80';
+  $Chart::Clicker::Container::VERSION = '2.81';
 }
 use Moose;
 
@@ -30,7 +30,7 @@ Chart::Clicker::Container - Base class that extends Graphics::Primitive::Contain
 
 =head1 VERSION
 
-version 2.80
+version 2.81
 
 =head1 DESCRIPTION
 

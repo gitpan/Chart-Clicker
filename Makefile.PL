@@ -13,6 +13,7 @@ my %WriteMakefileArgs = (
   "AUTHOR" => "Cory G Watson <gphat\@cpan.org>",
   "BUILD_REQUIRES" => {
     "Test::Exception" => 0,
+    "Test::Fatal" => 0,
     "Test::More" => 0,
     "strict" => 0,
     "warnings" => 0
@@ -62,7 +63,7 @@ my %WriteMakefileArgs = (
     "Moose::Util::TypeConstraints" => 0,
     "Scalar::Util" => 0
   },
-  "VERSION" => "2.80",
+  "VERSION" => "2.81",
   "test" => {
     "TESTS" => "t/*.t t/series/*.t t/xt/*.t"
   }
