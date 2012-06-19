@@ -1,6 +1,6 @@
 package Chart::Clicker::Data::Series::HighLow;
 {
-  $Chart::Clicker::Data::Series::HighLow::VERSION = '2.81';
+  $Chart::Clicker::Data::Series::HighLow::VERSION = '2.82';
 }
 use Moose;
 
@@ -73,7 +73,7 @@ Chart::Clicker::Data::Series::HighLow - Series data with additional attributes f
 
 =head1 VERSION
 
-version 2.81
+version 2.82
 
 =head1 SYNOPSIS
 

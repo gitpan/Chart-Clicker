@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::Legend;
 {
-  $Chart::Clicker::Decoration::Legend::VERSION = '2.81';
+  $Chart::Clicker::Decoration::Legend::VERSION = '2.82';
 }
 use Moose;
 
@@ -107,7 +107,7 @@ Chart::Clicker::Decoration::Legend - Series name, color key
 
 =head1 VERSION
 
-version 2.81
+version 2.82
 
 =head1 DESCRIPTION
 

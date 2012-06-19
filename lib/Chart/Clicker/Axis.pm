@@ -1,6 +1,6 @@
 package Chart::Clicker::Axis;
 {
-  $Chart::Clicker::Axis::VERSION = '2.81';
+  $Chart::Clicker::Axis::VERSION = '2.82';
 }
 use Moose;
 
@@ -272,7 +272,6 @@ override('prepare', sub {
             horizontal_align => 'center'
         );
         $label->name('label');
-        $label->border->width(1);
         use Graphics::Color::RGB;
         $label->border->color(Graphics::Color::RGB->new(r => 0, g => 0, b => 0));
         
@@ -526,7 +525,7 @@ Chart::Clicker::Axis - An X or Y Axis
 
 =head1 VERSION
 
-version 2.81
+version 2.82
 
 =head1 SYNOPSIS
 
