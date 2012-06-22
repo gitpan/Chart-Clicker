@@ -1,6 +1,6 @@
 package Chart::Clicker::Positioned;
 {
-  $Chart::Clicker::Positioned::VERSION = '2.82';
+  $Chart::Clicker::Positioned::VERSION = '2.83';
 }
 use Moose::Role;
 
@@ -55,7 +55,7 @@ Chart::Clicker::Positioned - Role for components that care about position.
 
 =head1 VERSION
 
-version 2.82
+version 2.83
 
 =head1 SYNOPSIS
 

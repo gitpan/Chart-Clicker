@@ -1,6 +1,6 @@
 package Chart::Clicker::Axis::DateTime;
 {
-  $Chart::Clicker::Axis::DateTime::VERSION = '2.82';
+  $Chart::Clicker::Axis::DateTime::VERSION = '2.83';
 }
 use Moose;
 
@@ -145,7 +145,7 @@ Chart::Clicker::Axis::DateTime - An X or Y Axis using DateTime
 
 =head1 VERSION
 
-version 2.82
+version 2.83
 
 =head1 SYNOPSIS
 

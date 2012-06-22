@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Area;
 {
-  $Chart::Clicker::Renderer::Area::VERSION = '2.82';
+  $Chart::Clicker::Renderer::Area::VERSION = '2.83';
 }
 use Moose;
 
@@ -148,7 +148,7 @@ Chart::Clicker::Renderer::Area - Area renderer
 
 =head1 VERSION
 
-version 2.82
+version 2.83
 
 =head1 SYNOPSIS
 

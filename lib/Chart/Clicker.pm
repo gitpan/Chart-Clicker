@@ -1,6 +1,6 @@
 package Chart::Clicker;
 {
-  $Chart::Clicker::VERSION = '2.82';
+  $Chart::Clicker::VERSION = '2.83';
 }
 use Moose;
 
@@ -537,7 +537,7 @@ Chart::Clicker - Powerful, extensible charting.
 
 =head1 VERSION
 
-version 2.82
+version 2.83
 
 =head1 SYNOPSIS
 
