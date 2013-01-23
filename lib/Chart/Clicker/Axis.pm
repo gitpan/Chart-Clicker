@@ -1,15 +1,20 @@
 package Chart::Clicker::Axis;
 {
-  $Chart::Clicker::Axis::VERSION = '2.83';
+  $Chart::Clicker::Axis::VERSION = '2.84';
 }
 use Moose;
+use Moose::Util;
 
 extends 'Chart::Clicker::Container';
 with 'Chart::Clicker::Positioned';
 
 # ABSTRACT: An X or Y Axis
 
+use Class::Load;
+
 use Chart::Clicker::Data::Range;
+
+use English qw(-no_match_vars);
 
 use Graphics::Color::RGB;
 
@@ -21,9 +26,15 @@ use Math::Trig ':pi';
 
 
 has 'tick_label_angle' => (
-    is => 'rw',
+    is  => 'rw',
     isa => 'Num'
 );
+
+
+has 'tick_division_type' => ( is => 'rw', isa => 'Str', default => 'Exact' );
+
+# The above tick division type is loaded on the first call to divvy()
+has '_tick_division_type_loaded' => ( is => 'ro', isa => 'Bool', lazy_build => 1 );
 
 
 has 'baseline' => (
@@ -163,6 +174,32 @@ sub BUILD {
     $self->padding(3);
 }
 
+sub _build__tick_division_type_loaded {
+    my $self = shift;
+
+    # User modules are prefixed with a +.
+    my $divisionTypeModule;
+    my $extensionOf = 'Chart::Clicker::Axis::DivisionType';
+    if ( $self->tick_division_type =~ m/^\+(.*)$/xmisg ) {
+        $divisionTypeModule = $1;
+    }
+    else {
+        $divisionTypeModule = sprintf( '%s::%s', $extensionOf, $self->tick_division_type );
+    }
+
+    # Try to load the DivisionType module. An error is thrown when the class is
+    # not available or cannot be loaded
+    Class::Load::load_class($divisionTypeModule);
+
+    # Apply the newly loaded role to this class.
+    Moose::Util::apply_all_roles( $self => $divisionTypeModule );
+    if ( not $self->does($extensionOf) ) {
+        die("Module $divisionTypeModule does not extend $extensionOf");
+    }
+
+    return 1;
+}
+
 override('prepare', sub {
     my ($self, $driver) = @_;
 
@@ -203,7 +240,7 @@ override('prepare', sub {
     }
 
     if($self->show_ticks && !scalar(@{ $self->tick_values })) {
-        $self->tick_values($self->range->divvy($self->ticks + 1));
+        $self->tick_values($self->divvy);
     }
 
     # Return now without setting a min height or width and allow 
@@ -511,11 +548,22 @@ sub format_value {
     }
 }
 
+
+sub divvy {
+    my $self = shift;
+
+    # Loads the divvy module once and only once
+    # which implements _real_divvy()
+    $self->_tick_division_type_loaded;
+    return $self->_real_divvy();
+}
+
 __PACKAGE__->meta->make_immutable;
 
 no Moose;
 
 1;
+
 __END__
 =pod
 
@@ -525,7 +573,7 @@ Chart::Clicker::Axis - An X or Y Axis
 
 =head1 VERSION
 
-version 2.83
+version 2.84
 
 =head1 SYNOPSIS
 
@@ -558,6 +606,22 @@ This axis' width.
 =head2 tick_label_angle
 
 The angle (in radians) to rotate the tick's labels.
+
+=head2 tick_division_type
+
+Selects the algorithm for dividing the graph axis into labelled ticks.
+
+The currently included algorithms are:
+L<Chart::Clicker::Data::DivisionType::Exact/Exact>,
+L<Chart::Clicker::Data::DivisionType::RoundedLinear/RoundedLinear>.
+
+You may write your own by providing a Moose Role which includes Role
+L<Chart::Clicker::Data::DivisionType> and prefixing the module name
+with + when setting tick_division_type.
+
+ Chart::Clicker::Axis->new(tick_division_type => '+MyApp::TickDivision');
+
+This value should only be set once per axis.
 
 =head2 baseline
 
@@ -706,13 +770,17 @@ Given a span and a value, returns it's pixel position on this Axis.
 
 Given a value, returns it formatted using this Axis' formatter.
 
+=head2 divvy
+
+Retrieves the divisions or ticks for the axis.
+
 =head1 AUTHOR
 
 Cory G Watson <gphat@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Cold Hard Code, LLC.
+This software is copyright (c) 2013 by Cold Hard Code, LLC.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

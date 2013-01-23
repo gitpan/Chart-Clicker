@@ -1,6 +1,6 @@
 package Chart::Clicker::Container;
 {
-  $Chart::Clicker::Container::VERSION = '2.83';
+  $Chart::Clicker::Container::VERSION = '2.84';
 }
 use Moose;
 
@@ -30,7 +30,7 @@ Chart::Clicker::Container - Base class that extends Graphics::Primitive::Contain
 
 =head1 VERSION
 
-version 2.83
+version 2.84
 
 =head1 DESCRIPTION
 
@@ -48,7 +48,7 @@ Cory G Watson <gphat@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Cold Hard Code, LLC.
+This software is copyright (c) 2013 by Cold Hard Code, LLC.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

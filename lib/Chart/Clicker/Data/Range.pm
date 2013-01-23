@@ -1,6 +1,6 @@
 package Chart::Clicker::Data::Range;
 {
-  $Chart::Clicker::Data::Range::VERSION = '2.83';
+  $Chart::Clicker::Data::Range::VERSION = '2.84';
 }
 use Moose;
 
@@ -17,6 +17,10 @@ has 'min' => ( is => 'rw', isa => 'Num' );
 
 
 has 'upper' => ( is => 'rw', isa => 'Num' );
+
+
+has 'ticks' => ( is => 'rw', isa => 'Int', default    => 5 );
+
 
 after 'lower' => sub {
     my $self = shift;
@@ -93,24 +97,6 @@ sub contains {
 }
 
 
-sub divvy {
-    my ($self, $n) = @_;
-
-    if(!$n) {
-        return [];
-    }
-
-    my $per = $self->span / ($n - 1);
-
-    my @vals;
-    for(0..($n - 1)) {
-        push(@vals, $self->lower + ($_ * $per));
-    }
-
-    return \@vals;
-}
-
-
 sub span {
     my ($self) = @_;
 
@@ -131,7 +117,7 @@ Chart::Clicker::Data::Range - A range of Data
 
 =head1 VERSION
 
-version 2.83
+version 2.84
 
 =head1 SYNOPSIS
 
@@ -166,6 +152,10 @@ set if you want to EXPLICITLY set the lower value.
 
 Set/Get the upper bound for this Range
 
+=head2 ticks
+
+The number of ticks to be displayed for this range.
+
 =head1 METHODS
 
 =head2 add
@@ -184,13 +174,6 @@ with one of 5-20 will result in a combined range of 1-20.
 Returns true if supplied value falls within this range (inclusive).  Otherwise
 returns false.
 
-=head2 divvy
-
-  my $values = $range->divvy(5);
-
-Returns an arrayref of $N - 1 values equally spaced in the range so that
-it may be divided into $N pieces.
-
 =head2 span
 
 Returns the span of this range, or UPPER - LOWER.
@@ -201,7 +184,7 @@ Cory G Watson <gphat@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Cold Hard Code, LLC.
+This software is copyright (c) 2013 by Cold Hard Code, LLC.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

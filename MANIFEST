@@ -30,6 +30,10 @@ example/tufte-whitegrid.pl
 lib/Chart/Clicker.pm
 lib/Chart/Clicker/Axis.pm
 lib/Chart/Clicker/Axis/DateTime.pm
+lib/Chart/Clicker/Axis/DivisionType.pm
+lib/Chart/Clicker/Axis/DivisionType/Exact.pm
+lib/Chart/Clicker/Axis/DivisionType/LinearExpandGraph.pm
+lib/Chart/Clicker/Axis/DivisionType/LinearRounded.pm
 lib/Chart/Clicker/Component.pm
 lib/Chart/Clicker/Container.pm
 lib/Chart/Clicker/Context.pm
@@ -63,6 +67,7 @@ lib/Chart/Clicker/Renderer/StackedBar.pm
 lib/Chart/Clicker/Tutorial.pm
 t/add-data.t
 t/axis-datetime.t
+t/axis-division-rounded.t
 t/axis.t
 t/basic.t
 t/context.t

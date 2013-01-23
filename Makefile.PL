@@ -27,9 +27,11 @@ my %WriteMakefileArgs = (
   "NAME" => "Chart::Clicker",
   "PREREQ_PM" => {
     "Carp" => 0,
+    "Class::Load" => 0,
     "Color::Scheme" => 0,
     "DateTime" => 0,
     "DateTime::Set" => 0,
+    "English" => 0,
     "Geometry::Primitive::Arc" => 0,
     "Geometry::Primitive::Circle" => 0,
     "Geometry::Primitive::Point" => 0,
@@ -60,10 +62,12 @@ my %WriteMakefileArgs = (
     "Math::Trig" => 0,
     "Moose" => 0,
     "Moose::Role" => 0,
+    "Moose::Util" => 0,
     "Moose::Util::TypeConstraints" => 0,
+    "POSIX" => 0,
     "Scalar::Util" => 0
   },
-  "VERSION" => "2.83",
+  "VERSION" => "2.84",
   "test" => {
     "TESTS" => "t/*.t t/series/*.t t/xt/*.t"
   }

@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::Glass;
 {
-  $Chart::Clicker::Decoration::Glass::VERSION = '2.83';
+  $Chart::Clicker::Decoration::Glass::VERSION = '2.84';
 }
 use Moose;
 
@@ -73,7 +73,7 @@ Chart::Clicker::Decoration::Glass - Under-chart gradient decoration
 
 =head1 VERSION
 
-version 2.83
+version 2.84
 
 =head1 DESCRIPTION
 
@@ -95,7 +95,7 @@ Cory G Watson <gphat@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Cold Hard Code, LLC.
+This software is copyright (c) 2013 by Cold Hard Code, LLC.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
