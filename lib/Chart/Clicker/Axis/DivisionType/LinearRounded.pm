@@ -1,6 +1,6 @@
 package Chart::Clicker::Axis::DivisionType::LinearRounded;
 {
-  $Chart::Clicker::Axis::DivisionType::LinearRounded::VERSION = '2.84';
+  $Chart::Clicker::Axis::DivisionType::LinearRounded::VERSION = '2.85';
 }
 
 use Moose::Role;
@@ -101,6 +101,7 @@ sub _real_divvy {
 no Moose;
 1;
 
+__END__
 
 =pod
 
@@ -110,7 +111,7 @@ Chart::Clicker::Axis::DivisionType::LinearRounded
 
 =head1 VERSION
 
-version 2.84
+version 2.85
 
 =head1 SYNOPSIS
 
@@ -172,7 +173,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
-
-__END__
-

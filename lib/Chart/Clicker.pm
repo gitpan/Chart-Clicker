@@ -1,6 +1,6 @@
 package Chart::Clicker;
 {
-  $Chart::Clicker::VERSION = '2.84';
+  $Chart::Clicker::VERSION = '2.85';
 }
 use Moose;
 
@@ -110,6 +110,13 @@ has 'format' => (
     is => 'rw',
     isa => 'Str',
     default => sub { 'PNG' }
+);
+
+
+has 'plot_mode' => (
+    is => 'rw',
+    isa => 'Str',
+    default => sub { 'slow' }
 );
 
 
@@ -527,8 +534,8 @@ no Moose;
 
 1;
 
-
 __END__
+
 =pod
 
 =head1 NAME
@@ -537,7 +544,7 @@ Chart::Clicker - Powerful, extensible charting.
 
 =head1 VERSION
 
-version 2.84
+version 2.85
 
 =head1 SYNOPSIS
 
@@ -741,6 +748,11 @@ L<Graphics::Primitive::Driver::Cairo>.
 
 Get the format for this Chart.  Required in the constructor.  Must be on of
 Png, Pdf, Ps or Svg.
+
+=head2 plot_mode 
+
+Fast or slow plot mode. When in fast mode, data elements that are deemed to be
+superfluous or invisible will not be drawn. Default is 'slow'
 
 =head2 grid_over
 
@@ -1001,4 +1013,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

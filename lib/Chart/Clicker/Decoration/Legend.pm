@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::Legend;
 {
-  $Chart::Clicker::Decoration::Legend::VERSION = '2.84';
+  $Chart::Clicker::Decoration::Legend::VERSION = '2.85';
 }
 use Moose;
 
@@ -61,6 +61,9 @@ override('prepare', sub {
     my $font = $self->font;
 
     my $ii = $self->item_padding;
+    
+    #this makes sure that wrapping works
+    $self->width($self->clicker->width);
 
     if($self->is_vertical) {
         # This assumes you aren't changing the layout manager...
@@ -98,7 +101,9 @@ __PACKAGE__->meta->make_immutable;
 no Moose;
 
 1;
+
 __END__
+
 =pod
 
 =head1 NAME
@@ -107,7 +112,7 @@ Chart::Clicker::Decoration::Legend - Series name, color key
 
 =head1 VERSION
 
-version 2.84
+version 2.85
 
 =head1 DESCRIPTION
 
@@ -148,4 +153,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

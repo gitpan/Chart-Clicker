@@ -1,6 +1,6 @@
 package Chart::Clicker::Data::Series;
 {
-  $Chart::Clicker::Data::Series::VERSION = '2.84';
+  $Chart::Clicker::Data::Series::VERSION = '2.85';
 }
 use Moose;
 
@@ -39,7 +39,7 @@ has 'range' => (
 has 'values' => (
     traits => [ 'Array' ],
     is => 'rw',
-    isa => 'ArrayRef[Num]',
+    isa => 'ArrayRef[Num|Undef]',
     default => sub { [] },
     handles => {
         'add_to_values' => 'push',
@@ -56,7 +56,8 @@ sub _build_range {
         unless scalar(@{ $values });
 
     return Chart::Clicker::Data::Range->new(
-        lower => min(@{ $values }), upper => max(@{ $values})
+        lower => min(grep { defined } @{ $values }),
+        upper => max(grep { defined } @{ $values })
     );
 }
 
@@ -115,6 +116,7 @@ no Moose;
 1;
 
 __END__
+
 =pod
 
 =head1 NAME
@@ -123,7 +125,7 @@ Chart::Clicker::Data::Series - A series of key, value pairs representing chart d
 
 =head1 VERSION
 
-version 2.84
+version 2.85
 
 =head1 SYNOPSIS
 
@@ -220,4 +222,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

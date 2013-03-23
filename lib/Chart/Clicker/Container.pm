@@ -1,6 +1,6 @@
 package Chart::Clicker::Container;
 {
-  $Chart::Clicker::Container::VERSION = '2.84';
+  $Chart::Clicker::Container::VERSION = '2.85';
 }
 use Moose;
 
@@ -21,7 +21,9 @@ __PACKAGE__->meta->make_immutable;
 no Moose;
 
 1;
+
 __END__
+
 =pod
 
 =head1 NAME
@@ -30,7 +32,7 @@ Chart::Clicker::Container - Base class that extends Graphics::Primitive::Contain
 
 =head1 VERSION
 
-version 2.84
+version 2.85
 
 =head1 DESCRIPTION
 
@@ -54,4 +56,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

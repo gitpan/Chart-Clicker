@@ -1,13 +1,24 @@
 package Chart::Clicker::Data::Range;
 {
-  $Chart::Clicker::Data::Range::VERSION = '2.84';
+  $Chart::Clicker::Data::Range::VERSION = '2.85';
 }
 use Moose;
+use Moose::Util::TypeConstraints;
+
+use constant EPSILON => 0.0001;
 
 # ABSTRACT: A range of Data
 
 
-has 'lower' => ( is => 'rw', isa => 'Num' );
+subtype 'Lower'
+    => as 'Num|Undef'
+    => where { defined($_) };
+
+coerce 'Lower'
+    => from 'Undef'
+    => via { - EPSILON };
+
+has 'lower' => ( is => 'rw', isa => 'Lower', coerce => 1);
 
 
 has 'max' => ( is => 'rw', isa => 'Num' );
@@ -16,7 +27,16 @@ has 'max' => ( is => 'rw', isa => 'Num' );
 has 'min' => ( is => 'rw', isa => 'Num' );
 
 
-has 'upper' => ( is => 'rw', isa => 'Num' );
+subtype 'Upper'
+    => as 'Num|Undef'
+    => where { defined($_) };
+
+coerce 'Upper'
+    => from 'Num|Undef'
+    => via { EPSILON };
+
+has 'upper' => ( is => 'rw', isa => 'Upper', coerce => 1);
+
 
 
 has 'ticks' => ( is => 'rw', isa => 'Int', default    => 5 );
@@ -28,6 +48,15 @@ after 'lower' => sub {
     if(defined($self->{'min'})) {
         $self->{'lower'} = $self->{'min'};
     }
+
+    $self->{'lower'} = $self->{'min'} unless (defined($self->{'lower'}));
+    $self->{'upper'} = $self->{'max'} unless (defined($self->{'upper'}));
+
+    if(defined($self->{'lower'}) && defined($self->{'upper'}) && $self->{'lower'} == $self->{'upper'}) {
+        $self->{'lower'} = $self->{'lower'} - EPSILON;
+        $self->{'lower'} = $self->{'lower'} + EPSILON;
+    }
+
 };
 
 after 'upper' => sub {
@@ -36,6 +65,15 @@ after 'upper' => sub {
     if(defined($self->{'max'})) {
         $self->{'upper'} = $self->{'max'};
     }
+
+    $self->{'lower'} = $self->{'min'} unless (defined($self->{'lower'}));
+    $self->{'upper'} = $self->{'max'} unless (defined($self->{'upper'}));
+
+    if(defined($self->{'lower'}) && defined($self->{'upper'}) && $self->{'lower'} == $self->{'upper'}) {
+        $self->{'upper'} = $self->{'upper'} - EPSILON;
+        $self->{'upper'} = $self->{'upper'} + EPSILON;
+    }
+
 };
 
 after 'min' => sub {
@@ -100,7 +138,15 @@ sub contains {
 sub span {
     my ($self) = @_;
 
-    return $self->upper - $self->lower;
+    my $span = $self->upper - $self->lower;
+
+    #we still want to be able to see flat lines!
+    if ($span <= EPSILON) {
+        $self->upper($self->upper() + EPSILON);
+        $self->lower($self->lower() - EPSILON);
+        $span = $self->upper - $self->lower;
+    }
+    return $span;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -108,7 +154,9 @@ __PACKAGE__->meta->make_immutable;
 no Moose;
 
 1;
+
 __END__
+
 =pod
 
 =head1 NAME
@@ -117,7 +165,7 @@ Chart::Clicker::Data::Range - A range of Data
 
 =head1 VERSION
 
-version 2.84
+version 2.85
 
 =head1 SYNOPSIS
 
@@ -190,4 +238,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

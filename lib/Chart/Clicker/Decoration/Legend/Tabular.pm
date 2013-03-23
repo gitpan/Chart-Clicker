@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::Legend::Tabular;
 {
-  $Chart::Clicker::Decoration::Legend::Tabular::VERSION = '2.84';
+  $Chart::Clicker::Decoration::Legend::Tabular::VERSION = '2.85';
 }
 use Moose;
 
@@ -157,7 +157,9 @@ __PACKAGE__->meta->make_immutable;
 no Moose;
 
 1;
+
 __END__
+
 =pod
 
 =head1 NAME
@@ -166,7 +168,7 @@ Chart::Clicker::Decoration::Legend::Tabular - Tabular version of Legend
 
 =head1 VERSION
 
-version 2.84
+version 2.85
 
 =head1 SYNOPSIS
 
@@ -251,4 +253,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

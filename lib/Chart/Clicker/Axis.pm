@@ -1,6 +1,6 @@
 package Chart::Clicker::Axis;
 {
-  $Chart::Clicker::Axis::VERSION = '2.84';
+  $Chart::Clicker::Axis::VERSION = '2.85';
 }
 use Moose;
 use Moose::Util;
@@ -263,7 +263,12 @@ override('prepare', sub {
 
         my $label = $val;
         if(defined($self->tick_labels)) {
-            $label = $self->tick_labels->[$i];
+            if (defined $self->tick_labels->[$i]) {
+                $label = $self->tick_labels->[$i];
+            }
+            else {
+                $label = "";
+            }
         } else {
             $label = $self->format_value($val);
         }
@@ -354,6 +359,7 @@ override('prepare', sub {
 sub mark {
     my ($self, $span, $value) = @_;
 
+    return undef if not defined $value;
     if($self->has_skip_range) {
         # We must completely ignore values that fall inside the skip range,
         # so we return an undef.
@@ -565,6 +571,7 @@ no Moose;
 1;
 
 __END__
+
 =pod
 
 =head1 NAME
@@ -573,7 +580,7 @@ Chart::Clicker::Axis - An X or Y Axis
 
 =head1 VERSION
 
-version 2.84
+version 2.85
 
 =head1 SYNOPSIS
 
@@ -786,4 +793,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Pie;
 {
-  $Chart::Clicker::Renderer::Pie::VERSION = '2.84';
+  $Chart::Clicker::Renderer::Pie::VERSION = '2.85';
 }
 use Moose;
 
@@ -169,9 +169,8 @@ no Moose;
 
 1;
 
-
-
 __END__
+
 =pod
 
 =head1 NAME
@@ -180,7 +179,7 @@ Chart::Clicker::Renderer::Pie - Pie renderer
 
 =head1 VERSION
 
-version 2.84
+version 2.85
 
 =head1 SYNOPSIS
 
@@ -255,4 +254,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

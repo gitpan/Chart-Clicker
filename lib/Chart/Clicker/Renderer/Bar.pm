@@ -1,6 +1,6 @@
 package Chart::Clicker::Renderer::Bar;
 {
-  $Chart::Clicker::Renderer::Bar::VERSION = '2.84';
+  $Chart::Clicker::Renderer::Bar::VERSION = '2.85';
 }
 use Moose;
 
@@ -187,7 +187,9 @@ __PACKAGE__->meta->make_immutable;
 no Moose;
 
 1;
+
 __END__
+
 =pod
 
 =head1 NAME
@@ -196,7 +198,7 @@ Chart::Clicker::Renderer::Bar - Bar renderer
 
 =head1 VERSION
 
-version 2.84
+version 2.85
 
 =head1 SYNOPSIS
 
@@ -250,4 +252,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
