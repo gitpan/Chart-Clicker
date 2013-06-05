@@ -1,6 +1,6 @@
 package Chart::Clicker::Component;
 {
-  $Chart::Clicker::Component::VERSION = '2.85';
+  $Chart::Clicker::Component::VERSION = '2.86';
 }
 use Moose;
 
@@ -32,7 +32,7 @@ Chart::Clicker::Component - Base class that extends Graphics::Primitive::Compone
 
 =head1 VERSION
 
-version 2.85
+version 2.86
 
 =head1 DESCRIPTION
 

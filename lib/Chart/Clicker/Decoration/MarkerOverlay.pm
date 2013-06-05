@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::MarkerOverlay;
 {
-  $Chart::Clicker::Decoration::MarkerOverlay::VERSION = '2.85';
+  $Chart::Clicker::Decoration::MarkerOverlay::VERSION = '2.86';
 }
 
 use Moose;
@@ -116,7 +116,7 @@ Chart::Clicker::Decoration::MarkerOverlay - Component for drawing markers
 
 =head1 VERSION
 
-version 2.85
+version 2.86
 
 =head1 DESCRIPTION
 

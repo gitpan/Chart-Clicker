@@ -1,6 +1,6 @@
 package Chart::Clicker::Axis::DivisionType::Exact;
 {
-  $Chart::Clicker::Axis::DivisionType::Exact::VERSION = '2.85';
+  $Chart::Clicker::Axis::DivisionType::Exact::VERSION = '2.86';
 }
 
 use Moose::Role;
@@ -38,7 +38,7 @@ Chart::Clicker::Axis::DivisionType::Exact
 
 =head1 VERSION
 
-version 2.85
+version 2.86
 
 =head1 SYNOPSIS
 

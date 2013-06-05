@@ -1,6 +1,6 @@
 package Chart::Clicker::Data::Marker;
 {
-  $Chart::Clicker::Data::Marker::VERSION = '2.85';
+  $Chart::Clicker::Data::Marker::VERSION = '2.86';
 }
 use Moose;
 
@@ -68,7 +68,7 @@ Chart::Clicker::Data::Marker - Highlight arbitrary value(s)
 
 =head1 VERSION
 
-version 2.85
+version 2.86
 
 =head1 SYNOPSIS
 
@@ -97,11 +97,6 @@ version 2.85
 
 Used to highlight a particular key, value or range of either.
 
-=head2 value2
-
-Set/Get the value2 for this marker.  This represents a second point on the
-range and is used to specify a range.
-
 =head1 ATTRIBUTES
 
 =head2 brush
@@ -129,6 +124,11 @@ and is used to specify a range.
 =head2 value
 
 Set/Get the value for this marker.  This represents a point on the range.
+
+=head2 value2
+
+Set/Get the value2 for this marker.  This represents a second point on the
+range and is used to specify a range.
 
 =head1 AUTHOR
 

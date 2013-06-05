@@ -1,6 +1,6 @@
 package Chart::Clicker::Decoration::OverAxis;
 {
-  $Chart::Clicker::Decoration::OverAxis::VERSION = '2.85';
+  $Chart::Clicker::Decoration::OverAxis::VERSION = '2.86';
 }
 use Moose;
 
@@ -153,7 +153,7 @@ Chart::Clicker::Decoration::OverAxis - An axis drawn over data
 
 =head1 VERSION
 
-version 2.85
+version 2.86
 
 =head1 DESCRIPTION
 

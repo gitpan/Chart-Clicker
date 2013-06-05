@@ -1,6 +1,6 @@
 package Chart::Clicker::Axis::DivisionType;
 {
-  $Chart::Clicker::Axis::DivisionType::VERSION = '2.85';
+  $Chart::Clicker::Axis::DivisionType::VERSION = '2.86';
 }
 use Moose::Role;
 requires qw{range ticks};
@@ -19,7 +19,7 @@ Chart::Clicker::Axis::DivisionType
 
 =head1 VERSION
 
-version 2.85
+version 2.86
 
 =head1 DESCRIPTION
 

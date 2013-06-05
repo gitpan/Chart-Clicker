@@ -1,6 +1,6 @@
 package Chart::Clicker::Axis::DivisionType::LinearRounded;
 {
-  $Chart::Clicker::Axis::DivisionType::LinearRounded::VERSION = '2.85';
+  $Chart::Clicker::Axis::DivisionType::LinearRounded::VERSION = '2.86';
 }
 
 use Moose::Role;
@@ -111,7 +111,7 @@ Chart::Clicker::Axis::DivisionType::LinearRounded
 
 =head1 VERSION
 
-version 2.85
+version 2.86
 
 =head1 SYNOPSIS
 
