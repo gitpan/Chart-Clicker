@@ -1,8 +1,5 @@
 package Chart::Clicker::Axis::DivisionType::LinearRounded;
-{
-  $Chart::Clicker::Axis::DivisionType::LinearRounded::VERSION = '2.86';
-}
-
+$Chart::Clicker::Axis::DivisionType::LinearRounded::VERSION = '2.87';
 use Moose::Role;
 with qw{Chart::Clicker::Axis::DivisionType};
 
@@ -111,14 +108,14 @@ Chart::Clicker::Axis::DivisionType::LinearRounded
 
 =head1 VERSION
 
-version 2.86
+version 2.87
 
 =head1 SYNOPSIS
 
   use Chart::Clicker::Axis;
 
   my $axis = Chart::Clicker::Axis->new({
-    tick_division_type  => 'RoundedLinear'
+    tick_division_type  => 'LinearRounded'
   });
 
 =head1 DESCRIPTION
@@ -127,7 +124,7 @@ Role describing how to divide data for Chart::Clicker::Axis.
 
 =head1 NAME
 
-Chart::Clicker::Axis::DivisionType::RoundedLinear - Nicely rounded segments on a linear scale.
+Chart::Clicker::Axis::DivisionType::LinearRounded - Nicely rounded segments on a linear scale.
 
 =head1 ATTRIBUTES
 
@@ -167,7 +164,7 @@ Cory G Watson <gphat@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Cold Hard Code, LLC.
+This software is copyright (c) 2014 by Cold Hard Code, LLC.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

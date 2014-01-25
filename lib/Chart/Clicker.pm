@@ -1,7 +1,5 @@
 package Chart::Clicker;
-{
-  $Chart::Clicker::VERSION = '2.86';
-}
+$Chart::Clicker::VERSION = '2.87';
 use Moose;
 
 extends 'Chart::Clicker::Container';
@@ -15,7 +13,7 @@ use Graphics::Color::RGB;
 use Graphics::Primitive::Insets;
 use Graphics::Primitive::Border;
 
-use Graphics::Primitive::Driver::Cairo;
+#use Graphics::Primitive::Driver::Cairo;
 
 use Chart::Clicker::Context;
 
@@ -94,8 +92,10 @@ has 'driver' => (
     does => 'Graphics::Primitive::Driver',
     default => sub {
         my ($self) = @_;
-        Graphics::Primitive::Driver::Cairo->new(
-            format => $self->format,
+        my $driver = $ENV{CHART_CLICKER_DEFAULT_DRIVER} || ($^O eq 'MSWin32'?"Graphics::Primitive::Driver::GD":"Graphics::Primitive::Driver::Cairo");
+        eval "require $driver;" or die "Cannot load driver $driver";
+        $driver->new(
+            'format' => $self->format,
         )
     },
     handles => {
@@ -544,7 +544,7 @@ Chart::Clicker - Powerful, extensible charting.
 
 =head1 VERSION
 
-version 2.86
+version 2.87
 
 =head1 SYNOPSIS
 
@@ -1007,7 +1007,7 @@ Cory G Watson <gphat@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Cold Hard Code, LLC.
+This software is copyright (c) 2014 by Cold Hard Code, LLC.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

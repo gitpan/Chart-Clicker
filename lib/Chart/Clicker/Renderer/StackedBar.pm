@@ -1,7 +1,5 @@
 package Chart::Clicker::Renderer::StackedBar;
-{
-  $Chart::Clicker::Renderer::StackedBar::VERSION = '2.86';
-}
+$Chart::Clicker::Renderer::StackedBar::VERSION = '2.87';
 use Moose;
 
 extends 'Chart::Clicker::Renderer';
@@ -176,7 +174,7 @@ Chart::Clicker::Renderer::StackedBar - Stacked Bar renderer
 
 =head1 VERSION
 
-version 2.86
+version 2.87
 
 =head1 SYNOPSIS
 
@@ -214,7 +212,7 @@ Cory G Watson <gphat@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Cold Hard Code, LLC.
+This software is copyright (c) 2014 by Cold Hard Code, LLC.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
