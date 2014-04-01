@@ -1,5 +1,5 @@
 package Chart::Clicker::Data::DataSet;
-$Chart::Clicker::Data::DataSet::VERSION = '2.87';
+$Chart::Clicker::Data::DataSet::VERSION = '2.88';
 use Moose;
 
 # ABSTRACT: A collection of series
@@ -137,7 +137,7 @@ Chart::Clicker::Data::DataSet - A collection of series
 
 =head1 VERSION
 
-version 2.87
+version 2.88
 
 =head1 SYNOPSIS
 

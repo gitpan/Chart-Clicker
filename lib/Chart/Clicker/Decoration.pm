@@ -1,5 +1,5 @@
 package Chart::Clicker::Decoration;
-$Chart::Clicker::Decoration::VERSION = '2.87';
+$Chart::Clicker::Decoration::VERSION = '2.88';
 use Moose;
 
 # ABSTRACT: Shiny baubles!
@@ -25,7 +25,7 @@ Chart::Clicker::Decoration - Shiny baubles!
 
 =head1 VERSION
 
-version 2.87
+version 2.88
 
 =head1 DESCRIPTION
 

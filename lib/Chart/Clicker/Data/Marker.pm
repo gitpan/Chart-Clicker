@@ -1,5 +1,5 @@
 package Chart::Clicker::Data::Marker;
-$Chart::Clicker::Data::Marker::VERSION = '2.87';
+$Chart::Clicker::Data::Marker::VERSION = '2.88';
 use Moose;
 
 # ABSTRACT: Highlight arbitrary value(s)
@@ -66,7 +66,7 @@ Chart::Clicker::Data::Marker - Highlight arbitrary value(s)
 
 =head1 VERSION
 
-version 2.87
+version 2.88
 
 =head1 SYNOPSIS
 

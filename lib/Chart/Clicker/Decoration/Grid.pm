@@ -1,5 +1,5 @@
 package Chart::Clicker::Decoration::Grid;
-$Chart::Clicker::Decoration::Grid::VERSION = '2.87';
+$Chart::Clicker::Decoration::Grid::VERSION = '2.88';
 use Moose;
 
 extends 'Graphics::Primitive::Canvas';
@@ -137,7 +137,7 @@ Chart::Clicker::Decoration::Grid - Under-data grid
 
 =head1 VERSION
 
-version 2.87
+version 2.88
 
 =head1 DESCRIPTION
 

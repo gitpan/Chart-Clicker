@@ -1,5 +1,5 @@
 package Chart::Clicker::Renderer::StackedBar;
-$Chart::Clicker::Renderer::StackedBar::VERSION = '2.87';
+$Chart::Clicker::Renderer::StackedBar::VERSION = '2.88';
 use Moose;
 
 extends 'Chart::Clicker::Renderer';
@@ -174,7 +174,7 @@ Chart::Clicker::Renderer::StackedBar - Stacked Bar renderer
 
 =head1 VERSION
 
-version 2.87
+version 2.88
 
 =head1 SYNOPSIS
 

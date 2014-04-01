@@ -1,5 +1,5 @@
 package Chart::Clicker::Renderer;
-$Chart::Clicker::Renderer::VERSION = '2.87';
+$Chart::Clicker::Renderer::VERSION = '2.88';
 use Moose;
 
 extends 'Graphics::Primitive::Canvas';
@@ -9,7 +9,11 @@ extends 'Graphics::Primitive::Canvas';
 
 has 'additive' => ( is => 'rw', isa => 'Bool', default => 0 );
 
-has 'clicker' => ( is => 'rw', isa => 'Chart::Clicker' );
+has 'clicker' => (
+  is => 'rw',
+  isa => 'Chart::Clicker',
+  weak_ref => 1
+);
 
 
 has 'context' => ( is => 'rw', isa => 'Str' );
@@ -36,7 +40,7 @@ Chart::Clicker::Renderer - Base class for renderers
 
 =head1 VERSION
 
-version 2.87
+version 2.88
 
 =head1 SYNOPSIS
 

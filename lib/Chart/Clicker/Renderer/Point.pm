@@ -1,5 +1,5 @@
 package Chart::Clicker::Renderer::Point;
-$Chart::Clicker::Renderer::Point::VERSION = '2.87';
+$Chart::Clicker::Renderer::Point::VERSION = '2.88';
 use Moose;
 
 # ABSTRACT: Point renderer
@@ -107,7 +107,7 @@ Chart::Clicker::Renderer::Point - Point renderer
 
 =head1 VERSION
 
-version 2.87
+version 2.88
 
 =head1 SYNOPSIS
 
